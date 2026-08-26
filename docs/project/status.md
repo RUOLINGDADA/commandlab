@@ -1,11 +1,14 @@
 # 项目状态
 
-- 当前阶段：Docker 课程深度重设计已完成，待创建短期分支并发起 Pull Request
+- 当前阶段：首发版本已发布，GitHub Pages 已上线
 - 当前版本：0.1.0
 - 目标仓库：`RUOLINGDADA/commandlab`
 - 目标站点：`https://ruolingdada.github.io/commandlab/`
 - 在线沙箱：首发关闭，显示“暂未开放”
 - 远程推送：已完成，`main` 已跟踪 `origin/main`
+- GitHub Release：`v0.1.0` 已发布
+- 分支规则：`Protect main` 已启用
+- Pages：Actions 部署成功
 
 ## 当前任务
 

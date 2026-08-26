@@ -16,3 +16,12 @@
 - 修复：在 `vitest.config.ts` 增加源码路径别名。
 - 回归测试：`pnpm test` 三个测试文件、五个断言全部通过。
 - 状态：已关闭。
+
+## BUG-003（已解决）
+
+- 现象：通过 Release 工作流创建 `v0.1.0` 后，Pages 的 `release.published` 触发没有自动产生部署运行。
+- 复现：从 Actions 手动运行 `Create release`，确认 Release 成功后检查工作流列表。
+- 根因：GitHub 使用 `GITHUB_TOKEN` 产生的事件不会再次触发新的工作流，导致 `release` 事件被抑制。
+- 修复：Pages 工作流增加 `workflow_run` 监听，仅在 `Create release` 成功时继续构建部署；保留外部发布的 `release` 事件和手动 dispatch。
+- 回归测试：PR #7 的 CI / Security 均通过；Pages 工作流手动运行构建与部署成功。
+- 状态：已关闭。
