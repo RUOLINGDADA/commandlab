@@ -12,4 +12,10 @@
 
 ## 当前任务
 
-- `docs/tasks/2026-08-27-github-first-release/`
+- `docs/tasks/2026-08-27-docker-course-redesign/`（实现与本地验证完成）
+
+## 最近验证
+
+- 内容校验：48 节课程通过
+- Lint、TypeScript、Vitest：通过
+- Next 静态构建与 `/commandlab` 导出校验：通过

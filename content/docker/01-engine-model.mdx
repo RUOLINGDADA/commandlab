@@ -3,35 +3,30 @@ id: "docker-01"
 tool: "docker"
 slug: "engine-model"
 title: "引擎、镜像与容器"
-summary: "理解客户端、守护进程、镜像与容器之间的职责，并用可清理的本机实验验证结果。"
+summary: "确认 CLI、Engine、镜像和容器的边界"
 level: "入门"
 order: 1
-duration: 35
-objectives: ["解释“引擎、镜像与容器”涉及的 Docker 对象与状态","完成实验并使用 inspect、ps 或相关命令验证"]
-prerequisites: []
-commands: [{"command":"docker version","description":"本节核心命令：引擎、镜像与容器"},{"command":"docker info","description":"用于比较对象、状态或执行方式"}]
-pitfall: {"symptom":"执行 docker version 后只看到表面结果，却无法解释镜像、容器或数据发生了什么。","cause":"没有区分镜像、容器、网络、卷和宿主资源的生命周期。","recovery":"先停止继续清理，使用 docker ps -a、docker inspect、docker logs 和 docker system df 收集证据。"}
-comparison: {"items":["docker version","docker info"],"guidance":"先确认操作对象是镜像、容器、网络、卷还是构建缓存，再选择作用范围最小的命令。","risk":"删除、覆盖挂载或开放高权限前必须确认数据位置与安全边界。","reversible":"容器通常可重建，但未挂载到卷的数据与被删除的镜像层不应视为可靠备份。"}
-related: ["docker version","docker info","docker inspect","docker --help"]
-quiz: {"question":"学习“引擎、镜像与容器”时，哪项验证方式更可靠？","options":["容器命令退出码为 0 就不再检查","根据对象类型使用 ps、inspect、logs 或 stats 验证","只查看 Docker Desktop 图标"],"answer":1,"explanation":"Docker 操作需要用与对象和目标匹配的证据验证。"}
-practice: {"goal":"在独立目录练习：引擎、镜像与容器","steps":["确认 Docker Engine 可用并建立 commandlab-docker-lab","执行 docker version，随后运行 docker version --format \"{{.Server.Version}}\""],"expected":"docker version --format \"{{.Server.Version}}\" 返回的对象状态与目标一致。","hint":"先用 docker ps -a 与 docker image ls 确认已有对象，避免名称冲突。","solution":"按顺序执行准备命令与 docker version，使用 docker version --format \"{{.Server.Version}}\" 验证，最后只清理 commandlab 前缀资源。","variant":"改变镜像标签、容器名称或一个限制参数，先预测 inspect 输出再验证。"}
-platforms: [{"platform":"windows","setup":["New-Item -ItemType Directory -Force commandlab-docker-lab | Out-Null","Set-Location commandlab-docker-lab","docker version","docker version"],"verify":["docker version --format \"{{.Server.Version}}\""],"cleanup":["docker rm -f commandlab-demo commandlab-web commandlab-limited 2>$null","docker volume rm commandlab-data 2>$null","docker network rm commandlab-net 2>$null","Set-Location ..","Remove-Item -Recurse -Force commandlab-docker-lab"]},{"platform":"macos","setup":["mkdir -p commandlab-docker-lab && cd commandlab-docker-lab","docker version","docker version"],"verify":["docker version --format \"{{.Server.Version}}\""],"cleanup":["docker rm -f commandlab-demo commandlab-web commandlab-limited 2>/dev/null || true","docker volume rm commandlab-data 2>/dev/null || true","docker network rm commandlab-net 2>/dev/null || true","cd ..","rm -rf commandlab-docker-lab"]},{"platform":"linux","setup":["mkdir -p commandlab-docker-lab && cd commandlab-docker-lab","docker version","docker version"],"verify":["docker version --format \"{{.Server.Version}}\""],"cleanup":["docker rm -f commandlab-demo commandlab-web commandlab-limited 2>/dev/null || true","docker volume rm commandlab-data 2>/dev/null || true","docker network rm commandlab-net 2>/dev/null || true","cd ..","rm -rf commandlab-docker-lab"]}]
+duration: 45
+objectives: ["解释确认 CLI、Engine、镜像和容器的边界涉及的对象和生命周期","完成真实案例并使用结构化命令验证","发现错误后安全恢复并清理资源"]
+prerequisites: ["已安装 Docker Desktop 或 Docker Engine"]
+scenarios: [{"id":"scenario-engine-model-1","title":"引擎、镜像与容器：主案例","context":"你正在处理“引擎、镜像与容器”的真实开发任务。请从准备、执行、观察、验证到清理完成闭环，像写一份可交接的值班记录。","goal":"使用 commandlab-engine-model 前缀完成 引擎、镜像与容器 实验，并能解释失败后的恢复路径。","prerequisites":["Docker Desktop 或 Docker Engine 已启动","终端可以执行 docker version","知道如何查看退出码和复制命令"],"images":[{"name":"alpine:3.20","source":"Docker Hub 官方镜像","purpose":"提供稳定、轻量的 shell 和基础工具","risk":"挂载、端口、权限和资源参数仍可能影响宿主机；练习只操作 commandlab 前缀"}],"steps":[{"id":"step-engine-model-1","prompt":"实操任务 1：docker version && docker info。请先预测对象状态，再执行并记录关键输出。","objective":"围绕“引擎、镜像与容器”完成可重复实验，理解命令影响的对象、范围和生命周期。","setup":[{"command":"docker version","description":"确认客户端与 Engine 可连接","shell":"sh"}],"hints":["先用 docker ps -a、docker image ls 或 docker network ls 观察环境，避免名称冲突。","只使用 commandlab- 前缀资源；版本、ID、时间可以变化，但关键状态关系必须一致。"],"answer":{"explanation":"本步骤把 引擎、镜像与容器 放在一个可复现案例中。执行后用结构化命令检查关键字段；失败时保留错误输出并按坑点恢复。","commands":[{"command":"docker version && docker info","description":"参考操作命令","shell":"sh"}]},"expected":"关键结果应满足：docker info --format '{{.ServerVersion}}'；不要把具体版本号或随机 ID 当成唯一标准。","verify":[{"command":"docker info --format '{{.ServerVersion}}'","description":"验证关键状态或输出","shell":"sh"}],"cleanup":[{"command":"docker rm -f $(docker ps -aq --filter name=commandlab-) 2>/dev/null || true","description":"只清理课程容器","shell":"sh"},{"command":"docker volume rm commandlab-data 2>/dev/null || true","description":"只清理课程命名卷","shell":"sh"}],"pitfalls":[{"symptom":"名称已被占用、命令找不到或状态与预期不同","cause":"重复执行复用了旧资源、镜像工具缺失，或把容器退出误判为 Engine 故障","recovery":"先 docker ps -a --filter name=commandlab- 和 docker context show 收集证据，再精确清理后重试。"}],"comparisons":[{"command":"docker run","purpose":"创建并启动容器","scope":"影响新容器及其主进程","risk":"中，参数错误可能暴露端口或挂载目录","reversible":"删除容器可撤销，未挂载数据不可恢复"},{"command":"docker inspect","purpose":"读取结构化配置和状态","scope":"只读指定对象","risk":"低，但输出可能包含环境变量","reversible":"完全可逆"}],"variants":["把 引擎、镜像与容器 案例中的镜像换成 busybox:1.36，预测输出变化。","故意改变一个参数，先写下预期差异，再用 verify 命令验证。"],"dangerous":false},{"id":"step-engine-model-2","prompt":"实操任务 2：复现同一案例并改变一个可观察参数（标签、环境变量、挂载、平台或资源限制）。请先预测对象状态，再执行并记录关键输出。","objective":"围绕“引擎、镜像与容器”完成可重复实验，理解命令影响的对象、范围和生命周期。","setup":[{"command":"docker version","description":"确认客户端与 Engine 可连接","shell":"sh"}],"hints":["先用 docker ps -a、docker image ls 或 docker network ls 观察环境，避免名称冲突。","只使用 commandlab- 前缀资源；版本、ID、时间可以变化，但关键状态关系必须一致。"],"answer":{"explanation":"本步骤把 引擎、镜像与容器 放在一个可复现案例中。执行后用结构化命令检查关键字段；失败时保留错误输出并按坑点恢复。","commands":[{"command":"复现同一案例并改变一个可观察参数（标签、环境变量、挂载、平台或资源限制）","description":"参考操作命令","shell":"sh"}]},"expected":"关键结果应满足：docker info --format '{{.ServerVersion}}'；不要把具体版本号或随机 ID 当成唯一标准。","verify":[{"command":"docker info --format '{{.ServerVersion}}'","description":"验证关键状态或输出","shell":"sh"}],"cleanup":[{"command":"docker rm -f $(docker ps -aq --filter name=commandlab-) 2>/dev/null || true","description":"只清理课程容器","shell":"sh"},{"command":"docker volume rm commandlab-data 2>/dev/null || true","description":"只清理课程命名卷","shell":"sh"}],"pitfalls":[{"symptom":"名称已被占用、命令找不到或状态与预期不同","cause":"重复执行复用了旧资源、镜像工具缺失，或把容器退出误判为 Engine 故障","recovery":"先 docker ps -a --filter name=commandlab- 和 docker context show 收集证据，再精确清理后重试。"}],"comparisons":[{"command":"docker run","purpose":"创建并启动容器","scope":"影响新容器及其主进程","risk":"中，参数错误可能暴露端口或挂载目录","reversible":"删除容器可撤销，未挂载数据不可恢复"},{"command":"docker inspect","purpose":"读取结构化配置和状态","scope":"只读指定对象","risk":"低，但输出可能包含环境变量","reversible":"完全可逆"}],"variants":["把 引擎、镜像与容器 案例中的镜像换成 busybox:1.36，预测输出变化。","故意改变一个参数，先写下预期差异，再用 verify 命令验证。"],"dangerous":false}]}]
+interactiveQuiz: {"question":"在“引擎、镜像与容器”练习中，哪种做法最可靠？","options":["只看命令退出码","先用最小范围命令验证对象，再按前缀清理","直接执行 docker system prune -a"],"answer":1,"explanation":"关键字段验证与定向清理能适应版本差异并降低误删风险。","type":"choice"}
+platforms: [{"platform":"windows","notes":"Windows 推荐在 WSL2 中执行 POSIX 命令；涉及 $PWD 的挂载请使用 WSL 路径。","setup":[{"command":"docker version","description":"确认客户端与服务端可连接","shell":"sh"}],"verify":[{"command":"docker ps -a --filter name=commandlab-","description":"列出课程资源并核对状态","shell":"sh"}],"cleanup":[{"command":"docker rm -f $(docker ps -aq --filter name=commandlab-) 2>/dev/null || true","description":"定向删除课程容器","shell":"sh"}]},{"platform":"macos","notes":"macOS 使用 Docker Desktop，挂载前确认目录存在并已授权。","setup":[{"command":"docker version","description":"确认客户端与服务端可连接","shell":"sh"}],"verify":[{"command":"docker ps -a --filter name=commandlab-","description":"列出课程资源并核对状态","shell":"sh"}],"cleanup":[{"command":"docker rm -f $(docker ps -aq --filter name=commandlab-) 2>/dev/null || true","description":"定向删除课程容器","shell":"sh"}]},{"platform":"linux","notes":"Linux 直接连接 Engine；权限不足时检查 docker 组和当前 context。","setup":[{"command":"docker version","description":"确认客户端与服务端可连接","shell":"sh"}],"verify":[{"command":"docker ps -a --filter name=commandlab-","description":"列出课程资源并核对状态","shell":"sh"}],"cleanup":[{"command":"docker rm -f $(docker ps -aq --filter name=commandlab-) 2>/dev/null || true","description":"定向删除课程容器","shell":"sh"}]}]
 ---
 
-## 核心模型
+## 引擎、镜像与容器：从概念到可复现证据
 
-理解客户端、守护进程、镜像与容器之间的职责。
+本节围绕 **确认 CLI、Engine、镜像和容器的边界** 设计。请把练习当作一次真实开发或值班任务：先确认上下文，再执行最小操作，最后用验证命令证明结果。浏览器不会执行 Docker 命令，代码块只会被复制到你的本机终端。
 
-Docker CLI 只是客户端，真正管理镜像、容器、网络和卷的是 Docker Engine。执行命令前先说明操作对象和生命周期，执行后再用结构化检查命令确认结果，避免把“进程启动”误判为“服务可用”。
+### 练习协议
 
-## 操作顺序
+先完成题目，再展开答案。所有资源统一使用 `commandlab-` 前缀；涉及删除、挂载、网络、端口、权限或资源限制时，先阅读步骤中的影响范围。错误出现时不要立即重试，保留错误文本并按照“对象—状态—原因—恢复”顺序排查。
 
-1. 在 commandlab-docker-lab 目录确认 docker version 同时显示客户端和服务端。
-2. 执行 docker version 完成本节核心动作。
-3. 运行 docker version --format "{{.Server.Version}}" 检查实际对象状态。
-4. 只删除 commandlab 前缀资源，避免影响本机其他项目。
+### 输出判断
 
-## 进一步理解
+Docker 的 ID、时间、镜像摘要和平台架构会因本机变化。本节验收关注关键字段：对象是否存在、状态是否正确、数据是否保留、命令是否返回预期退出码，以及输出是否包含目标名称或健康状态。
 
-docker version 与 docker info 面向的观察角度或对象不同。生产环境还必须考虑权限、资源上限、持久化位置、网络暴露和可重建性；任何清理动作都要先确认数据是否位于卷或外部存储。
+### 课后复盘
 
+完成后回答：这条命令操作的是镜像、容器、卷、网络还是构建缓存？它是否改变了宿主机文件？再次执行会复用什么、重新创建什么？把答案写进本地课程笔记，下一节会继续使用这些判断。
+---

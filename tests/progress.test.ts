@@ -14,4 +14,16 @@ describe("本地学习进度", () => {
     expect(next.note).toBe("三棵树");
     expect(next.completed).toBe(true);
   });
+
+  it("Docker 步骤完成记录可持久化并兼容旧记录", async () => {
+    const runtime = await import("@commandlab/practice-runtime");
+    await runtime.updateLessonProgress("docker-01", { completedSteps: ["step-engine-model-1"] });
+    const next = await runtime.updateLessonProgress("docker-01", {
+      completedSteps: ["step-engine-model-1", "step-engine-model-2"],
+    });
+    expect(next.completedSteps).toEqual(["step-engine-model-1", "step-engine-model-2"]);
+    expect((await runtime.getLessonProgress("docker-01")).completedSteps).toContain(
+      "step-engine-model-2",
+    );
+  });
 });

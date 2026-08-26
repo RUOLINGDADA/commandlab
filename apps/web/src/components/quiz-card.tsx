@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Button, Card } from "@commandlab/ui";
 import { updateLessonProgress } from "@commandlab/practice-runtime";
-import type { LessonMeta } from "@commandlab/content-schema";
+import type { InteractiveQuiz } from "@commandlab/content-schema";
 
-export function QuizCard({ lessonId, quiz }: { lessonId: string; quiz: LessonMeta["quiz"] }) {
+export function QuizCard({ lessonId, quiz }: { lessonId: string; quiz: InteractiveQuiz }) {
   const [selected, setSelected] = useState<number>();
   const [submitted, setSubmitted] = useState(false);
   const correct = selected === quiz.answer;
