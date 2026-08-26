@@ -1,0 +1,37 @@
+---
+id: "git-13"
+tool: "git"
+slug: "undo"
+title: "restore、reset 与 revert"
+summary: "按影响区域选择正确的撤销方式，并在隔离仓库中练习、验证与安全清理。"
+level: "高级"
+order: 13
+duration: 30
+objectives: ["解释“restore、reset 与 revert”涉及的状态变化","独立执行相关命令并验证结果"]
+prerequisites: ["git-12"]
+commands: [{"command":"git restore note.txt","description":"本节核心命令：restore、reset 与 revert"},{"command":"git revert HEAD","description":"用于比较作用范围与使用场景"}]
+pitfall: {"symptom":"没有确认状态就执行 git restore note.txt，得到与预期不同的结果。","cause":"忽略了当前分支、工作区、暂存区或命令作用范围。","recovery":"停止继续写入，先用 git status、git log 和 git reflog 检查并保存现场。"}
+comparison: {"items":["git restore note.txt","git revert HEAD"],"guidance":"先判断目标是观察状态、改变工作区、移动引用还是改写历史，再选择命令。","risk":"只读检查风险低；覆盖工作区或改写共享历史前必须建立恢复点。","reversible":"Git 对象通常可从 reflog 追踪，未提交且被覆盖的内容可能无法恢复。"}
+related: ["git restore note.txt","git revert HEAD","git status","git help"]
+quiz: {"question":"学习“restore、reset 与 revert”时，哪项习惯最可靠？","options":["不看状态直接执行写命令","先观察、预测影响，再执行并验证","命令没有报错就表示目标完成"],"answer":1,"explanation":"可靠操作包含观察、预测、执行和验证四步。"}
+practice: {"goal":"在独立仓库练习：restore、reset 与 revert","steps":["建立 commandlab-git-lab 并创建种子提交","执行 git restore --staged note.txt，随后运行 git status --short"],"expected":"git status --short 显示与目标一致的状态或历史。","hint":"先运行 git status，确认当前分支与工作区是否干净。","solution":"完成种子仓库后执行 git restore --staged note.txt，再用 git status --short 验证并解释输出。","variant":"新增一个文件或分支条件，先写下预测，再重复 git restore note.txt 并比较结果。"}
+platforms: [{"platform":"windows","setup":["New-Item -ItemType Directory -Force commandlab-git-lab | Out-Null","Set-Location commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","Set-Content note.txt 'CommandLab'","git add note.txt","git commit -m \"docs: seed lab\"","git restore --staged note.txt"],"verify":["git status --short"],"cleanup":["Set-Location ..","Remove-Item -Recurse -Force commandlab-git-lab"]},{"platform":"macos","setup":["mkdir -p commandlab-git-lab && cd commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","printf 'CommandLab\\n' > note.txt","git add note.txt","git commit -m \"docs: seed lab\"","git restore --staged note.txt"],"verify":["git status --short"],"cleanup":["cd ..","rm -rf commandlab-git-lab"]},{"platform":"linux","setup":["mkdir -p commandlab-git-lab && cd commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","printf 'CommandLab\\n' > note.txt","git add note.txt","git commit -m \"docs: seed lab\"","git restore --staged note.txt"],"verify":["git status --short"],"cleanup":["cd ..","rm -rf commandlab-git-lab"]}]
+---
+
+## 核心模型
+
+按影响区域选择正确的撤销方式。
+
+不要从背诵参数开始。先运行 git status 确认当前分支、暂存区和工作区，再判断命令会移动引用、改变暂存区，还是改写工作区。把影响区域说清楚后再执行，可以避免大多数误操作。
+
+## 操作顺序
+
+1. 在独立的 commandlab-git-lab 目录建立实验环境。
+2. 使用 git restore note.txt 完成本节核心观察或动作。
+3. 运行 git status --short 检查结果，不用“没有报错”代替验证。
+4. 对照状态或提交图解释变化，然后执行安全清理。
+
+## 进一步理解
+
+git restore note.txt 与 git revert HEAD 的职责并不相同。在团队仓库中还要考虑命令是否改变已经共享的提交 ID。整理历史前应建立临时分支或标签，并确认恢复路径。
+

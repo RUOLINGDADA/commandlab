@@ -1,0 +1,26 @@
+name: 课程纠错
+description: 报告命令、解释、平台差异或答案错误
+title: "docs: "
+labels: ["content"]
+body:
+  - type: input
+    id: lesson
+    attributes:
+      label: 课程与小节
+      placeholder: "Git 07 创建与切换分支 / 本机实战"
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 受影响平台
+      options: ["全部", "Windows PowerShell", "macOS", "Linux", "与平台无关"]
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: 问题与正确内容
+      description: 如涉及命令，请隐去个人路径和凭据。
+    validations:
+      required: true

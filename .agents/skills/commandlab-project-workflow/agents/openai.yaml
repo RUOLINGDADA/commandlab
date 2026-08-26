@@ -1,0 +1,6 @@
+interface:
+  display_name: "CommandLab 项目工作流"
+  short_description: "确认需求并维护 CommandLab 的任务、Bug 与交接记录"
+  default_prompt: "使用 $commandlab-project-workflow 处理这个 CommandLab 项目需求。"
+policy:
+  allow_implicit_invocation: true

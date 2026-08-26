@@ -1,0 +1,35 @@
+name: Bug 报告
+description: 报告可以稳定复现的网站问题
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "感谢报告问题。安全漏洞请使用 Security 私密报告，不要公开提交。"
+  - type: input
+    id: page
+    attributes:
+      label: 页面地址
+      placeholder: "例如 /commandlab/courses/git/mental-model/"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 请按顺序列出操作。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期与实际结果
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 系统与浏览器
+      placeholder: "Windows 11 / Chrome 版本号"
+    validations:
+      required: true

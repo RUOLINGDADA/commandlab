@@ -1,0 +1,37 @@
+---
+id: "git-11"
+tool: "git"
+slug: "fetch-pull"
+title: "安全同步远程变化"
+summary: "区分只获取的 fetch 与会整合的 pull，并在隔离仓库中练习、验证与安全清理。"
+level: "进阶"
+order: 11
+duration: 35
+objectives: ["解释“安全同步远程变化”涉及的状态变化","独立执行相关命令并验证结果"]
+prerequisites: ["git-10"]
+commands: [{"command":"git fetch origin","description":"本节核心命令：安全同步远程变化"},{"command":"git pull --ff-only","description":"用于比较作用范围与使用场景"}]
+pitfall: {"symptom":"没有确认状态就执行 git fetch origin，得到与预期不同的结果。","cause":"忽略了当前分支、工作区、暂存区或命令作用范围。","recovery":"停止继续写入，先用 git status、git log 和 git reflog 检查并保存现场。"}
+comparison: {"items":["git fetch origin","git pull --ff-only"],"guidance":"先判断目标是观察状态、改变工作区、移动引用还是改写历史，再选择命令。","risk":"只读检查风险低；覆盖工作区或改写共享历史前必须建立恢复点。","reversible":"Git 对象通常可从 reflog 追踪，未提交且被覆盖的内容可能无法恢复。"}
+related: ["git fetch origin","git pull --ff-only","git status","git help"]
+quiz: {"question":"学习“安全同步远程变化”时，哪项习惯最可靠？","options":["不看状态直接执行写命令","先观察、预测影响，再执行并验证","命令没有报错就表示目标完成"],"answer":1,"explanation":"可靠操作包含观察、预测、执行和验证四步。"}
+practice: {"goal":"在独立仓库练习：安全同步远程变化","steps":["建立 commandlab-git-lab 并创建种子提交","执行 git fetch --all --dry-run，随后运行 git remote -v"],"expected":"git remote -v 显示与目标一致的状态或历史。","hint":"先运行 git status，确认当前分支与工作区是否干净。","solution":"完成种子仓库后执行 git fetch --all --dry-run，再用 git remote -v 验证并解释输出。","variant":"新增一个文件或分支条件，先写下预测，再重复 git fetch origin 并比较结果。"}
+platforms: [{"platform":"windows","setup":["New-Item -ItemType Directory -Force commandlab-git-lab | Out-Null","Set-Location commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","Set-Content note.txt 'CommandLab'","git add note.txt","git commit -m \"docs: seed lab\"","git fetch --all --dry-run"],"verify":["git remote -v"],"cleanup":["Set-Location ..","Remove-Item -Recurse -Force commandlab-git-lab"]},{"platform":"macos","setup":["mkdir -p commandlab-git-lab && cd commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","printf 'CommandLab\\n' > note.txt","git add note.txt","git commit -m \"docs: seed lab\"","git fetch --all --dry-run"],"verify":["git remote -v"],"cleanup":["cd ..","rm -rf commandlab-git-lab"]},{"platform":"linux","setup":["mkdir -p commandlab-git-lab && cd commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","printf 'CommandLab\\n' > note.txt","git add note.txt","git commit -m \"docs: seed lab\"","git fetch --all --dry-run"],"verify":["git remote -v"],"cleanup":["cd ..","rm -rf commandlab-git-lab"]}]
+---
+
+## 核心模型
+
+区分只获取的 fetch 与会整合的 pull。
+
+不要从背诵参数开始。先运行 git status 确认当前分支、暂存区和工作区，再判断命令会移动引用、改变暂存区，还是改写工作区。把影响区域说清楚后再执行，可以避免大多数误操作。
+
+## 操作顺序
+
+1. 在独立的 commandlab-git-lab 目录建立实验环境。
+2. 使用 git fetch origin 完成本节核心观察或动作。
+3. 运行 git remote -v 检查结果，不用“没有报错”代替验证。
+4. 对照状态或提交图解释变化，然后执行安全清理。
+
+## 进一步理解
+
+git fetch origin 与 git pull --ff-only 的职责并不相同。在团队仓库中还要考虑命令是否改变已经共享的提交 ID。整理历史前应建立临时分支或标签，并确认恢复路径。
+

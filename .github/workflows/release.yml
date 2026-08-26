@@ -1,0 +1,41 @@
+name: Create release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "语义化版本，例如 0.1.0"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: 验证版本格式
+        shell: bash
+        run: |
+          VERSION="${{ inputs.version }}"
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "版本必须类似 0.1.0"; exit 1; }
+          test "$(node -p "require('./package.json').version")" = "$VERSION" || { echo "package.json 版本不一致"; exit 1; }
+          git rev-parse "v$VERSION" >/dev/null 2>&1 && { echo "标签已存在"; exit 1; } || true
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint && pnpm typecheck && pnpm test && pnpm validate:content
+      - name: 创建 GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "v${{ inputs.version }}" --target "$GITHUB_SHA" --generate-notes --title "CommandLab v${{ inputs.version }}"

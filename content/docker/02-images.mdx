@@ -1,0 +1,37 @@
+---
+id: "docker-02"
+tool: "docker"
+slug: "images"
+title: "读取与管理镜像"
+summary: "把镜像理解为只读层和可复现配置，并用可清理的本机实验验证结果。"
+level: "入门"
+order: 2
+duration: 40
+objectives: ["解释“读取与管理镜像”涉及的 Docker 对象与状态","完成实验并使用 inspect、ps 或相关命令验证"]
+prerequisites: ["docker-01"]
+commands: [{"command":"docker image ls","description":"本节核心命令：读取与管理镜像"},{"command":"docker image inspect alpine:3.22","description":"用于比较对象、状态或执行方式"}]
+pitfall: {"symptom":"执行 docker image ls 后只看到表面结果，却无法解释镜像、容器或数据发生了什么。","cause":"没有区分镜像、容器、网络、卷和宿主资源的生命周期。","recovery":"先停止继续清理，使用 docker ps -a、docker inspect、docker logs 和 docker system df 收集证据。"}
+comparison: {"items":["docker image ls","docker image inspect alpine:3.22"],"guidance":"先确认操作对象是镜像、容器、网络、卷还是构建缓存，再选择作用范围最小的命令。","risk":"删除、覆盖挂载或开放高权限前必须确认数据位置与安全边界。","reversible":"容器通常可重建，但未挂载到卷的数据与被删除的镜像层不应视为可靠备份。"}
+related: ["docker image ls","docker image inspect alpine:3.22","docker inspect","docker --help"]
+quiz: {"question":"学习“读取与管理镜像”时，哪项验证方式更可靠？","options":["容器命令退出码为 0 就不再检查","根据对象类型使用 ps、inspect、logs 或 stats 验证","只查看 Docker Desktop 图标"],"answer":1,"explanation":"Docker 操作需要用与对象和目标匹配的证据验证。"}
+practice: {"goal":"在独立目录练习：读取与管理镜像","steps":["确认 Docker Engine 可用并建立 commandlab-docker-lab","执行 docker image ls，随后运行 docker image ls alpine:3.22"],"expected":"docker image ls alpine:3.22 返回的对象状态与目标一致。","hint":"先用 docker ps -a 与 docker image ls 确认已有对象，避免名称冲突。","solution":"按顺序执行准备命令与 docker image ls，使用 docker image ls alpine:3.22 验证，最后只清理 commandlab 前缀资源。","variant":"改变镜像标签、容器名称或一个限制参数，先预测 inspect 输出再验证。"}
+platforms: [{"platform":"windows","setup":["New-Item -ItemType Directory -Force commandlab-docker-lab | Out-Null","Set-Location commandlab-docker-lab","docker version","docker pull alpine:3.22","docker image ls"],"verify":["docker image ls alpine:3.22"],"cleanup":["docker rm -f commandlab-demo commandlab-web commandlab-limited 2>$null","docker volume rm commandlab-data 2>$null","docker network rm commandlab-net 2>$null","Set-Location ..","Remove-Item -Recurse -Force commandlab-docker-lab"]},{"platform":"macos","setup":["mkdir -p commandlab-docker-lab && cd commandlab-docker-lab","docker version","docker pull alpine:3.22","docker image ls"],"verify":["docker image ls alpine:3.22"],"cleanup":["docker rm -f commandlab-demo commandlab-web commandlab-limited 2>/dev/null || true","docker volume rm commandlab-data 2>/dev/null || true","docker network rm commandlab-net 2>/dev/null || true","cd ..","rm -rf commandlab-docker-lab"]},{"platform":"linux","setup":["mkdir -p commandlab-docker-lab && cd commandlab-docker-lab","docker version","docker pull alpine:3.22","docker image ls"],"verify":["docker image ls alpine:3.22"],"cleanup":["docker rm -f commandlab-demo commandlab-web commandlab-limited 2>/dev/null || true","docker volume rm commandlab-data 2>/dev/null || true","docker network rm commandlab-net 2>/dev/null || true","cd ..","rm -rf commandlab-docker-lab"]}]
+---
+
+## 核心模型
+
+把镜像理解为只读层和可复现配置。
+
+Docker CLI 只是客户端，真正管理镜像、容器、网络和卷的是 Docker Engine。执行命令前先说明操作对象和生命周期，执行后再用结构化检查命令确认结果，避免把“进程启动”误判为“服务可用”。
+
+## 操作顺序
+
+1. 在 commandlab-docker-lab 目录确认 docker version 同时显示客户端和服务端。
+2. 执行 docker image ls 完成本节核心动作。
+3. 运行 docker image ls alpine:3.22 检查实际对象状态。
+4. 只删除 commandlab 前缀资源，避免影响本机其他项目。
+
+## 进一步理解
+
+docker image ls 与 docker image inspect alpine:3.22 面向的观察角度或对象不同。生产环境还必须考虑权限、资源上限、持久化位置、网络暴露和可重建性；任何清理动作都要先确认数据是否位于卷或外部存储。
+

@@ -1,0 +1,23 @@
+name: 功能建议
+description: 提议新的学习能力或网站功能
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 学习问题
+      description: 当前用户在哪个场景遇到困难？
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 期望结果
+      description: 用户完成后应能观察到什么？
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 已考虑的替代方式

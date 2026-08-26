@@ -1,0 +1,30 @@
+{
+  "name": "commandlab",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "turbo run lint",
+    "security:secrets": "node scripts/check-secrets.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "turbo run typecheck",
+    "validate:content": "pnpm --filter @commandlab/web validate:content"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.13",
+    "@vitest/coverage-v8": "4.1.11",
+    "fake-indexeddb": "6.2.5",
+    "prettier": "3.8.2",
+    "turbo": "2.10.12",
+    "typescript": "6.0.3",
+    "vitest": "4.1.11"
+  }
+}
