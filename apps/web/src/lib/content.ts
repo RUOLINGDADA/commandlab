@@ -55,6 +55,17 @@ export function validateContent(): Lesson[] {
 
     const platforms = new Set(lesson.platforms.map((guide) => guide.platform));
     if (platforms.size !== 3) throw new Error(`${lesson.id} 的三平台指引不完整。`);
+
+    if (lesson.tool === "docker") {
+      const minimumScenarios = lesson.level === "高级" || lesson.level === "精通" ? 2 : 1;
+      if (lesson.scenarios.length < minimumScenarios) {
+        throw new Error(`${lesson.id} 至少需要 ${minimumScenarios} 个实操场景。`);
+      }
+      const stepIds = lesson.scenarios.flatMap((scenario) => scenario.steps.map((step) => step.id));
+      if (new Set(stepIds).size !== stepIds.length) {
+        throw new Error(`${lesson.id} 的实操步骤编号重复。`);
+      }
+    }
   }
 
   for (const tool of ["git", "docker"] as const) {
@@ -68,7 +79,9 @@ export function validateContent(): Lesson[] {
 
   for (const lesson of lessons) {
     for (const prerequisite of lesson.prerequisites) {
-      if (!ids.has(prerequisite)) {
+      // Git 课程使用课程 ID 表达前置关系；Docker 课程允许写入本机环境前置条件。
+      // 只有形如 tool-01 的值才需要解析为跨课程链接，避免把“已安装 Docker”误判为坏链接。
+      if (/^(git|docker)-\d{2}$/.test(prerequisite) && !ids.has(prerequisite)) {
         throw new Error(`${lesson.id} 引用了不存在的前置课程 ${prerequisite}。`);
       }
     }

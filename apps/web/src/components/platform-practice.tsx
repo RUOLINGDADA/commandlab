@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { CheckCircle2, Clipboard, RotateCcw } from "lucide-react";
-import type { LessonMeta } from "@commandlab/content-schema";
+import type { GitLesson } from "@commandlab/content-schema";
 
 const labels = { windows: "Windows PowerShell", macos: "macOS", linux: "Linux" } as const;
 
-export function PlatformPractice({ guides }: { guides: LessonMeta["platforms"] }) {
-  const [active, setActive] = useState<LessonMeta["platforms"][number]["platform"]>("windows");
+export function PlatformPractice({ guides }: { guides: GitLesson["platforms"] }) {
+  const [active, setActive] = useState<GitLesson["platforms"][number]["platform"]>("windows");
   const guide = guides.find((item) => item.platform === active) ?? guides[0]!;
 
   async function copy(command: string) {

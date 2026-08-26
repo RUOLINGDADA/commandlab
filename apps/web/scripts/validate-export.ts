@@ -1,7 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const output = path.resolve(process.cwd(), "out");
+// Turbo 从仓库根目录执行脚本，而 Next.js 将静态文件输出到 apps/web/out。
+// 同时保留从 apps/web 目录直接运行时的兼容路径，便于本地排查导出问题。
+const outputCandidates = [
+  path.resolve(process.cwd(), "out"),
+  path.resolve(process.cwd(), "apps/web/out"),
+];
+const output = outputCandidates.find((candidate) => fs.existsSync(candidate));
+if (!output) throw new Error("找不到 Next.js 静态导出目录 out。");
 const requiredPages = [
   "index.html",
   "learn/index.html",

@@ -5,6 +5,8 @@ export interface LessonProgress {
   completed: boolean;
   favorite: boolean;
   quizCorrect: boolean;
+  /** Docker 逐步实操已完成的步骤 ID；Git 课程为空数组。 */
+  completedSteps: string[];
   note: string;
   updatedAt: string;
 }
@@ -47,11 +49,13 @@ export async function getLessonProgress(lessonId: string): Promise<LessonProgres
     completed: false,
     favorite: false,
     quizCorrect: false,
+    completedSteps: [],
     note: "",
     updatedAt: new Date(0).toISOString(),
   };
   if (!databasePromise) return empty;
-  return (await (await databasePromise).get("progress", lessonId)) ?? empty;
+  const stored = await (await databasePromise).get("progress", lessonId);
+  return stored ? { ...empty, ...stored, completedSteps: stored.completedSteps ?? [] } : empty;
 }
 
 /** 合并并持久化单节课状态，保证未修改字段不会被意外清空。 */

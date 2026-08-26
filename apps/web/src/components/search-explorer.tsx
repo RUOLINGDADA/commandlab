@@ -12,14 +12,27 @@ export function SearchExplorer({ lessons }: { lessons: Lesson[] }) {
     const needle = query.trim().toLocaleLowerCase("zh-CN");
     return lessons.filter((lesson) => {
       const toolMatches = tool === "all" || lesson.tool === tool;
-      const text = [
-        lesson.title,
-        lesson.summary,
-        lesson.level,
-        lesson.commands.map((item) => item.command).join(" "),
-        lesson.pitfall.symptom,
-        lesson.related.join(" "),
-      ]
+      const lessonDetails =
+        lesson.tool === "git"
+          ? [
+              lesson.commands.map((item) => item.command).join(" "),
+              lesson.pitfall.symptom,
+              lesson.related.join(" "),
+            ]
+          : [
+              lesson.scenarios
+                .flatMap((scenario) => [
+                  scenario.title,
+                  scenario.context,
+                  ...scenario.steps.flatMap((step) => [
+                    step.prompt,
+                    step.answer.commands.map((item) => item.command).join(" "),
+                    step.pitfalls.map((pitfall) => pitfall.symptom).join(" "),
+                  ]),
+                ])
+                .join(" "),
+            ];
+      const text = [lesson.title, lesson.summary, lesson.level, ...lessonDetails]
         .join(" ")
         .toLocaleLowerCase("zh-CN");
       return toolMatches && (!needle || text.includes(needle));

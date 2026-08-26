@@ -15,6 +15,7 @@ import { Badge, Card } from "@commandlab/ui";
 import { toolLabels, type Tool } from "@commandlab/content-schema";
 import { LessonActions } from "@/components/lesson-actions";
 import { PlatformPractice } from "@/components/platform-practice";
+import { DockerPractice } from "@/components/docker-practice";
 import { QuizCard } from "@/components/quiz-card";
 import { TerminalPreview } from "@/components/terminal-preview";
 import { getLesson, getLessonsByTool, validateContent } from "@/lib/content";
@@ -96,65 +97,87 @@ export default async function LessonPage({
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{lesson.body}</ReactMarkdown>
         </section>
 
-        <div className="insight-grid">
-          <Card className="insight-card pitfall-card">
-            <AlertTriangle />
-            <div>
-              <p className="eyebrow">常见坑点</p>
-              <h3>{lesson.pitfall.symptom}</h3>
-              <p>
-                <strong>原因：</strong>
-                {lesson.pitfall.cause}
-              </p>
-              <p>
-                <strong>恢复：</strong>
-                {lesson.pitfall.recovery}
-              </p>
-            </div>
-          </Card>
-          <Card className="insight-card compare-card">
-            <GitCompareArrows />
-            <div>
-              <p className="eyebrow">命令辨析</p>
-              <h3>{lesson.comparison.items.join(" vs ")}</h3>
-              <p>{lesson.comparison.guidance}</p>
-              <p>
-                <strong>风险：</strong>
-                {lesson.comparison.risk}
-              </p>
-              <p>
-                <strong>可逆性：</strong>
-                {lesson.comparison.reversible}
-              </p>
-            </div>
-          </Card>
-        </div>
-
-        <section className="practice-section">
-          <div className="section-heading left">
-            <p className="eyebrow">本机实战</p>
-            <h2>{lesson.practice.goal}</h2>
-            <p>{lesson.practice.steps.join(" → ")}</p>
+        {lesson.tool === "git" && (
+          <div className="insight-grid">
+            <Card className="insight-card pitfall-card">
+              <AlertTriangle />
+              <div>
+                <p className="eyebrow">常见坑点</p>
+                <h3>{lesson.pitfall.symptom}</h3>
+                <p>
+                  <strong>原因：</strong>
+                  {lesson.pitfall.cause}
+                </p>
+                <p>
+                  <strong>恢复：</strong>
+                  {lesson.pitfall.recovery}
+                </p>
+              </div>
+            </Card>
+            <Card className="insight-card compare-card">
+              <GitCompareArrows />
+              <div>
+                <p className="eyebrow">命令辨析</p>
+                <h3>{lesson.comparison.items.join(" vs ")}</h3>
+                <p>{lesson.comparison.guidance}</p>
+                <p>
+                  <strong>风险：</strong>
+                  {lesson.comparison.risk}
+                </p>
+                <p>
+                  <strong>可逆性：</strong>
+                  {lesson.comparison.reversible}
+                </p>
+              </div>
+            </Card>
           </div>
-          <PlatformPractice guides={lesson.platforms} />
-          <Card className="hint-card">
-            <Lightbulb />
-            <div>
-              <strong>提示</strong>
-              <p>{lesson.practice.hint}</p>
-              <details>
-                <summary>查看参考解法</summary>
-                <p>{lesson.practice.solution}</p>
-              </details>
-              <p>
-                <strong>衍生练习：</strong>
-                {lesson.practice.variant}
-              </p>
-            </div>
-          </Card>
-        </section>
+        )}
 
-        <QuizCard lessonId={lesson.id} quiz={lesson.quiz} />
+        {lesson.tool === "docker" ? (
+          <section className="practice-section">
+            <div className="section-heading left">
+              <p className="eyebrow">本机实战 · 逐步案例</p>
+              <h2>跟着场景完成每一个可验证步骤</h2>
+              <p>答案默认折叠；命令只会复制到剪贴板，不会在浏览器中执行。</p>
+            </div>
+            <DockerPractice
+              lessonId={lesson.id}
+              scenarios={lesson.scenarios}
+              platforms={lesson.platforms}
+            />
+          </section>
+        ) : (
+          <section className="practice-section">
+            <div className="section-heading left">
+              <p className="eyebrow">本机实战</p>
+              <h2>{lesson.practice.goal}</h2>
+              <p>{lesson.practice.steps.join(" → ")}</p>
+            </div>
+            <PlatformPractice guides={lesson.platforms} />
+            <Card className="hint-card">
+              <Lightbulb />
+              <div>
+                <strong>提示</strong>
+                <p>{lesson.practice.hint}</p>
+                <details>
+                  <summary>查看参考解法</summary>
+                  <p>{lesson.practice.solution}</p>
+                </details>
+                <p>
+                  <strong>衍生练习：</strong>
+                  {lesson.practice.variant}
+                </p>
+              </div>
+            </Card>
+          </section>
+        )}
+
+        <QuizCard
+          lessonId={lesson.id}
+          quiz={
+            lesson.tool === "docker" ? lesson.interactiveQuiz : { ...lesson.quiz, type: "choice" }
+          }
+        />
         <TerminalPreview compact />
         <LessonActions lessonId={lesson.id} />
 
