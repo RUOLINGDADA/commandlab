@@ -2,9 +2,20 @@
 
 ## 状态
 
-实施完成，`main` 已推送到 GitHub。静态首发网站和课程均已实现。
+首发实施已完成。`main` 已推送并受 `Protect main` 规则集保护；`v0.1.0` Release 已发布，GitHub Pages 已成功部署。
+
+## 线上交付
+
+- 仓库：https://github.com/RUOLINGDADA/commandlab
+- Release：https://github.com/RUOLINGDADA/commandlab/releases/tag/v0.1.0
+- Pages：https://ruolingdada.github.io/commandlab/
+- Pages 工作流：https://github.com/RUOLINGDADA/commandlab/actions/workflows/pages.yml
+- 自动部署修复 PR：https://github.com/RUOLINGDADA/commandlab/pull/7
 
 ## 下一步
+
+- 后续功能请从短期分支发起 Pull Request；`main` 需要 `quality` 检查通过后 Squash 合并。
+- 服务器准备好后，再按架构文档增加登录、云端进度和安全沙箱实现。
 
 ## 已验证
 
@@ -21,4 +32,4 @@ git remote add origin https://github.com/RUOLINGDADA/commandlab.git
 git push -u origin main
 ```
 
-`git push -u origin main` 已成功，远程 `main` 当前指向提交 `0640875c64ce05e206a866b4daa80bedc71bb94d`。请按 `docs/project/github-settings.md` 配置 Pages 和分支规则。暂未创建 Release。
+`main` 当前指向提交 `bec3cf3`（Pages 发布触发修复）。本地验证命令：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm validate:content`、`pnpm build`。GitHub Actions 最近的 CI、Security、Release 和 Pages 运行均已成功。
