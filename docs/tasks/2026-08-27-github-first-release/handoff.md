@@ -21,4 +21,4 @@ git remote add origin https://github.com/RUOLINGDADA/commandlab.git
 git push -u origin main
 ```
 
-推送后按 `docs/project/github-settings.md` 配置 Pages 和分支规则。暂未执行远程推送或创建 Release。
+本地已配置 `origin`，但 `git push -u origin main` 返回 `Repository not found`，说明 GitHub 上尚未创建 `RUOLINGDADA/commandlab` 或当前账号无权访问。请先在 GitHub 创建同名公开空仓库，再重新执行推送。推送后按 `docs/project/github-settings.md` 配置 Pages 和分支规则。暂未创建 Release。

@@ -5,6 +5,7 @@
 - 目标仓库：`RUOLINGDADA/commandlab`
 - 目标站点：`https://ruolingdada.github.io/commandlab/`
 - 在线沙箱：首发关闭，显示“暂未开放”
+- 远程推送：等待创建 `RUOLINGDADA/commandlab` 空仓库（当前返回 Repository not found）
 
 ## 当前任务
 
