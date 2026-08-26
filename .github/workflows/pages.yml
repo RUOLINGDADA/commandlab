@@ -33,7 +33,7 @@ jobs:
           GITHUB_PAGES: "true"
           GITHUB_REPOSITORY: RUOLINGDADA/commandlab
       - run: pnpm --filter @commandlab/web validate:export
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: apps/web/out
 
