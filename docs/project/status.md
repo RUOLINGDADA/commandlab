@@ -7,6 +7,7 @@
 - 在线沙箱：首发关闭，显示“暂未开放”
 - 远程推送：已完成，`main` 已跟踪 `origin/main`
 - GitHub Release：`v0.1.1` 已发布
+- 当前开发分支：`codex/docker-course-quality-reference`（Docker 课程质量与工具百科重构）
 - 分支规则：`Protect main` 已启用
 - Pages：Actions 部署成功
 
@@ -20,3 +21,4 @@
 - 内容校验：48 节课程通过
 - Lint、TypeScript、Vitest：通过
 - Next 静态构建与 `/commandlab` 导出校验：通过
+- Docker 课程质量重构：本地实现完成，Pages 子路径导出复验通过，待提交 PR

@@ -14,6 +14,9 @@ const requiredPages = [
   "learn/index.html",
   "courses/git/mental-model/index.html",
   "courses/docker/engine-model/index.html",
+  "reference/index.html",
+  "reference/git/index.html",
+  "reference/docker/index.html",
   "terminal/index.html",
 ];
 

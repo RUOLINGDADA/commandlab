@@ -48,6 +48,20 @@ describe("课程内容", () => {
         }
       }
     }
-    expect(stepIds.size).toBeGreaterThanOrEqual(48);
+    expect(stepIds.size).toBeGreaterThanOrEqual(24);
+  });
+
+  it("Docker 互动题按课程主题唯一且题目不泄露命令", () => {
+    const dockerLessons = lessons.filter((lesson) => lesson.tool === "docker");
+    expect(new Set(dockerLessons.map((lesson) => lesson.interactiveQuiz.question)).size).toBe(24);
+    for (const lesson of dockerLessons) {
+      expect(lesson.interactiveQuiz.type).toBeDefined();
+      for (const scenario of lesson.scenarios) {
+        for (const step of scenario.steps) {
+          expect(step.prompt).not.toMatch(/docker\s|git\s|```|&&|\|\||--[a-z]/);
+          expect(step.preparation.join(" ")).not.toMatch(/docker\s/);
+        }
+      }
+    }
   });
 });

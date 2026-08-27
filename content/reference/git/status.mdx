@@ -1,0 +1,20 @@
+---
+id: "git-ref-status"
+tool: "git"
+slug: "status"
+title: "git status"
+category: "日常检查"
+object: "工作区与暂存区"
+summary: "查看当前文件相对最近一次提交发生了什么变化。"
+usage: "开始开发、提交前自检或遇到冲突时，先用它确认 Git 眼中的状态。"
+commonOptions: ["--short：用紧凑格式显示路径状态", "--branch：同时显示当前分支"]
+scenarios: ["提交前确认哪些文件会进入下一次提交。", "排查‘明明改过文件却没有变化’时确认文件是否被忽略。"]
+comparisons: ["与 git diff 对比：status 给出文件级摘要，diff 展示具体行变化。"]
+risk: "低"
+reversible: "只读命令，不修改工作区或仓库。"
+errors: ["fatal: not a git repository：当前目录不是 Git 仓库，请切换到项目目录。"]
+examples: [{command: "git status --short --branch", description: "显示分支和精简状态", shell: "sh"}]
+relatedLessons: ["git-01", "git-02"]
+---
+
+`git status` 是最安全的第一步。先看状态，再决定是否需要 add、restore 或 commit。

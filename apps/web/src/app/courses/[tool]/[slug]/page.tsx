@@ -78,7 +78,7 @@ export default async function LessonPage({
           <div className="lesson-meta">
             <Badge>{lesson.level}</Badge>
             <span>
-              <Clock3 size={14} /> {lesson.duration} 分钟
+              <Clock3 size={14} /> 约 {lesson.duration} 分钟
             </span>
           </div>
           <h1>{lesson.title}</h1>

@@ -18,6 +18,7 @@ export function SiteHeader() {
         </Link>
         <nav className="main-nav" aria-label="主导航">
           <Link href="/learn/">学习路径</Link>
+          <Link href="/reference/">工具百科</Link>
           <Link href="/progress/">学习进度</Link>
           <Link href="/terminal/">在线终端</Link>
         </nav>

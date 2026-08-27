@@ -1,9 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
-import { lessonSchema, type Lesson, type Tool } from "@commandlab/content-schema";
+import {
+  lessonSchema,
+  referenceEntrySchema,
+  type Lesson,
+  type ReferenceEntry,
+  type Tool,
+} from "@commandlab/content-schema";
 
 let lessonCache: Lesson[] | undefined;
+type LoadedReference = ReferenceEntry & { body: string };
+let referenceCache: LoadedReference[] | undefined;
 
 function contentRoot(): string {
   const rootCandidate = path.resolve(process.cwd(), "content");
@@ -95,4 +103,36 @@ export function getLessonsByTool(tool: Tool): Lesson[] {
 
 export function getLesson(tool: Tool, slug: string): Lesson | undefined {
   return validateContent().find((lesson) => lesson.tool === tool && lesson.slug === slug);
+}
+
+export function getLessonById(id: string): Lesson | undefined {
+  return validateContent().find((lesson) => lesson.id === id);
+}
+
+/** 构建阶段读取工具百科条目，供静态百科页和搜索使用。 */
+export function loadReferences(): LoadedReference[] {
+  if (referenceCache) return referenceCache;
+  const root = path.join(contentRoot(), "reference");
+  if (!fs.existsSync(root)) return [];
+  const files = (["git", "docker"] as const).flatMap((tool) => {
+    const directory = path.join(root, tool);
+    return fs.existsSync(directory)
+      ? fs
+          .readdirSync(directory)
+          .filter((file) => file.endsWith(".mdx"))
+          .map((file) => path.join(directory, file))
+      : [];
+  });
+  referenceCache = files.map((file) => {
+    const parsed = matter(fs.readFileSync(file, "utf8"));
+    const metadata = referenceEntrySchema.parse(parsed.data);
+    const body = parsed.content.trim();
+    if (body.length < 30) throw new Error(`${file} 的百科正文过短。`);
+    return { ...metadata, body } as ReferenceEntry & { body: string };
+  });
+  return referenceCache;
+}
+
+export function getReferencesByTool(tool: Tool): LoadedReference[] {
+  return loadReferences().filter((entry) => entry.tool === tool);
 }

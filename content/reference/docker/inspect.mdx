@@ -1,0 +1,20 @@
+---
+id: "docker-ref-inspect"
+tool: "docker"
+slug: "inspect"
+title: "docker inspect"
+category: "排错观察"
+object: "镜像、容器、卷或网络"
+summary: "以结构化 JSON 读取 Docker 对象的配置和状态。"
+usage: "日志无法解释、端口未生效、挂载不正确或健康状态异常时，用它补充证据。"
+commonOptions: ["--format：只输出需要的字段", "容器名或 ID：限定检查对象"]
+scenarios: ["检查容器实际使用的镜像、环境变量和挂载。", "确认卷或网络的名称、驱动和连接对象。"]
+comparisons: ["与 docker ps 对比：ps 适合快速列表，inspect 适合深入字段。"]
+risk: "低"
+reversible: "只读命令；输出可能包含环境变量和路径，不要直接公开日志。"
+errors: ["Error: No such object：名称写错、对象已删除或当前 context 不同。"]
+examples: [{command: "docker inspect commandlab-web --format '{{.State.Status}} {{.Config.Image}}'", description: "读取容器状态和镜像", shell: "sh"}]
+relatedLessons: ["docker-06", "docker-23"]
+---
+
+排错时先保留完整输出，再用 `--format` 提取关键字段，避免凭感觉重启或清理。
