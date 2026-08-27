@@ -11,3 +11,7 @@
 - 已补齐 15 个 Docker 百科条目并关联新课程编号；百科总数为 17（含 2 个 Git 条目）。
 - 已更新静态导出关键路径为 `/courses/docker/install-engine/`，进度测试同步新步骤编号。
 - 已通过 `pnpm validate:content` 和 `pnpm test`（4 个测试文件、11 个测试）。
+- 已通过 `pnpm format:check`、`pnpm lint`、`pnpm typecheck`、GitHub Pages 环境下的 `pnpm build` 与 `validate:export`。
+- 已完成本地浏览器验收：新首课、答案折叠、平台切换和 15 条 Docker 百科均正常，无横向溢出。
+- 已提交 `9183085 feat: redesign Docker guide curriculum`，并推送到 `origin/codex/docker-guide-redesign`。
+- Pull Request 创建入口：`https://github.com/RUOLINGDADA/commandlab/pull/new/codex/docker-guide-redesign`。

@@ -4,4 +4,4 @@
 
 验证已通过：`pnpm format:check`、`pnpm validate:content`、`pnpm lint`、`pnpm typecheck`、`pnpm test`、GitHub Pages 环境下的 `pnpm build` 和 `pnpm --filter @commandlab/web validate:export`，并完成本地浏览器验收。
 
-下一步：检查 `git diff` 后提交短期分支并准备 Pull Request；不合并 `main`，不创建新 Release。
+提交 `9183085` 已推送到 `origin/codex/docker-guide-redesign`，工作区干净。下一步在 `https://github.com/RUOLINGDADA/commandlab/pull/new/codex/docker-guide-redesign` 创建 Pull Request 并等待必需检查；不直接合并 `main`，不创建新 Release。
