@@ -4,4 +4,4 @@
 
 验证已通过：`pnpm format:check`、`pnpm validate:content`、`pnpm lint`、`pnpm typecheck`、`pnpm test`、GitHub Pages 环境下的 `pnpm build` 和 `pnpm --filter @commandlab/web validate:export`，并完成本地浏览器验收。
 
-提交 `9183085` 已推送到 `origin/codex/docker-guide-redesign`，工作区干净。下一步在 `https://github.com/RUOLINGDADA/commandlab/pull/new/codex/docker-guide-redesign` 创建 Pull Request 并等待必需检查；不直接合并 `main`，不创建新 Release。
+功能提交 `9183085` 已推送到 `origin/codex/docker-guide-redesign`，文档交接提交 `9a350f1` 目前仅在本地，因网络故障暂未推送。工作区干净；网络恢复后先推送最新提交，再在 `https://github.com/RUOLINGDADA/commandlab/pull/new/codex/docker-guide-redesign` 创建 Pull Request 并等待必需检查；不直接合并 `main`，不创建新 Release。

@@ -22,4 +22,4 @@
 - 内容校验：48 节课程通过
 - Lint、TypeScript、Vitest：通过
 - Next 静态构建与 `/commandlab` 导出校验：通过
-- Docker 指南风格重构：完整工程验证、Pages 导出和浏览器验收通过；提交 `9183085` 已推送到 `origin/codex/docker-guide-redesign`
+- Docker 指南风格重构：完整工程验证、Pages 导出和浏览器验收通过；功能提交 `9183085` 已推送，最新文档交接提交因网络故障暂未推送

@@ -14,4 +14,5 @@
 - 已通过 `pnpm format:check`、`pnpm lint`、`pnpm typecheck`、GitHub Pages 环境下的 `pnpm build` 与 `validate:export`。
 - 已完成本地浏览器验收：新首课、答案折叠、平台切换和 15 条 Docker 百科均正常，无横向溢出。
 - 已提交 `9183085 feat: redesign Docker guide curriculum`，并推送到 `origin/codex/docker-guide-redesign`。
+- 已提交 `9a350f1 docs: record Docker guide PR handoff`；当前网络无法连接 GitHub，暂未推送。
 - Pull Request 创建入口：`https://github.com/RUOLINGDADA/commandlab/pull/new/codex/docker-guide-redesign`。
