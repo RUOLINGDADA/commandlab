@@ -1,0 +1,21 @@
+---
+id: "docker-ref-start"
+tool: "docker"
+slug: "start"
+title: "docker start"
+category: "生命周期"
+object: "已停止容器"
+summary: "重新启动已有容器，不创建新容器。"
+usage: "恢复刚刚停止的开发服务。"
+commonOptions: ["-a：连接到容器输出","-i：重新附加标准输入"]
+scenarios: ["恢复刚刚停止的开发服务。","比较重启前后容器 ID 是否保持不变。"]
+comparisons: ["与 docker run 对比：start 复用旧容器，run 创建新实例。"]
+risk: "中"
+reversible: "可能恢复旧挂载和旧配置；重启前先 inspect。"
+errors: ["Cannot start container：入口命令已失败或依赖不可用。"]
+examples: [{command: "docker start commandlab-web", description: "围绕 docker start 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-05"]
+---
+
+重新启动已有容器，不创建新容器。比较重启前后容器 ID 是否保持不变。 与 docker run 对比：start 复用旧容器，run 创建新实例。
+

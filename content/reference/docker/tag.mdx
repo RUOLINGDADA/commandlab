@@ -1,0 +1,21 @@
+---
+id: "docker-ref-tag"
+tool: "docker"
+slug: "tag"
+title: "docker tag"
+category: "镜像发布"
+object: "镜像标签"
+summary: "为同一镜像 ID 增加可追溯的仓库、版本或提交标签。"
+usage: "推送前建立 semver 和 git sha 标签。"
+commonOptions: ["源镜像：必须已存在","目标仓库:标签：明确发布地址"]
+scenarios: ["推送前建立 semver 和 git sha 标签。","核对两个标签是否指向同一 ID。"]
+comparisons: ["与 docker push 对比：tag 只改本地引用，push 才上传仓库。"]
+risk: "中"
+reversible: "标签不会复制镜像层，但错误仓库名可能把镜像推到错误位置。"
+errors: ["No such image：源标签不存在。"]
+examples: [{command: "docker tag commandlab-app:0.1 commandlab/demo:0.1.0", description: "围绕 docker tag 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-19"]
+---
+
+为同一镜像 ID 增加可追溯的仓库、版本或提交标签。核对两个标签是否指向同一 ID。 与 docker push 对比：tag 只改本地引用，push 才上传仓库。
+

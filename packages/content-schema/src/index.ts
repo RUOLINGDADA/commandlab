@@ -39,9 +39,18 @@ const comparisonSchema = z.object({
   reversible: z.string().min(2),
 });
 
+const parameterSchema = z.object({
+  token: z.string().min(1),
+  meaning: z.string().min(6),
+  effect: z.string().min(6),
+});
+
+const exerciseRoleSchema = z.enum(["main", "variant"]);
+
 /** 一道真实本机练习步骤，题目、答案、验证和清理保持一一对应。 */
 export const exerciseStepSchema = z.object({
   id: z.string().regex(/^step-[a-z0-9-]+$/),
+  role: exerciseRoleSchema,
   /** 题目只描述任务，不得泄露可直接执行的命令。 */
   prompt: z
     .string()
@@ -58,11 +67,16 @@ export const exerciseStepSchema = z.object({
   answer: z.object({
     explanation: z.string().min(10),
     commands: z.array(commandSchema).min(1),
+    parameters: z.array(parameterSchema).min(1),
+    process: z.array(z.string().min(10)).min(2),
+    stateChanges: z.array(z.string().min(8)).min(1),
   }),
   expected: z.string().min(10),
   verify: z.array(commandSchema).min(1),
   cleanup: z.array(commandSchema).min(1),
   pitfalls: z.array(pitfallSchema).min(1),
+  diagnosisOrder: z.array(z.string().min(2)).min(3),
+  cleanupScope: z.string().min(10),
   comparisons: z.array(comparisonSchema).min(2),
   variants: z.array(z.string().min(8)).min(1),
   dangerous: z.boolean().default(false),
@@ -76,7 +90,7 @@ export const scenarioSchema = z.object({
   goal: z.string().min(10),
   prerequisites: z.array(z.string().min(4)).min(1),
   images: z.array(imageSchema).min(1),
-  steps: z.array(exerciseStepSchema).min(1).max(3),
+  steps: z.array(exerciseStepSchema).length(2),
 });
 
 const platformGuideSchema = z.object({
@@ -166,17 +180,29 @@ export const dockerLessonSchema = z
         message: "答案索引必须指向现有选项。",
       });
     }
-    const minimumScenarios = lesson.level === "高级" || lesson.level === "精通" ? 2 : 1;
-    if (lesson.scenarios.length < minimumScenarios) {
+    if (lesson.scenarios.length !== 1) {
       context.addIssue({
         code: "custom",
         path: ["scenarios"],
-        message: `${lesson.level}课程至少需要 ${minimumScenarios} 个实操场景。`,
+        message: "Docker 课程必须使用一个完整场景，并包含主任务和变体任务。",
       });
     }
     const stepIds = lesson.scenarios.flatMap((scenario) => scenario.steps.map((step) => step.id));
     if (new Set(stepIds).size !== stepIds.length) {
       context.addIssue({ code: "custom", path: ["scenarios"], message: "实操步骤编号不能重复。" });
+    }
+    for (const [scenarioIndex, scenario] of lesson.scenarios.entries()) {
+      const roles = scenario.steps.map((step) => step.role);
+      if (
+        roles.filter((role) => role === "main").length !== 1 ||
+        roles.filter((role) => role === "variant").length !== 1
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["scenarios", scenarioIndex, "steps"],
+          message: "每个 Docker 场景必须恰好包含一个主任务和一个变体任务。",
+        });
+      }
     }
     for (const [scenarioIndex, scenario] of lesson.scenarios.entries()) {
       for (const [stepIndex, step] of scenario.steps.entries()) {
@@ -189,35 +215,18 @@ export const dockerLessonSchema = z
         }
       }
     }
-    const stepCount = stepIds.length;
-    const ranges: Record<Level, [number, number][]> = {
-      入门: [
-        [10, 15],
-        [15, 20],
-        [20, 25],
-      ],
-      进阶: [
-        [15, 20],
-        [20, 25],
-        [25, 30],
-      ],
-      高级: [
-        [20, 25],
-        [25, 30],
-        [30, 35],
-      ],
-      精通: [
-        [25, 30],
-        [30, 35],
-        [35, 40],
-      ],
+    const ranges: Record<Level, [number, number]> = {
+      入门: [15, 20],
+      进阶: [20, 25],
+      高级: [25, 30],
+      精通: [30, 35],
     };
-    const [minimum, maximum] = ranges[lesson.level][Math.min(stepCount, 3) - 1]!;
+    const [minimum, maximum] = ranges[lesson.level];
     if (lesson.duration < minimum || lesson.duration > maximum) {
       context.addIssue({
         code: "custom",
         path: ["duration"],
-        message: `${lesson.level}课程 ${stepCount} 步时长应为 ${minimum}-${maximum} 分钟。`,
+        message: `${lesson.level}课程（2 个步骤）时长应为 ${minimum}-${maximum} 分钟。`,
       });
     }
   });

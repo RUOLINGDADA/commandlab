@@ -1,0 +1,21 @@
+---
+id: "docker-ref-build"
+tool: "docker"
+slug: "build"
+title: "docker build"
+category: "镜像构建"
+object: "构建上下文与镜像"
+summary: "根据 Dockerfile 和上下文创建镜像。"
+usage: "构建可重复的应用镜像。"
+commonOptions: ["-t：设置仓库和标签","--no-cache：禁用缓存","--target：选择多阶段目标"]
+scenarios: ["构建可重复的应用镜像。","通过日志判断缓存命中。"]
+comparisons: ["与 docker compose build 对比：build 直接构建单镜像，Compose 按服务编排。"]
+risk: "中"
+reversible: "上下文可能包含密钥和大目录；先写 .dockerignore。"
+errors: ["failed to read dockerfile：路径或文件名错误。"]
+examples: [{command: "docker build -t commandlab-app:0.1 .", description: "围绕 docker build 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-10"]
+---
+
+根据 Dockerfile 和上下文创建镜像。通过日志判断缓存命中。 与 docker compose build 对比：build 直接构建单镜像，Compose 按服务编排。
+

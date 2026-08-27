@@ -7,6 +7,26 @@ describe("工具百科", () => {
   it("Git 与 Docker 均提供可校验条目", () => {
     expect(entries.some((entry) => entry.tool === "git")).toBe(true);
     expect(entries.some((entry) => entry.tool === "docker")).toBe(true);
+    expect(entries.filter((entry) => entry.tool === "docker")).toHaveLength(15);
+    expect(entries.filter((entry) => entry.tool === "docker").map((entry) => entry.slug)).toEqual(
+      expect.arrayContaining([
+        "run",
+        "ps",
+        "logs",
+        "exec",
+        "stop",
+        "start",
+        "rm",
+        "image",
+        "build",
+        "tag",
+        "volume",
+        "network",
+        "compose",
+        "inspect",
+        "stats",
+      ]),
+    );
   });
 
   it("百科相关课程编号均存在", () => {

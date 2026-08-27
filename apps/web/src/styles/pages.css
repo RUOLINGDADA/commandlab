@@ -655,6 +655,29 @@
   padding: 10px 0 2px;
   border-top: 0;
 }
+.answer-details-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 15px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-soft);
+}
+.answer-details-grid h4 {
+  margin: 0 0 6px;
+  font-size: 0.86rem;
+}
+.answer-details-grid ul,
+.answer-details-grid ol {
+  margin: 0;
+  padding-left: 20px;
+}
+.answer-details-grid li {
+  margin: 4px 0;
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+}
 .quiz-card {
   margin-block: 45px;
   padding: 25px;

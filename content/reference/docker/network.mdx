@@ -1,0 +1,21 @@
+---
+id: "docker-ref-network"
+tool: "docker"
+slug: "network"
+title: "docker network"
+category: "网络与 DNS"
+object: "用户定义网络"
+summary: "创建用户网络并让容器通过服务名互相发现。"
+usage: "让前端按服务名访问 Redis。"
+commonOptions: ["create：创建网络","connect：连接已有容器","inspect：查看端点和子网"]
+scenarios: ["让前端按服务名访问 Redis。","验证 localhost 不会跨容器。"]
+comparisons: ["与 -p 对比：network 控制容器间通信，-p 暴露到宿主机。"]
+risk: "中"
+reversible: "网络连接会改变可达范围；不要连接到未知生产网络。"
+errors: ["network not found：名称写错或已被清理。"]
+examples: [{command: "docker network inspect commandlab-net", description: "围绕 docker network 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-17"]
+---
+
+创建用户网络并让容器通过服务名互相发现。验证 localhost 不会跨容器。 与 -p 对比：network 控制容器间通信，-p 暴露到宿主机。
+

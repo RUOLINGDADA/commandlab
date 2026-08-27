@@ -79,7 +79,7 @@ export function DockerPractice({
       {scenarios.map((scenario) => (
         <section className="scenario-card" key={scenario.id}>
           <div className="scenario-heading">
-            <p className="eyebrow">实操场景</p>
+            <p className="eyebrow">实操场景 · 一个主任务 + 一个变体</p>
             <h3>{scenario.title}</h3>
             <p>{scenario.context}</p>
             <p>
@@ -133,7 +133,9 @@ function StepCard({
       <div className="step-title">
         <span className="step-number">{String(index).padStart(2, "0")}</span>
         <div>
-          <p className="eyebrow">步骤 {index}</p>
+          <p className="eyebrow">
+            {step.role === "main" ? "主任务" : "变体任务"} · 步骤 {index}
+          </p>
           <h4>{step.prompt}</h4>
         </div>
         <div className="step-state-actions">
@@ -186,6 +188,34 @@ function StepCard({
         </summary>
         <p>{step.answer.explanation}</p>
         <CommandList title="答案命令" commands={step.answer.commands} />
+        <div className="answer-details-grid">
+          <div>
+            <h4>参数与关键字解释</h4>
+            <ul>
+              {step.answer.parameters.map((parameter) => (
+                <li key={`${parameter.token}-${parameter.meaning}`}>
+                  <code>{parameter.token}</code>：{parameter.meaning}。{parameter.effect}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4>Docker 内部执行流程</h4>
+            <ol>
+              {step.answer.process.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ol>
+          </div>
+          <div>
+            <h4>对象状态变化</h4>
+            <ul>
+              {step.answer.stateChanges.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
         <p>
           <strong>关键预期：</strong>
           {step.expected}
@@ -231,11 +261,15 @@ function StepCard({
             </div>
           ))}
         </div>
+        <p>
+          <strong>排查顺序：</strong>
+          {step.diagnosisOrder.join(" → ")}
+        </p>
       </details>
       <details>
         <summary>
           <ChevronDown size={16} />
-          查看命令辨析、清理与衍生练习
+          查看命令辨析与变体练习
         </summary>
         <p>
           <strong>命令辨析：</strong>
@@ -246,10 +280,26 @@ function StepCard({
             )
             .join("；")}
         </p>
-        <CommandList title="清理命令" commands={step.cleanup} />
         <p>
           <strong>衍生练习：</strong>
           {step.variants.join("；")}
+        </p>
+      </details>
+      <details>
+        <summary>
+          <ChevronDown size={16} />
+          查看精确清理
+        </summary>
+        {step.dangerous && (
+          <p className="danger-warning">
+            <AlertTriangle size={16} />
+            清理会删除本步骤创建的对象。先核对名称，只执行与当前课程相符的命令。
+          </p>
+        )}
+        <CommandList title="清理命令" commands={step.cleanup} />
+        <p className="verification-note">
+          <strong>影响范围：</strong>
+          {step.cleanupScope}
         </p>
       </details>
     </Card>

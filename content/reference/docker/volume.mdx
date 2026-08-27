@@ -1,0 +1,21 @@
+---
+id: "docker-ref-volume"
+tool: "docker"
+slug: "volume"
+title: "docker volume"
+category: "持久化存储"
+object: "命名卷"
+summary: "创建、检查和删除由 Docker 管理的持久化数据卷。"
+usage: "升级数据库容器但保留业务数据。"
+commonOptions: ["create：创建卷","inspect：查看挂载点","rm：删除卷"]
+scenarios: ["升级数据库容器但保留业务数据。","清理前确认卷中无需要保留的文件。"]
+comparisons: ["与 bind mount 对比：volume 由 Docker 管理，bind mount 直接映射宿主机路径。"]
+risk: "高"
+reversible: "删除卷不可恢复；卷可能包含数据库完整数据目录。"
+errors: ["volume is in use：仍有容器挂载该卷。"]
+examples: [{command: "docker volume inspect commandlab-data", description: "围绕 docker volume 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-15"]
+---
+
+创建、检查和删除由 Docker 管理的持久化数据卷。清理前确认卷中无需要保留的文件。 与 bind mount 对比：volume 由 Docker 管理，bind mount 直接映射宿主机路径。
+

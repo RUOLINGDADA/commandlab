@@ -1,0 +1,21 @@
+---
+id: "docker-ref-ps"
+tool: "docker"
+slug: "ps"
+title: "docker ps"
+category: "容器状态"
+object: "容器"
+summary: "列出运行中或全部容器，快速判断名称、状态和端口。"
+usage: "值班时确认服务是否仍在运行。"
+commonOptions: ["-a：包含已停止容器","--filter name=：按 commandlab- 前缀筛选","--format：输出稳定字段"]
+scenarios: ["值班时确认服务是否仍在运行。","清理前核对目标名称而不是凭 ID 操作。"]
+comparisons: ["与 docker inspect 对比：ps 适合列表，inspect 适合单对象详情。"]
+risk: "低"
+reversible: "只读；输出中的端口和名称可能暴露内部拓扑。"
+errors: ["Error: Invalid filter：过滤器拼写错误。"]
+examples: [{command: "docker ps -a --filter name=commandlab-", description: "围绕 docker ps 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-05"]
+---
+
+列出运行中或全部容器，快速判断名称、状态和端口。清理前核对目标名称而不是凭 ID 操作。 与 docker inspect 对比：ps 适合列表，inspect 适合单对象详情。
+

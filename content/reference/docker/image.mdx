@@ -1,0 +1,21 @@
+---
+id: "docker-ref-image"
+tool: "docker"
+slug: "image"
+title: "docker image"
+category: "镜像管理"
+object: "镜像"
+summary: "使用 image 子命令组列出、检查、删除和标记镜像。"
+usage: "整理构建产物和标签。"
+commonOptions: ["ls：列出本地镜像","inspect：读取配置和摘要","rm：删除标签或镜像"]
+scenarios: ["整理构建产物和标签。","删除前检查是否仍被容器引用。"]
+comparisons: ["与 docker container 对比：image 操作模板，container 操作运行实例。"]
+risk: "中"
+reversible: "删除镜像可能使后续启动需要重新拉取；不要误删基础镜像。"
+errors: ["No such image：仓库或标签写错。"]
+examples: [{command: "docker image ls commandlab-", description: "围绕 docker image 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-08"]
+---
+
+使用 image 子命令组列出、检查、删除和标记镜像。删除前检查是否仍被容器引用。 与 docker container 对比：image 操作模板，container 操作运行实例。
+

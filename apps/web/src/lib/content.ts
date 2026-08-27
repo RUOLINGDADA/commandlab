@@ -65,9 +65,8 @@ export function validateContent(): Lesson[] {
     if (platforms.size !== 3) throw new Error(`${lesson.id} 的三平台指引不完整。`);
 
     if (lesson.tool === "docker") {
-      const minimumScenarios = lesson.level === "高级" || lesson.level === "精通" ? 2 : 1;
-      if (lesson.scenarios.length < minimumScenarios) {
-        throw new Error(`${lesson.id} 至少需要 ${minimumScenarios} 个实操场景。`);
+      if (lesson.scenarios.length !== 1) {
+        throw new Error(`${lesson.id} 必须使用一个完整场景，并在其中包含主任务和变体。`);
       }
       const stepIds = lesson.scenarios.flatMap((scenario) => scenario.steps.map((step) => step.id));
       if (new Set(stepIds).size !== stepIds.length) {
