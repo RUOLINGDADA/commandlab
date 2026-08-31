@@ -29,4 +29,4 @@
 
 ## 下一步
 
-完成本地验证后提交并推送 `codex/docker-guide-redesign`，创建 PR；合并后运行 `Create release` 输入 `0.1.2`，等待 Pages 部署并执行线上 HTTP 验收。
+本地验证和提交已完成（`146f1aa`、`3d9d05b`）。待 GitHub HTTPS 网络恢复并完成账号登录后，推送 `codex/docker-guide-redesign`，创建并合并 PR；随后运行 `Create release` 输入 `0.1.2`，等待 Pages 部署并执行线上 HTTP 验收。
