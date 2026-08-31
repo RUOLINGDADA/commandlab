@@ -82,7 +82,7 @@ pnpm --filter @commandlab/web validate:export
 
 ## 发布
 
-维护者在 GitHub 的 **Actions → Create release** 中输入语义化版本。工作流创建 GitHub Release 后，Pages 工作流会自动构建并部署网站。当前版本为 `v0.1.2`。
+维护者在 GitHub 的 **Actions → Create release** 中输入语义化版本。工作流创建 GitHub Release 后，Pages 工作流会自动构建并部署网站。当前版本为 `v0.1.3`。
 
 ## 许可
 

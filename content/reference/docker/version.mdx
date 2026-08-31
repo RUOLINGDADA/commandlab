@@ -1,0 +1,24 @@
+---
+id: "docker-ref-version"
+tool: "docker"
+slug: "version"
+title: "docker version"
+category: "连接诊断"
+object: "CLI 与 Engine 版本"
+summary: "同时查看 Docker 客户端与服务端版本和 API 兼容信息。"
+usage: "安装检查、升级后验证和客户端无法连接时的第一步。"
+syntax: "docker version [--format=<template>]"
+parameters:
+  - {flag: "--format=<template>", description: "按模板输出稳定字段，适合记录或脚本。"}
+  - {flag: "Client/Server", description: "分别代表 CLI 和 Engine；缺少 Server 通常表示连接失败。"}
+commonOptions: ["--format：模板输出", "Client/Server：两端版本"]
+scenarios: ["确认 Desktop Engine 是否已启动。", "排查 API 版本不兼容。"]
+comparisons: ["与 docker info 对比：version 看版本和 API，info 看 Engine 运行资源。"]
+risk: "低"
+reversible: "只读命令，不修改任何资源。"
+errors: ["Cannot connect to the Docker daemon：Engine 未启动或 context 指向错误目标。"]
+examples: [{command: "docker version --format '{{.Client.Version}} / {{.Server.Version}}'", description: "输出客户端与服务端版本", shell: "sh"}]
+relatedLessons: ["docker-01", "docker-23"]
+---
+
+看到 Client 没有 Server 时，不要继续执行删除或发布命令。先启动 Docker Desktop，再运行 `docker context show` 确认连接目标。

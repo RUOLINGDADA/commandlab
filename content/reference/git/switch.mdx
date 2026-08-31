@@ -1,0 +1,20 @@
+---
+id: "git-ref-switch"
+tool: "git"
+slug: "switch"
+title: "git switch"
+category: "分支"
+object: "当前工作区与 HEAD"
+summary: "在分支之间安全切换，或创建并切换到新分支。"
+usage: "开始工作前切换到正确分支；切换失败时先处理未保存改动。"
+commonOptions: ["-c：创建并切换新分支", "--detach：临时查看某个提交，不移动分支名称"]
+scenarios: ["从 main 创建 feature 分支。", "只读查看旧提交内容后回到原分支。"]
+comparisons: ["与 git checkout 对比：switch 专注分支切换，checkout 还承担文件恢复等旧式功能。"]
+risk: "中"
+reversible: "再次切换即可回到原分支；未提交改动可能阻止切换以避免覆盖。"
+errors: ["Your local changes would be overwritten：先提交、暂存或明确恢复这些本地改动。"]
+examples: [{command: "git switch -c feature/readme", description: "创建并切换分支", shell: "sh"}]
+relatedLessons: ["git-07", "git-13"]
+---
+
+切换分支会让工作区文件跟着目标提交变化。看到 Git 提示会覆盖本地改动时不要强行加参数，先用 `git diff` 看清改动属于谁。

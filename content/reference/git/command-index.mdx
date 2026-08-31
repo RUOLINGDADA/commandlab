@@ -1,0 +1,30 @@
+---
+id: "git-ref-command-index"
+tool: "git"
+slug: "command-index"
+title: "Git 命令总览"
+category: "命令索引"
+object: "Git CLI 与本地仓库"
+summary: "按任务快速定位 Git 命令族，并先理解全局参数如何影响输出。"
+usage: "不知道命令名时，从初始化、观察、修改、协作、恢复五类任务开始查找。"
+syntax: "git [--version] [--help] [-C <path>] [-c <key>=<value>] <command> [<options>]"
+parameters:
+  - {flag: "--version", description: "显示 Git 版本，排查教程与本机版本差异。"}
+  - {flag: "--help", description: "查看命令帮助；如 git help log 可打开详细说明。"}
+  - {flag: "-C <path>", description: "先切换到指定目录再执行命令，不改变当前终端目录。"}
+  - {flag: "-c key=value", description: "只对本次命令临时覆盖一个配置值。"}
+  - {flag: "观测类", description: "status、log、show、diff、reflog、branch、remote。"}
+  - {flag: "修改类", description: "add、commit、switch、merge、rebase、stash、tag。"}
+  - {flag: "协作类", description: "clone、fetch、pull、push、cherry-pick。"}
+  - {flag: "恢复类", description: "restore、reset、revert、bisect、clean。"}
+commonOptions: ["--help：查看帮助", "-C：指定目录", "-c：临时配置"]
+scenarios: ["根据问题选择只读命令，再决定是否改变仓库。", "在陌生仓库先用 status 和 log 建立安全基线。"]
+comparisons: ["与 shell 命令对比：Git 子命令作用于仓库对象，先确认当前目录和分支。"]
+risk: "中"
+reversible: "索引本身只读；具体命令的风险以对应条目为准，包含 clean、reset、push 的操作前必须建立恢复点。"
+errors: ["git: 'xxx' is not a git command：子命令拼写错误，运行 git help -a 查看可用命令。"]
+examples: [{command: "git help -a", description: "列出 Git 可用命令", shell: "sh"}, {command: "git -C ./project status --short", description: "在指定目录读取状态", shell: "sh"}]
+relatedLessons: ["git-01", "git-24"]
+---
+
+把 Git 命令分成“看、改、传、救”四类：先看状态和差异，再改暂存区或历史；需要同步时区分 fetch、pull、push；发生事故时优先 reflog、restore 或 revert。每条具体命令都应回到本索引确认它影响的对象。

@@ -1,0 +1,25 @@
+---
+id: "git-ref-log"
+tool: "git"
+slug: "log"
+title: "git log"
+category: "历史阅读"
+object: "提交历史"
+summary: "按时间和拓扑关系查看提交、作者、分支与标签。"
+usage: "定位某次改动、找到可回退提交或理解分支合并关系。"
+syntax: "git log [--oneline] [--graph] [--decorate] [-n <count>] [-- <path>]"
+parameters:
+  - {flag: "--oneline", description: "每个提交压缩成一行，便于快速扫描。"}
+  - {flag: "--graph", description: "用字符绘制分支和合并关系。"}
+  - {flag: "-n <count>", description: "只显示最近指定数量的提交。", example: "-n 10"}
+commonOptions: ["--oneline：一行摘要", "--graph：绘制分支图", "--decorate：显示引用名称"]
+scenarios: ["找到最近一次发布对应的提交。", "确认某文件由哪次提交引入。"]
+comparisons: ["与 git show 对比：log 适合浏览多条历史，show 适合深入一条提交。"]
+risk: "低"
+reversible: "只读命令，不修改历史。"
+errors: ["does not have any commits yet：仓库还没有第一次提交。"]
+examples: [{command: "git log --oneline --graph --decorate -n 12", description: "阅读最近 12 条提交图", shell: "sh"}]
+relatedLessons: ["git-05", "git-14", "git-24"]
+---
+
+提交短哈希只是显示用的缩写，不要手工猜测。复制完整哈希或从 `git log` 输出中选择，能减少把命令指向错误提交的风险。

@@ -1,0 +1,25 @@
+---
+id: "git-ref-cherry-pick"
+tool: "git"
+slug: "cherry-pick"
+title: "git cherry-pick"
+category: "提交移植"
+object: "当前分支与指定提交"
+summary: "把一个或多个已有提交的改动复制到当前分支。"
+usage: "将独立的紧急修复移植到维护分支或发布分支。"
+syntax: "git cherry-pick [--no-commit] <commit>..."
+parameters:
+  - {flag: "--no-commit", description: "应用改动但暂不创建提交，便于合并多个修复。"}
+  - {flag: "<commit>...", description: "要移植的提交哈希，可按顺序提供多个。"}
+  - {flag: "--abort", description: "冲突未解决时撤销整个移植过程。"}
+commonOptions: ["--no-commit：只应用改动", "--abort：放弃冲突中的移植"]
+scenarios: ["把 main 上的修复带到 release 分支。", "挑选两个连续修复并合并成一个提交。"]
+comparisons: ["与 merge 对比：cherry-pick 复制选定提交，merge 整合整个分支历史。"]
+risk: "高"
+reversible: "移植生成新提交，可用 revert 撤销；冲突处理中用 cherry-pick --abort。"
+errors: ["The previous cherry-pick is now empty：目标分支已包含相同改动，确认后继续或跳过。"]
+examples: [{command: "git cherry-pick --no-commit abc1234", description: "应用修复但暂不提交", shell: "sh"}]
+relatedLessons: ["git-18", "git-13"]
+---
+
+cherry-pick 的结果不是“同一个提交”，而是内容相同、哈希不同的新提交。记录来源哈希，方便以后审计和排查重复修复。

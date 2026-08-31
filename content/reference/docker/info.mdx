@@ -1,0 +1,24 @@
+---
+id: "docker-ref-info"
+tool: "docker"
+slug: "info"
+title: "docker info"
+category: "Engine 诊断"
+object: "Docker Engine 全局状态"
+summary: "读取容器数量、存储驱动、资源限制和插件等 Engine 信息。"
+usage: "性能异常、磁盘告警或安装检查时建立全局基线。"
+syntax: "docker info [--format=<template>]"
+parameters:
+  - {flag: "--format=<template>", description: "只输出指定字段，避免把环境细节全部复制到工单。"}
+  - {flag: "Containers/Images", description: "查看当前 Engine 管理的对象数量。"}
+commonOptions: ["--format：结构化输出", "Containers/Images：资源统计"]
+scenarios: ["确认 Engine 存储和资源状态。", "排查磁盘空间被镜像层占满。"]
+comparisons: ["与 docker stats 对比：info 是 Engine 全局概况，stats 是容器实时资源。"]
+risk: "低"
+reversible: "只读命令，不改变资源。"
+errors: ["permission denied：当前用户无权访问 Docker socket，先检查权限和 context。"]
+examples: [{command: "docker info --format '{{.Containers}} containers, {{.Images}} images'", description: "输出容器和镜像数量", shell: "sh"}]
+relatedLessons: ["docker-01", "docker-22"]
+---
+
+`docker info` 输出可能包含主机和存储信息。对外分享日志时只保留排错所需字段，避免把不必要的环境细节带出机器。

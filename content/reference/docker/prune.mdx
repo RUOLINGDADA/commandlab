@@ -1,0 +1,20 @@
+---
+id: "docker-ref-prune"
+tool: "docker"
+slug: "prune"
+title: "docker prune 系列"
+category: "资源清理"
+object: "未使用的镜像、容器、网络或卷"
+summary: "删除未使用资源以回收磁盘空间，范围取决于子命令。"
+usage: "磁盘告警时先盘点资源，再使用带过滤条件的定向清理。"
+commonOptions: ["container prune：已停止容器", "image prune：悬空镜像", "volume prune：未被引用的卷"]
+scenarios: ["只清理本课程 commandlab- 前缀的已停止容器。", "查看将被删除的资源后再决定是否执行。"]
+comparisons: ["与 rm/rmi 对比：prune 按‘未使用’条件批量处理，误删范围更难直觉判断。"]
+risk: "高"
+reversible: "删除容器可重建，但未挂载卷中的数据和未标记镜像可能不可恢复；不要默认使用全局 prune。"
+errors: ["conflict：资源仍被容器、网络或卷引用，先 inspect 依赖关系。"]
+examples: [{command: "docker container prune --filter 'label=commandlab'", description: "按标签清理停止容器", shell: "sh"}]
+relatedLessons: ["docker-09", "docker-24"]
+---
+
+清理命令的关键不是记住名字，而是先确认范围。课程统一使用 `commandlab-` 前缀；在真实机器上优先按名称、标签或项目定向删除，保留卷和镜像前先确认是否仍有数据价值。

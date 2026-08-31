@@ -1,0 +1,25 @@
+---
+id: "git-ref-reset"
+tool: "git"
+slug: "reset"
+title: "git reset"
+category: "历史指针"
+object: "HEAD、当前分支和暂存区"
+summary: "移动当前分支指针，并按模式同步暂存区或工作区。"
+usage: "只在个人未共享分支撤回提交；执行前记录当前哈希。"
+syntax: "git reset [--soft|--mixed|--hard] [<commit>]"
+parameters:
+  - {flag: "--soft", description: "只移动分支指针，改动保留在暂存区。"}
+  - {flag: "--mixed", description: "移动指针并重置暂存区，工作区文件保留。"}
+  - {flag: "--hard", description: "同时覆盖暂存区和工作区，未保存改动有丢失风险。"}
+commonOptions: ["--soft：保留暂存", "--mixed：默认模式", "--hard：覆盖工作区"]
+scenarios: ["合并最近两个本地临时提交。", "撤回提交但保留文件修改继续编辑。"]
+comparisons: ["与 git revert 对比：reset 改写本地指针，revert 创建一个公开可追踪的反向提交。"]
+risk: "高"
+reversible: "reflog 通常可找回 reset 前指针；--hard 覆盖的未提交文件不保证可恢复。"
+errors: ["fatal: ambiguous argument：目标提交不存在，先从 log 复制哈希。"]
+examples: [{command: "git reset --soft HEAD~1", description: "撤回最近提交但保留暂存内容", shell: "sh"}]
+relatedLessons: ["git-13", "git-14"]
+---
+
+`reset` 的风险来自它同时影响多个对象。初学时优先练习 `--soft`，任何出现 `--hard` 的教程都要先确认备份和恢复点。

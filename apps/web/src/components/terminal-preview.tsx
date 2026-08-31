@@ -2,8 +2,10 @@ import Link from "next/link";
 import { LockKeyhole, ServerCog, Terminal } from "lucide-react";
 import { Card } from "@commandlab/ui";
 import { sandboxAvailability } from "@commandlab/practice-runtime";
+import { InteractiveGitWorkbench } from "./interactive-git-workbench";
 
 export function TerminalPreview({ compact = false }: { compact?: boolean }) {
+  if (compact) return <InteractiveGitWorkbench compact />;
   return (
     <Card className={compact ? "terminal-card is-compact" : "terminal-card"}>
       <div className="terminal-topbar">

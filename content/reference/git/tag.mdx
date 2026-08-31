@@ -1,0 +1,25 @@
+---
+id: "git-ref-tag"
+tool: "git"
+slug: "tag"
+title: "git tag"
+category: "版本标记"
+object: "标签引用"
+summary: "给某个提交添加稳定、可读的版本名称。"
+usage: "发布前创建 v1.2.0 等不可移动标记，并在推送前检查指向。"
+syntax: "git tag [-a|-s] <name> [<commit>] [-m <message>]"
+parameters:
+  - {flag: "-a", description: "创建带作者和说明的附注标签。"}
+  - {flag: "-s", description: "使用 GPG/SSH 签名创建标签，需先配置密钥。"}
+  - {flag: "<commit>", description: "标签要指向的提交；省略时使用 HEAD。"}
+commonOptions: ["-a：附注标签", "-s：签名标签", "-d：删除本地标签"]
+scenarios: ["标记一次可交付版本。", "检查标签是否指向预期提交。"]
+comparisons: ["与分支对比：分支会随新提交移动，标签通常表示不可移动的发布点。"]
+risk: "中"
+reversible: "本地标签可删除重建；已推送标签修改会影响发布者和消费者，需明确沟通。"
+errors: ["tag already exists：名称已存在，先查看 show tag 再决定是否删除。"]
+examples: [{command: "git tag -a v1.0.0 -m \"release: v1.0.0\"", description: "创建附注版本标签", shell: "sh"}]
+relatedLessons: ["git-12", "git-24"]
+---
+
+标签是发布记录的一部分。创建后用 `git show --stat v1.0.0` 检查它指向的提交，确认版本内容和发布说明一致。

@@ -1,0 +1,25 @@
+---
+id: "git-ref-remote"
+tool: "git"
+slug: "remote"
+title: "git remote"
+category: "远程配置"
+object: "远端名称与 URL"
+summary: "查看、添加、修改和删除远端仓库地址。"
+usage: "克隆后确认 origin 地址，或为同一仓库增加备用推送目标。"
+syntax: "git remote [-v] | add <name> <url> | set-url <name> <url>"
+parameters:
+  - {flag: "-v", description: "同时显示 fetch 和 push 地址。"}
+  - {flag: "add <name> <url>", description: "添加一个远端名称和地址。", example: "add origin https://example.com/repo.git"}
+  - {flag: "set-url", description: "修改已有远端地址，旧地址不会自动备份。"}
+commonOptions: ["-v：显示完整地址", "add：添加远端", "set-url：修改地址"]
+scenarios: ["确认 push 将发送到哪个仓库。", "迁移仓库地址后更新 origin。"]
+comparisons: ["与 git clone 对比：remote 管理连接信息，clone 同时复制历史和工作区。"]
+risk: "高"
+reversible: "重新 set-url 可恢复旧地址；执行 push 前务必核对 URL 和权限。"
+errors: ["No such remote：名称拼写错误，先运行 git remote。"]
+examples: [{command: "git remote -v", description: "查看所有远端读写地址", shell: "sh"}]
+relatedLessons: ["git-10", "git-12"]
+---
+
+远端名 `origin` 只是本地别名，不代表某个固定网站。把地址当作敏感配置检查，尤其不要把令牌直接写入 URL。

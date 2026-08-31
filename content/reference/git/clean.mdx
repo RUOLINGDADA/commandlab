@@ -1,0 +1,25 @@
+---
+id: "git-ref-clean"
+tool: "git"
+slug: "clean"
+title: "git clean"
+category: "文件清理"
+object: "未跟踪文件与目录"
+summary: "删除 Git 未跟踪的文件或目录，清理构建产物。"
+usage: "先预览将删除的路径，再只清理明确的生成目录。"
+syntax: "git clean [-n|-i] [-d] [-f] [--] <path>"
+parameters:
+  - {flag: "-n", description: "预览模式，只列出将删除的文件，不执行删除。"}
+  - {flag: "-d", description: "同时包含未跟踪目录。"}
+  - {flag: "-f", description: "确认执行删除；Git 默认要求显式强制。"}
+commonOptions: ["-n：预览", "-d：包含目录", "-f：实际删除"]
+scenarios: ["删除 dist、coverage 等可重新生成的目录。", "排查未跟踪文件导致的构建干扰。"]
+comparisons: ["与 git restore 对比：clean 删除未跟踪内容，restore 处理已跟踪文件修改。"]
+risk: "高"
+reversible: "删除通常不可由 Git 恢复；务必先执行 -n，并确认没有个人文件。"
+errors: ["clean.requireForce：未提供 -f，Git 拒绝执行以保护文件。"]
+examples: [{command: "git clean -nd -- dist", description: "预览 dist 目录清理范围", shell: "sh"}]
+relatedLessons: ["git-06", "git-13"]
+---
+
+任何包含 `git clean -f` 的命令都要先改成 `git clean -n` 预览。它不会读取回收站，也不会把删除内容放入 reflog。

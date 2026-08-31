@@ -1,0 +1,25 @@
+---
+id: "git-ref-config"
+tool: "git"
+slug: "config"
+title: "git config"
+category: "配置"
+object: "Git 配置文件"
+summary: "读取或修改 Git 的系统级、用户级和仓库级配置。"
+usage: "首次使用 Git 时配置提交身份；排错时确认配置来自哪个文件。"
+syntax: "git config [--local|--global|--system] [--get|--list] [key] [value]"
+parameters:
+  - {flag: "--local", description: "只影响当前仓库，优先级高于全局配置。"}
+  - {flag: "--global", description: "影响当前用户的所有仓库。"}
+  - {flag: "--list --show-origin", description: "列出配置值及其来源文件。"}
+commonOptions: ["--local：当前仓库", "--global：当前用户", "--show-origin：显示来源"]
+scenarios: ["配置 user.name 与 user.email。", "查找提交身份为何与预期不同。"]
+comparisons: ["与环境变量对比：config 会持久化到配置文件，环境变量通常只影响当前进程。"]
+risk: "中"
+reversible: "重新设置同一键即可覆盖；删除仓库级配置不会删除提交历史。"
+errors: ["Author identity unknown：未配置提交身份，先设置 local 或 global 值。"]
+examples: [{command: "git config --local --list --show-origin", description: "查看当前仓库配置来源", shell: "sh"}]
+relatedLessons: ["git-02", "git-22"]
+---
+
+配置范围决定影响面。刚开始学习时建议使用 `--local`，这样不会意外修改电脑上其他项目的身份设置。

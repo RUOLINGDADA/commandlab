@@ -1,0 +1,26 @@
+---
+id: "git-ref-bisect"
+tool: "git"
+slug: "bisect"
+title: "git bisect"
+category: "回归排查"
+object: "提交范围与好坏边界"
+summary: "用二分搜索快速定位首次引入问题的提交。"
+usage: "测试能明确回答好/坏时，在长历史中定位回归来源。"
+syntax: "git bisect start [<bad> <good>] | good | bad | reset"
+parameters:
+  - {flag: "start", description: "进入二分状态并可同时指定坏提交和好提交。"}
+  - {flag: "good <commit>", description: "标记当前或指定提交没有问题。"}
+  - {flag: "bad <commit>", description: "标记当前或指定提交存在问题。"}
+  - {flag: "reset", description: "结束二分并回到开始前的分支。"}
+commonOptions: ["start：开始二分", "good：标记正常", "bad：标记异常", "reset：结束二分"]
+scenarios: ["从一次正常发布和当前故障之间定位回归。", "自动脚本逐个测试提交并报告结果。"]
+comparisons: ["与 log 搜索对比：bisect 用实验结果缩小范围，适合提交很多的历史。"]
+risk: "中"
+reversible: "reset 会回到原分支；二分本身不改提交对象，但测试脚本可能改变工作区。"
+errors: ["You need to give me at least one good and one bad：尚未提供边界提交。"]
+examples: [{command: "git bisect start HEAD v1.0.0", description: "以当前故障和已知版本开始二分", shell: "sh"}]
+relatedLessons: ["git-19", "git-05"]
+---
+
+二分的关键是“测试必须可靠”。每次标记前先确认当前提交确实被测试过；结束后一定执行 `git bisect reset`，否则工作区会停留在中间提交。

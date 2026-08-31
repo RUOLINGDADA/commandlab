@@ -1,0 +1,20 @@
+---
+id: "git-ref-branch"
+tool: "git"
+slug: "branch"
+title: "git branch"
+category: "分支"
+object: "分支引用"
+summary: "查看、创建、重命名或删除指向提交的分支名称。"
+usage: "为新任务创建独立分支，完成后再合并回主分支。"
+commonOptions: ["-a：查看本地和远端跟踪分支", "-d：删除已合并分支；-D 会跳过保护检查"]
+scenarios: ["开始功能开发前建立隔离分支。", "清理已经合并的本地分支。"]
+comparisons: ["与 git switch 对比：branch 管理名称，switch 负责切换工作区到名称。"]
+risk: "中"
+reversible: "删除分支名称不会立即删除提交对象，reflog 或其他引用仍可能找回。"
+errors: ["branch is not fully merged：分支仍有未合并提交，请先确认是否需要保留。"]
+examples: [{command: "git branch --show-current", description: "显示当前分支", shell: "sh"}]
+relatedLessons: ["git-07", "git-08"]
+---
+
+分支可以理解为“贴在某个提交上的可移动标签”。创建分支很轻量，但删除前仍应查看 `git log --oneline 分支名`，确认没有唯一保留的工作。

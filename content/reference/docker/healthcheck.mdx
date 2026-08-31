@@ -1,0 +1,20 @@
+---
+id: "docker-ref-healthcheck"
+tool: "docker"
+slug: "healthcheck"
+title: "HEALTHCHECK"
+category: "运行状态"
+object: "容器健康状态"
+summary: "为镜像声明可重复执行的健康探针，让编排工具区分运行与可用。"
+usage: "服务进程已启动但依赖尚未就绪时，用健康检查暴露真实状态。"
+commonOptions: ["--interval：探针执行间隔", "--timeout：单次探针超时时间", "--retries：连续失败次数"]
+scenarios: ["让 Compose 在依赖服务健康后再启动应用。", "通过 inspect 读取 healthy、starting 或 unhealthy。"]
+comparisons: ["与 docker ps 对比：ps 只显示运行状态，healthcheck 还检查应用是否响应。"]
+risk: "低"
+reversible: "修改 Dockerfile 后需重建镜像；删除容器不会影响宿主机文件。"
+errors: ["unhealthy：探针命令返回非 0，先进入容器运行同一检查并读取日志。"]
+examples: [{command: "docker inspect --format '{{.State.Health.Status}}' commandlab-web", description: "读取健康状态", shell: "sh"}]
+relatedLessons: ["docker-21", "docker-23"]
+---
+
+“容器在运行”不等于“服务可用”。健康检查是容器内部的一条只读测试命令，结果会被 Engine 记录。排错时先区分进程退出、探针失败和依赖未就绪三种情况。

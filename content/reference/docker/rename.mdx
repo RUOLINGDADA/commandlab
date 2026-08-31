@@ -1,0 +1,24 @@
+---
+id: "docker-ref-rename"
+tool: "docker"
+slug: "rename"
+title: "docker rename"
+category: "容器管理"
+object: "容器名称"
+summary: "修改现有容器的名称，不改变镜像、进程或挂载。"
+usage: "为临时容器设置可读名称，或修正自动生成的名称。"
+syntax: "docker rename CONTAINER NEW_NAME"
+parameters:
+  - {flag: "CONTAINER", description: "当前容器名或 ID。"}
+  - {flag: "NEW_NAME", description: "未被其他容器占用的新名称。", example: "commandlab-api"}
+commonOptions: ["CONTAINER：旧名称", "NEW_NAME：新名称"]
+scenarios: ["把随机名称改为值班记录中的稳定名称。", "释放旧名称后再创建同名容器。"]
+comparisons: ["与 docker tag 对比：rename 改容器名称，tag 改镜像引用。"]
+risk: "低"
+reversible: "再次执行 rename 可改回；依赖旧名称的脚本需要同步更新。"
+errors: ["Conflict：新名称已被其他容器占用，先 inspect 两个对象。"]
+examples: [{command: "docker rename commandlab-old commandlab-api", description: "重命名课程容器", shell: "sh"}]
+relatedLessons: ["docker-04", "docker-05"]
+---
+
+容器 ID 不会因 rename 改变。日志、网络别名和脚本可能引用容器名，改名后要用 `docker inspect` 确认名称字段。

@@ -1,0 +1,25 @@
+---
+id: "docker-ref-login"
+tool: "docker"
+slug: "login"
+title: "docker login"
+category: "镜像仓库"
+object: "Registry 凭据"
+summary: "登录镜像仓库，为 pull、push 和私有镜像访问提供凭据。"
+usage: "发布前验证仓库地址和账号；优先使用令牌而非密码。"
+syntax: "docker login [SERVER] [-u USERNAME] [--password-stdin]"
+parameters:
+  - {flag: "SERVER", description: "可选仓库地址；省略时使用 Docker Hub。"}
+  - {flag: "-u USERNAME", description: "指定登录用户名。"}
+  - {flag: "--password-stdin", description: "从标准输入读取密码/令牌，避免出现在命令历史。"}
+commonOptions: ["-u：用户名", "--password-stdin：从标准输入读取凭据"]
+scenarios: ["登录私有 Registry 拉取基础镜像。", "推送版本标签前确认当前账号和仓库。"]
+comparisons: ["与 docker logout 对比：login 写入凭据，logout 删除当前仓库凭据。"]
+risk: "高"
+reversible: "可用 logout 删除本机凭据；凭据文件仍需按系统安全策略保护。"
+errors: ["unauthorized：账号、令牌、仓库地址或权限不匹配。"]
+examples: [{command: "Get-Content token.txt | docker login registry.example.com -u learner --password-stdin", description: "PowerShell 安全读取令牌登录", shell: "powershell"}]
+relatedLessons: ["docker-19", "docker-24"]
+---
+
+不要把密码直接写在命令参数里。PowerShell、bash 和 CI 都可以通过标准输入传递令牌，并减少历史记录泄露风险。

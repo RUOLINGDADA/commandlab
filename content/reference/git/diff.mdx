@@ -1,0 +1,25 @@
+---
+id: "git-ref-diff"
+tool: "git"
+slug: "diff"
+title: "git diff"
+category: "差异检查"
+object: "工作区、暂存区与提交之间的差异"
+summary: "逐行查看文件在不同状态之间的变化。"
+usage: "提交前检查具体改动，确认没有把调试代码或密钥放进提交。"
+syntax: "git diff [--staged|HEAD|<commit>] [--] [path]"
+parameters:
+  - {flag: "--staged", description: "比较暂存区与最近一次提交。"}
+  - {flag: "HEAD", description: "比较工作区和暂存区相对于最近提交的全部变化。"}
+  - {flag: "-- path", description: "只查看指定文件或目录，避免输出过长。", example: "git diff -- src/"}
+commonOptions: ["--staged：查看已暂存差异", "--stat：只看文件统计"]
+scenarios: ["提交前逐行检查修改。", "确认 git add 后暂存区究竟包含什么。"]
+comparisons: ["与 git status 对比：diff 显示内容，status 只显示路径状态摘要。"]
+risk: "低"
+reversible: "只读命令，不修改文件或提交。"
+errors: ["fatal: ambiguous argument：提交名或路径不存在，先运行 log 和 status。"]
+examples: [{command: "git diff --staged -- README.md", description: "检查暂存的 README 改动", shell: "sh"}]
+relatedLessons: ["git-01", "git-03", "git-05"]
+---
+
+记住三种常见比较：`git diff` 看“工作区还没暂存的改动”，`git diff --staged` 看“已经准备提交的改动”，`git diff HEAD` 看“工作区加暂存区相对最近提交的全部改动”。

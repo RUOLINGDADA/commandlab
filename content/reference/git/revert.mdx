@@ -1,0 +1,25 @@
+---
+id: "git-ref-revert"
+tool: "git"
+slug: "revert"
+title: "git revert"
+category: "安全撤销"
+object: "提交历史"
+summary: "创建一个新提交来反向抵消已有提交的改动。"
+usage: "撤销已经推送到共享分支的错误改动，保留审计记录。"
+syntax: "git revert [--no-edit] [--no-commit] <commit>"
+parameters:
+  - {flag: "--no-edit", description: "使用自动生成的提交说明，不打开编辑器。"}
+  - {flag: "--no-commit", description: "只应用反向修改，暂不创建提交。"}
+  - {flag: "<commit>", description: "要抵消的提交哈希或引用。"}
+commonOptions: ["--no-edit：不编辑说明", "--no-commit：先暂存不提交"]
+scenarios: ["撤销线上已发布的单个错误提交。", "把多个反向修改合并成一个审计提交。"]
+comparisons: ["与 reset 对比：revert 不移动分支历史，适合共享分支。"]
+risk: "中"
+reversible: "再次 revert 反向提交可恢复效果；冲突处理前可用 revert --abort。"
+errors: ["CONFLICT：反向修改与后续改动重叠，按冲突文件逐一处理。"]
+examples: [{command: "git revert --no-edit HEAD", description: "生成撤销最近提交的新提交", shell: "sh"}]
+relatedLessons: ["git-13", "git-24"]
+---
+
+revert 是“用新证据纠正旧证据”，所以不会让历史消失。共享分支优先选择它，团队成员能在 log 中看见发生过什么。

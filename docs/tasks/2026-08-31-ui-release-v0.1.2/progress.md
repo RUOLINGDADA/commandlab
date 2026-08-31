@@ -15,3 +15,5 @@
 - PR #12 已 Squash 合并到 `main@5bd5560`；`Create release #3` 成功创建 `v0.1.2`。
 - GitHub Pages #3 部署成功；线上 `/`、`/learn/`、`/courses/docker/`、`/reference/`、`/progress/`、`/terminal/` 均返回 HTTP 200。
 - Docker Desktop 引擎因 `sailor-ingest.sock` 初始化错误仍无法连接，容器镜像验收待环境修复。
+- 已从 WSL 挂载视角确认运行目录中的 socket 文件为 0 字节普通文件，并将旧的 `sailor-ingest.sock`、`dockerInference`、`dockerEthernetVfkit` 和 `userAnalyticsOtlpHttp.sock` 改名为 `.bak-20260831`；Docker Desktop 4.88.1 仍会重建 `sailor-ingest.sock` 后退出，确认阻塞属于本机引擎环境而非项目配置。
+- 已更新项目状态、缺陷记录、计划和交接文档；当前工作区保持干净并与 `origin/main` 一致。

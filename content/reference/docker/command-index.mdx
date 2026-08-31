@@ -1,0 +1,28 @@
+---
+id: "docker-ref-command-index"
+tool: "docker"
+slug: "command-index"
+title: "Docker 命令总览"
+category: "命令索引"
+object: "Docker CLI、Engine 与资源对象"
+summary: "按镜像、容器、网络、数据、编排和清理任务定位 Docker 命令族。"
+usage: "不知道命令名时先确认目标对象，再从对应命令族选择只读或变更操作。"
+syntax: "docker [--context <name>] [--log-level <level>] <management-command> <command> [OPTIONS]"
+parameters:
+  - {flag: "--context <name>", description: "指定请求发送到哪个 Engine；危险操作前必须确认。"}
+  - {flag: "--log-level <level>", description: "设置 CLI 日志级别，排错时可使用 debug。"}
+  - {flag: "镜像", description: "pull、images、build、tag、push、rmi、save、load。"}
+  - {flag: "容器", description: "run、create、start、stop、kill、restart、ps、logs、exec、inspect、cp、rm。"}
+  - {flag: "网络与数据", description: "network、volume、port、stats。"}
+  - {flag: "编排与清理", description: "compose、system prune、container prune、image prune。"}
+commonOptions: ["--context：选择 Engine", "--help：查看子命令帮助", "--format：稳定字段输出"]
+scenarios: ["先用 ps、images、inspect 观察对象，再执行 run、rm 或 prune。", "生产排错按 context、资源状态、日志、健康检查顺序收集证据。"]
+comparisons: ["与 Podman 等工具对比：Docker CLI 通过 Engine 管理镜像、容器、网络和卷。"]
+risk: "中"
+reversible: "索引和 inspect 等观察命令只读；run、rm、prune、push、volume rm 的风险以具体条目为准。"
+errors: ["docker: 'xxx' is not a docker command：运行 docker --help 或 docker <command> --help 查找正确写法。"]
+examples: [{command: "docker --help", description: "查看管理命令列表", shell: "sh"}, {command: "docker --context default ps --all", description: "在指定 Engine 查看全部容器", shell: "sh"}]
+relatedLessons: ["docker-01", "docker-24"]
+---
+
+Docker 的安全顺序是“确认 context → 观察对象 → 改变一个条件 → 验证稳定字段 → 定向清理”。不要把 `docker ps` 的运行状态误当成服务健康，也不要把 `prune` 当作默认清理方式。
