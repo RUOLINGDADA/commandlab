@@ -10,8 +10,8 @@ export default function LearnPage() {
     <section className="page shell">
       <header className="page-heading">
         <p className="eyebrow">课程目录</p>
-        <h1>选择你的下一项能力</h1>
-        <p>按工具筛选，或直接搜索命令、错误现象与知识点。</p>
+        <h1>按问题找一节课</h1>
+        <p>先选工具或输入现象。课程按四个难度阶段排列，每节都以一个可验证结果收尾。</p>
       </header>
       <SearchExplorer lessons={lessons} />
     </section>

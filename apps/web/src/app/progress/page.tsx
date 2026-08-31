@@ -10,8 +10,8 @@ export default function ProgressPage() {
     <section className="page shell narrow-page">
       <header className="page-heading">
         <p className="eyebrow">本地学习档案</p>
-        <h1>每一步都值得被看见</h1>
-        <p>完成记录、互动题和收藏保存在当前浏览器，不需要注册账号。</p>
+        <h1>看清已经完成什么</h1>
+        <p>完成记录、互动题、收藏和笔记只保存在当前浏览器，不需要注册账号。</p>
       </header>
       <ProgressDashboard />
       <div className="info-grid">
