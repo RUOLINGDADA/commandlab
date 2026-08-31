@@ -1,12 +1,12 @@
 # 项目状态
 
 - 当前阶段：CommandLab UI、Git 深度课程、全量命令百科、命令独立动画页与首页动效重构已完成本地实现与验证
-- 当前版本：0.1.2
+- 当前版本：0.1.3
 - 目标仓库：`RUOLINGDADA/commandlab`
 - 目标站点：`https://ruolingdada.github.io/commandlab/`
 - 在线沙箱：首发关闭，显示“暂未开放”
 - 远程推送：已完成，`main` 已跟踪 `origin/main`
-- GitHub Release：`v0.1.2` 已发布
+- GitHub Release：`v0.1.3` 发布中
 - 当前开发分支：`main`（已快进至 `origin/main`）
 - 分支规则：`Protect main` 已启用
 - Pages：Actions 部署成功
@@ -16,6 +16,7 @@
 - `docs/tasks/2026-08-31-interactive-git-workbench/`（交互式 Git 仿真终端与可点击工作区已完成本地实现与验收）
 - `docs/tasks/2026-08-31-terminal-density-context-menu/`（终端固定滚动、紧凑输出、工作区右键菜单与命令提示已完成本地实现与验收）
 - `docs/tasks/2026-08-31-ide-workspace-remote-sync/`（可见 `>` 操作入口、远端文件仿真、`git pull` 工作区同步已完成本地实现与验收）
+- `docs/tasks/2026-08-31-release-v0.1.3/`（版本统一、main 合并、GitHub Release 与 Pages 部署）
 - `docs/tasks/2026-08-31-commandlab-redesign/`（UI、Git 课程深度练习、百科扩充已完成；待后续发布决策）
 - `docs/tasks/2026-08-31-reference-motion/`（全量命令百科、参数解析、首页工作区动效和响应式验收完成）
 - `docs/tasks/2026-08-31-ui-release-v0.1.2/`（PR #12、Release `v0.1.2` 和 Pages 已完成；Docker 本机补验待环境修复）

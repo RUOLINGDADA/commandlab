@@ -16,3 +16,4 @@
 | [2026-08-31 交互式 Git 仿真终端与工作区](../tasks/2026-08-31-interactive-git-workbench/requirements.md)          | 本地完成 | 浏览器内可输入命令、可点击工作区、内存状态同步与响应式验收             |
 | [2026-08-31 终端紧凑布局、右键菜单与命令提示](../tasks/2026-08-31-terminal-density-context-menu/requirements.md) | 本地完成 | 固定滚动终端、紧凑 Git 输出、工作区上下文动作与命令补全                |
 | [2026-08-31 IDE 工作区操作入口与远端同步](../tasks/2026-08-31-ide-workspace-remote-sync/requirements.md)         | 本地完成 | 可见 `>` 操作入口、远端文件仿真、`git pull` 工作区同步与冲突保护       |
+| [2026-08-31 v0.1.3 发布](../tasks/2026-08-31-release-v0.1.3/requirements.md)                                     | 进行中   | 统一版本、合并 main、创建 GitHub Release 并部署 Pages                  |
