@@ -5,6 +5,6 @@
 - [ ] 完成版本、文档和 UI/部署改动收尾
 - [ ] 执行本地质量、构建和 Docker 验证
 - [x] 提交本地分支改动
-- [ ] 推送分支，创建 Pull Request（待 GitHub 网络与登录恢复）
-- [ ] 合并 PR，创建 `v0.1.2` Release 并验收 Pages
+- [x] 推送分支，创建 Pull Request 并等待必需检查
+- [x] 合并 PR，创建 `v0.1.2` Release 并验收 Pages
 - [ ] 更新项目状态、缺陷记录和交接
