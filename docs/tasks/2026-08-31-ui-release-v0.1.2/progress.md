@@ -11,3 +11,7 @@
 - Docker Desktop daemon 当前未运行，`docker version` 无法连接；容器构建与 HTTP 冒烟待 CI 或 daemon 恢复后补验。
 - 本地提交已完成：`146f1aa`（UI/部署与文档）和 `3d9d05b`（版本 `0.1.2`）。
 - 推送 `codex/docker-guide-redesign` 时 GitHub HTTPS 连接超时；浏览器可访问仓库但未登录，无法创建 PR 或运行 Release。
+- 已成功推送分支并创建 PR #12；CI quality、CodeQL、dependency-review、secret-patterns 共 5 项检查通过。
+- PR #12 已 Squash 合并到 `main@5bd5560`；`Create release #3` 成功创建 `v0.1.2`。
+- GitHub Pages #3 部署成功；线上 `/`、`/learn/`、`/courses/docker/`、`/reference/`、`/progress/`、`/terminal/` 均返回 HTTP 200。
+- Docker Desktop 引擎因 `sailor-ingest.sock` 初始化错误仍无法连接，容器镜像验收待环境修复。

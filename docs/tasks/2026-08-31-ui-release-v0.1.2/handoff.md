@@ -29,4 +29,4 @@
 
 ## 下一步
 
-本地验证和提交已完成（`146f1aa`、`3d9d05b`）。待 GitHub HTTPS 网络恢复并完成账号登录后，推送 `codex/docker-guide-redesign`，创建并合并 PR；随后运行 `Create release` 输入 `0.1.2`，等待 Pages 部署并执行线上 HTTP 验收。
+PR #12 已通过 5/5 检查并合并到 `main@5bd5560`；`v0.1.2` Release 和 Pages 部署均成功，线上关键路径返回 HTTP 200。剩余唯一验收项是 Docker Desktop 引擎恢复后运行 `docker compose -p commandlab up -d --build` 并执行 HTTP 冒烟。
