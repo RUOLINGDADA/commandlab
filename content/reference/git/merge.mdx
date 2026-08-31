@@ -1,0 +1,20 @@
+---
+id: "git-ref-merge"
+tool: "git"
+slug: "merge"
+title: "git merge"
+category: "协作整合"
+object: "当前分支与被合并分支"
+summary: "将另一个分支的提交整合到当前分支，并在必要时生成合并提交。"
+usage: "先更新信息，再在目标分支执行合并；冲突时逐文件处理并验证。"
+commonOptions: ["--no-ff：即使可快进也保留合并节点", "--abort：冲突未处理完时放弃本次合并"]
+scenarios: ["把完成的功能分支合并回 main。", "遇到冲突时查看标记、选择内容并继续。"]
+comparisons: ["与 git rebase 对比：merge 保留分叉历史，rebase 会重写提交基线。"]
+risk: "高"
+reversible: "合并前建立分支或标签；未推送的合并可用 reset 撤回，已共享历史应使用反向提交。"
+errors: ["CONFLICT：同一位置被不同提交修改，需要人工选择并重新暂存。"]
+examples: [{command: "git merge --no-ff feature/readme", description: "合并功能分支", shell: "sh"}]
+relatedLessons: ["git-08", "git-09"]
+---
+
+合并操作发生在“当前分支”。执行前先运行 `git branch --show-current`，避免站在错误分支上把主线合进功能分支。冲突解决后必须重新 `git add`，再用 `git status` 确认状态。

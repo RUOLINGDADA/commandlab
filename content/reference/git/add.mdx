@@ -1,0 +1,20 @@
+---
+id: "git-ref-add"
+tool: "git"
+slug: "add"
+title: "git add"
+category: "暂存区"
+object: "暂存区"
+summary: "选择下一次提交要包含的文件或部分变化。"
+usage: "完成一小段修改后，把它从工作区放入暂存区，再用 diff --staged 检查。"
+commonOptions: ["-A：暂存所有路径的新增、修改和删除", "-p：逐块选择是否暂存"]
+scenarios: ["只提交文档修改，不把未完成的代码混入提交。", "用 -p 将同一文件中的两个主题拆成不同提交。"]
+comparisons: ["与 git commit 对比：add 只准备快照，commit 才写入历史。"]
+risk: "中"
+reversible: "可用 git restore --staged 撤回暂存；尚未提交的内容仍在工作区。"
+errors: ["pathspec did not match：文件名拼写错误或当前目录不对。"]
+examples: [{command: "git add -p", description: "逐块选择修改", shell: "sh"}]
+relatedLessons: ["git-03", "git-04"]
+---
+
+`git add` 不会上传代码，也不会创建提交。它只把当前文件内容复制到暂存区。小白练习时建议执行 `git status` → `git add 文件名` → `git diff --staged`，确认无误后再提交。

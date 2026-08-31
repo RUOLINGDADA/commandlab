@@ -1,0 +1,25 @@
+---
+id: "docker-ref-create"
+tool: "docker"
+slug: "create"
+title: "docker create"
+category: "容器生命周期"
+object: "已创建但未启动的容器"
+summary: "根据镜像创建容器配置，但不启动主进程。"
+usage: "需要先审查配置、挂载和端口，再决定何时启动容器。"
+syntax: "docker create [OPTIONS] IMAGE [COMMAND] [ARG...]"
+parameters:
+  - {flag: "--name", description: "指定稳定容器名称，便于后续 logs、inspect 和 rm。"}
+  - {flag: "-e KEY=VALUE", description: "注入运行时环境变量。"}
+  - {flag: "-v SRC:DST", description: "挂载卷或目录；确认路径边界后再使用。"}
+commonOptions: ["--name：命名容器", "-e：设置环境变量", "-v：挂载数据"]
+scenarios: ["预创建容器并在启动前查看配置。", "将容器创建与启动拆开用于排错。"]
+comparisons: ["与 docker run 对比：run 等价于 create 后 start，create 本身不会运行进程。"]
+risk: "中"
+reversible: "容器可用 docker rm 删除；挂载卷中的数据需单独评估。"
+errors: ["Conflict：同名容器已存在，先 inspect 确认是否为本节资源。"]
+examples: [{command: "docker create --name commandlab-create busybox:1.36 sleep 300", description: "创建但不启动容器", shell: "sh"}]
+relatedLessons: ["docker-04", "docker-05"]
+---
+
+create 适合教学和排错，因为配置和运行被分成两步。执行后用 `docker ps -a` 查看 Created 状态，再决定是否 start。

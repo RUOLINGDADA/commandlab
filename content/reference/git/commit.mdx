@@ -1,0 +1,20 @@
+---
+id: "git-ref-commit"
+tool: "git"
+slug: "commit"
+title: "git commit"
+category: "提交历史"
+object: "提交对象与当前分支"
+summary: "把暂存区快照记录成一个带说明的提交。"
+usage: "暂存区内容经过检查后，用清晰的动词开头写提交说明。"
+commonOptions: ["-m：直接提供提交说明", "--amend：修改最近一次提交，使用前先确认尚未共享"]
+scenarios: ["完成一个可独立回滚的小改动。", "补充最近提交遗漏的文件并修正说明。"]
+comparisons: ["与 git push 对比：commit 只写本地历史，push 才发送到远端。"]
+risk: "中"
+reversible: "提交对象通常可通过 reflog 找回；amend 会改变提交 ID，不要在共享提交上随意使用。"
+errors: ["Author identity unknown：尚未配置 user.name 和 user.email。"]
+examples: [{command: "git commit -m \"docs: explain status\"", description: "创建带说明的提交", shell: "sh"}]
+relatedLessons: ["git-04", "git-14"]
+---
+
+提交是“保存点”，不是备份到云端。提交前先检查暂存区，提交后用 `git show --stat --oneline HEAD` 看看保存了哪些文件。说明应回答“这次改变了什么”，避免只写 `update`。

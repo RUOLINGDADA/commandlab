@@ -1,0 +1,25 @@
+---
+id: "git-ref-push"
+tool: "git"
+slug: "push"
+title: "git push"
+category: "远程协作"
+object: "本地引用与远端引用"
+summary: "把本地分支或标签发送到远端仓库。"
+usage: "推送前先 fetch 和检查差异，确认远端名称、分支和提交范围。"
+syntax: "git push [--set-upstream] [--force-with-lease] <remote> <refspec>"
+parameters:
+  - {flag: "--set-upstream", description: "建立本地分支与远端跟踪关系。"}
+  - {flag: "--force-with-lease", description: "仅在远端仍是你预期状态时安全强推。"}
+  - {flag: "<remote> <refspec>", description: "远端名称和要更新的分支或标签。", example: "origin main"}
+commonOptions: ["-u：设置跟踪分支", "--force-with-lease：带保护的强推"]
+scenarios: ["首次发布新分支供同事评审。", "修订个人分支历史后更新远端。"]
+comparisons: ["与 git fetch 对比：push 发送本地引用，fetch 只下载远端信息。"]
+risk: "高"
+reversible: "普通推送可用 revert 修复；强推会改写远端引用，必须先沟通并保留旧哈希。"
+errors: ["rejected (non-fast-forward)：远端有本地没有的提交，先 fetch 并整合。"]
+examples: [{command: "git push --set-upstream origin feature/docs", description: "首次推送并建立跟踪", shell: "sh"}]
+relatedLessons: ["git-10", "git-12"]
+---
+
+推送不是“保存到云端”这么简单，它会改变远端分支。小白先用 `git remote -v` 确认地址，再用 `git log origin/分支..HEAD` 看清将发送哪些提交。

@@ -1,0 +1,25 @@
+---
+id: "docker-ref-pull"
+tool: "docker"
+slug: "pull"
+title: "docker pull"
+category: "镜像"
+object: "镜像仓库与本地镜像"
+summary: "从仓库下载镜像及其依赖层到本地 Engine。"
+usage: "运行容器前固定镜像版本，避免 latest 随时间变化。"
+syntax: "docker pull [--platform=<platform>] [--quiet] NAME[:TAG|@DIGEST]"
+parameters:
+  - {flag: "--platform=<platform>", description: "指定拉取的 CPU/OS 平台。", example: "--platform=linux/amd64"}
+  - {flag: "--quiet", description: "减少进度输出，只显示摘要。"}
+  - {flag: "NAME[:TAG]", description: "镜像名和可选标签；省略标签默认 latest。"}
+commonOptions: ["--platform：指定平台", "--quiet：减少输出"]
+scenarios: ["为课程实验预拉取 busybox。", "在多架构机器上选择正确平台镜像。"]
+comparisons: ["与 docker run 对比：run 可能隐式拉取，pull 只下载不创建容器。"]
+risk: "低"
+reversible: "删除本地镜像不会影响远端仓库，但未推送的本地构建层可能无法恢复。"
+errors: ["manifest unknown：标签不存在，检查仓库名、标签或平台。"]
+examples: [{command: "docker pull --platform=linux/amd64 busybox:1.36", description: "固定平台拉取镜像", shell: "sh"}]
+relatedLessons: ["docker-02", "docker-08"]
+---
+
+镜像标签是人类可读别名，digest 才是不可变内容标识。用于发布时记录 digest，避免同名标签被重新推送后产生不可复现结果。

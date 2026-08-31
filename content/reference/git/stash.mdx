@@ -1,0 +1,25 @@
+---
+id: "git-ref-stash"
+tool: "git"
+slug: "stash"
+title: "git stash"
+category: "临时保存"
+object: "工作区与暂存区改动"
+summary: "临时保存未提交修改，让工作区回到干净状态。"
+usage: "需要紧急切换分支或处理线上问题时，暂存当前工作并附上说明。"
+syntax: "git stash push [-u] [-m <message>] | list | show | pop | apply [<stash>]"
+parameters:
+  - {flag: "push", description: "创建一条临时保存记录，默认只包含已跟踪文件。"}
+  - {flag: "-u", description: "同时保存未跟踪文件；忽略文件仍不会进入 stash。"}
+  - {flag: "pop/apply", description: "恢复最近或指定记录；pop 成功后会删除记录。"}
+commonOptions: ["-u：包含未跟踪文件", "-m：添加说明", "list：查看记录"]
+scenarios: ["临时离开未完成的功能分支。", "恢复 stash 后检查冲突并继续工作。"]
+comparisons: ["与 commit 对比：stash 是临时本地记录，commit 是正式历史的一部分。"]
+risk: "中"
+reversible: "apply 不删除 stash，pop 可能在成功后删除；用 list 和 show 先确认记录。"
+errors: ["Your local changes would be overwritten：恢复前工作区仍有冲突修改，先保存或清理。"]
+examples: [{command: "git stash push -u -m \"wip: docs\"", description: "保存包含未跟踪文件的临时工作", shell: "sh"}]
+relatedLessons: ["git-15", "git-13"]
+---
+
+stash 不是云端备份。重要工作应提交到个人分支；stash 只适合短暂切换上下文，并定期清理已经不需要的记录。

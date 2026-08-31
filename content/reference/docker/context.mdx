@@ -1,0 +1,20 @@
+---
+id: "docker-ref-context"
+tool: "docker"
+slug: "context"
+title: "docker context"
+category: "连接目标"
+object: "Docker CLI 当前连接的 Engine"
+summary: "查看和切换 CLI 将请求发送到哪一个 Docker Engine。"
+usage: "本机、远程主机或 Docker Desktop 间切换前，先确认 context 名称。"
+commonOptions: ["show：显示当前 context", "ls：列出可用 context", "use：切换目标 context"]
+scenarios: ["排查明明删除了容器但另一台机器仍存在的情况。", "执行危险操作前确认没有连到生产 Engine。"]
+comparisons: ["与 docker info 对比：context 说明目标，info 读取目标 Engine 的详细状态。"]
+risk: "高"
+reversible: "切换 context 可立即切回；在错误 Engine 上执行的删除和部署无法自动撤回。"
+errors: ["Cannot connect to the Docker daemon：目标 Engine 未启动、地址错误或权限不足。"]
+examples: [{command: "docker context show", description: "确认当前连接目标", shell: "sh"}]
+relatedLessons: ["docker-01", "docker-23"]
+---
+
+把 context 当作“命令要发往哪台机器的地址簿”。任何 `rm`、`prune` 或发布命令前都先运行 `docker context show`，这是 Docker 小白最值得养成的安全习惯之一。

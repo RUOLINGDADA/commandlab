@@ -1,0 +1,25 @@
+---
+id: "docker-ref-save-load"
+tool: "docker"
+slug: "save-load"
+title: "docker save / load"
+category: "镜像搬运"
+object: "镜像 tar 归档"
+summary: "将镜像导出为本地归档，或从归档导入到另一台 Engine。"
+usage: "无 Registry 网络时在隔离机器间搬运测试镜像。"
+syntax: "docker save [-o FILE] IMAGE...  ·  docker load [-i FILE]"
+parameters:
+  - {flag: "-o FILE", description: "把导出内容写入指定 tar 文件。", example: "-o app.tar"}
+  - {flag: "-i FILE", description: "从指定 tar 文件读取镜像。", example: "-i app.tar"}
+  - {flag: "IMAGE...", description: "要导出的一个或多个镜像标签。"}
+commonOptions: ["-o：导出文件", "-i：导入文件"]
+scenarios: ["把课程镜像导出后交给离线测试机。", "导入归档并用 images 核对标签。"]
+comparisons: ["与 push/pull 对比：save/load 走本地文件，不依赖 Registry。"]
+risk: "中"
+reversible: "归档文件可保留或删除；load 会增加本地镜像占用，不会创建容器。"
+errors: ["open app.tar: no such file：路径不存在或当前目录不正确。"]
+examples: [{command: "docker save -o commandlab-app.tar commandlab/app:dev", description: "导出实验镜像", shell: "sh"}, {command: "docker load -i commandlab-app.tar", description: "导入实验镜像", shell: "sh"}]
+relatedLessons: ["docker-08", "docker-19"]
+---
+
+save 导出的是镜像层和标签，不包含容器运行时产生的卷数据。需要搬运数据时必须单独使用卷备份方案。

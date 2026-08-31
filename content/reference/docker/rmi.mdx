@@ -1,0 +1,24 @@
+---
+id: "docker-ref-rmi"
+tool: "docker"
+slug: "rmi"
+title: "docker rmi"
+category: "镜像管理"
+object: "本地镜像引用"
+summary: "删除本地镜像标签和镜像层，释放磁盘空间。"
+usage: "确认没有容器依赖后删除课程实验镜像。"
+syntax: "docker rmi [-f] IMAGE[:TAG|@DIGEST]"
+parameters:
+  - {flag: "-f", description: "强制删除镜像引用；仍需评估正在使用它的容器。"}
+  - {flag: "IMAGE[:TAG]", description: "镜像名称和标签或 digest。"}
+commonOptions: ["-f：强制删除", "IMAGE:TAG：目标镜像"]
+scenarios: ["清理 commandlab- 前缀实验镜像。", "删除旧标签但保留同一 digest 的其他引用。"]
+comparisons: ["与 docker rm 对比：rmi 删除镜像，rm 删除容器。"]
+risk: "高"
+reversible: "镜像可重新 pull 或 build；未推送的本地层可能无法恢复。"
+errors: ["image is being used by stopped container：先列出并评估关联容器。"]
+examples: [{command: "docker rmi commandlab/app:dev", description: "删除实验标签", shell: "sh"}]
+relatedLessons: ["docker-09", "docker-19"]
+---
+
+镜像和容器是两个不同对象。删除镜像不会自动删除容器，但容器仍可能占用镜像层；清理前先用 `docker ps -a` 检查引用关系。

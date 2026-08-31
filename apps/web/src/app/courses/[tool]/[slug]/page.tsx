@@ -3,18 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import {
-  AlertTriangle,
-  ArrowLeft,
-  ArrowRight,
-  Clock3,
-  GitCompareArrows,
-  Lightbulb,
-} from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Clock3, GitCompareArrows } from "lucide-react";
 import { Badge, Card } from "@commandlab/ui";
 import { toolLabels, type Tool } from "@commandlab/content-schema";
 import { LessonActions } from "@/components/lesson-actions";
-import { PlatformPractice } from "@/components/platform-practice";
+import { GitPractice } from "@/components/git-practice";
 import { DockerPractice } from "@/components/docker-practice";
 import { QuizCard } from "@/components/quiz-card";
 import { TerminalPreview } from "@/components/terminal-preview";
@@ -149,26 +142,11 @@ export default async function LessonPage({
         ) : (
           <section className="practice-section">
             <div className="section-heading left">
-              <p className="eyebrow">本机实战</p>
-              <h2>{lesson.practice.goal}</h2>
-              <p>{lesson.practice.steps.join(" → ")}</p>
+              <p className="eyebrow">本机实战 · 逐步案例</p>
+              <h2>先观察，再改变，最后验证</h2>
+              <p>答案默认折叠。每一步都说明影响范围、命令含义、验证字段和安全清理方式。</p>
             </div>
-            <PlatformPractice guides={lesson.platforms} />
-            <Card className="hint-card">
-              <Lightbulb />
-              <div>
-                <strong>提示</strong>
-                <p>{lesson.practice.hint}</p>
-                <details>
-                  <summary>查看参考解法</summary>
-                  <p>{lesson.practice.solution}</p>
-                </details>
-                <p>
-                  <strong>衍生练习：</strong>
-                  {lesson.practice.variant}
-                </p>
-              </div>
-            </Card>
+            <GitPractice lesson={lesson} />
           </section>
         )}
 

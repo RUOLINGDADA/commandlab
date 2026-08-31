@@ -1,0 +1,24 @@
+---
+id: "docker-ref-kill"
+tool: "docker"
+slug: "kill"
+title: "docker kill"
+category: "容器生命周期"
+object: "运行中容器的主进程"
+summary: "直接向容器主进程发送信号，立即终止运行。"
+usage: "进程无响应且 stop 等待超时时作为最后手段。"
+syntax: "docker kill [-s SIGNAL] CONTAINER [CONTAINER...]"
+parameters:
+  - {flag: "-s SIGNAL", description: "指定要发送的信号，默认 SIGKILL。", example: "-s SIGTERM"}
+  - {flag: "CONTAINER", description: "目标容器名或 ID；先用 ps 核对。"}
+commonOptions: ["-s：指定信号", "--signal：同 -s"]
+scenarios: ["终止卡死的课程实验容器。", "发送 SIGTERM 让应用先执行优雅关闭。"]
+comparisons: ["与 docker stop 对比：stop 先发 SIGTERM 并等待，kill 默认立即发 SIGKILL。"]
+risk: "高"
+reversible: "进程终止不可撤回；容器通常可重新 start，但内存中未写入卷的数据会丢失。"
+errors: ["No such container：名称错误或容器已被删除，先列出 commandlab- 前缀对象。"]
+examples: [{command: "docker kill -s SIGTERM commandlab-worker", description: "发送可处理的终止信号", shell: "sh"}]
+relatedLessons: ["docker-05", "docker-23"]
+---
+
+kill 会影响容器里的主进程，不等于删除容器。执行前确认容器名称和挂载数据，避免把同一镜像的其他实例一起终止。

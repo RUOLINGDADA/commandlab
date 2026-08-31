@@ -1,0 +1,25 @@
+---
+id: "git-ref-init"
+tool: "git"
+slug: "init"
+title: "git init"
+category: "仓库创建"
+object: "当前目录与 .git 数据库"
+summary: "在目录中创建新的本地 Git 仓库。"
+usage: "开始一个新项目，或把已有目录纳入版本控制前使用。"
+syntax: "git init [--bare] [--initial-branch=<name>] [directory]"
+parameters:
+  - {flag: "--bare", description: "只创建对象数据库，不创建工作区，适合远端仓库。"}
+  - {flag: "--initial-branch=<name>", description: "指定第一次提交前默认分支名称。", example: "--initial-branch=main"}
+  - {flag: "directory", description: "要初始化的目录；省略时使用当前位置。"}
+commonOptions: ["--bare：创建裸仓库", "--initial-branch：指定初始分支"]
+scenarios: ["在 commandlab-git-lab 中创建练习仓库。", "为已有项目添加 Git 元数据但不自动提交文件。"]
+comparisons: ["与 git clone 对比：init 只创建空仓库，clone 会复制远端历史和文件。"]
+risk: "低"
+reversible: "删除目录中的 .git 可解除版本控制，但其中未备份的历史对象也会被删除。"
+errors: ["Reinitialized existing Git repository：当前目录已有 .git，先确认是否操作了正确目录。"]
+examples: [{command: "git init --initial-branch=main commandlab-git-lab", description: "创建 main 初始分支的练习仓库", shell: "sh"}]
+relatedLessons: ["git-01", "git-02"]
+---
+
+`git init` 只负责建立数据库，不会自动跟踪或提交文件。第一次操作后运行 `git status`，你会看到“尚无提交”的状态，这不是错误。

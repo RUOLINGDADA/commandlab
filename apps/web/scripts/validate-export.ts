@@ -17,6 +17,9 @@ const requiredPages = [
   "reference/index.html",
   "reference/git/index.html",
   "reference/docker/index.html",
+  "reference/git/add/animation/index.html",
+  "reference/git/branch/animation/index.html",
+  "reference/docker/run/animation/index.html",
   "terminal/index.html",
 ];
 

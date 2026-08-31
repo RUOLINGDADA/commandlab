@@ -1,0 +1,24 @@
+---
+id: "docker-ref-port"
+tool: "docker"
+slug: "port"
+title: "docker port"
+category: "网络"
+object: "容器端口映射"
+summary: "查看容器端口映射到宿主机的实际端口。"
+usage: "本地 Web 服务无法访问时，确认容器端口和宿主机端口是否一致。"
+syntax: "docker port CONTAINER [PRIVATE_PORT[/PROTO]]"
+parameters:
+  - {flag: "CONTAINER", description: "要查看映射的容器。"}
+  - {flag: "PRIVATE_PORT/PROTO", description: "可选容器端口和协议，如 80/tcp。"}
+commonOptions: ["PRIVATE_PORT：容器端口", "PROTO：tcp 或 udp"]
+scenarios: ["验证 commandlab-web 的本地访问入口。", "排查端口被占用或映射错误。"]
+comparisons: ["与 docker ps 对比：port 专门输出映射，ps 适合同时查看多个容器摘要。"]
+risk: "低"
+reversible: "只读命令；修改映射需重新创建容器。"
+errors: ["没有输出：容器未发布该端口，检查 run/create 时的 -p 参数。"]
+examples: [{command: "docker port commandlab-web 80/tcp", description: "查看 Web 容器 80 端口映射", shell: "sh"}]
+relatedLessons: ["docker-07", "docker-17"]
+---
+
+端口映射写成 `宿主机:容器`，例如 `127.0.0.1:8080:80`。看到只监听 `0.0.0.0` 时，意味着可能暴露到局域网，需重新评估风险。

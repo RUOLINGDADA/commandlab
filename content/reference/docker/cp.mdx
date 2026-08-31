@@ -1,0 +1,20 @@
+---
+id: "docker-ref-cp"
+tool: "docker"
+slug: "cp"
+title: "docker cp"
+category: "文件交换"
+object: "容器文件系统与宿主机目录"
+summary: "在运行中或已停止的容器与宿主机之间复制文件。"
+usage: "提取日志、导入配置或临时取出容器内生成的报告。"
+commonOptions: ["容器路径：使用 container:/path 表示容器内文件", "-a：保留源文件 UID/GID（Linux）"]
+scenarios: ["把容器中的诊断日志复制到 commandlab-reports。", "将准备好的配置文件复制进一次性排错容器。"]
+comparisons: ["与 bind mount 对比：cp 是一次性拷贝，挂载是持续共享同一目录。"]
+risk: "中"
+reversible: "复制本身可删除目标文件；覆盖同名宿主机文件前先备份。"
+errors: ["no such file or directory：容器路径不存在，先用 exec ls 确认目录层级。"]
+examples: [{command: "docker cp commandlab-web:/var/log/app.log ./commandlab-reports/", description: "取出容器日志", shell: "sh"}]
+relatedLessons: ["docker-06", "docker-16"]
+---
+
+`docker cp` 不会自动理解应用格式，它只负责文件复制。路径左边写容器名和冒号，右边写宿主机路径；复制前先用 `docker inspect` 确认容器名称，避免操作到相似对象。

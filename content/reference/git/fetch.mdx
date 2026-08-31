@@ -1,0 +1,25 @@
+---
+id: "git-ref-fetch"
+tool: "git"
+slug: "fetch"
+title: "git fetch"
+category: "远程协作"
+object: "远端跟踪引用"
+summary: "下载远端最新对象和引用，但不自动修改当前工作区。"
+usage: "在合并或查看远端变化前先同步信息，保持本地决策可控。"
+syntax: "git fetch [--prune] <remote> [<refspec>]"
+parameters:
+  - {flag: "--prune", description: "删除远端已不存在的本地跟踪引用。"}
+  - {flag: "<remote>", description: "要获取信息的远端名称，通常是 origin。"}
+  - {flag: "<refspec>", description: "可选的分支映射，只获取指定引用。"}
+commonOptions: ["--prune：清理过期跟踪引用", "--all：获取所有远端"]
+scenarios: ["合并前查看 origin/main 是否有新提交。", "发现远端删除分支后清理本地引用。"]
+comparisons: ["与 git pull 对比：fetch 不改变当前分支，pull 会继续执行整合。"]
+risk: "低"
+reversible: "下载对象不会覆盖工作区；删除过期跟踪引用不影响远端真实分支。"
+errors: ["Could not resolve host：远端地址或网络不可用，保留输出后检查 remote -v。"]
+examples: [{command: "git fetch --prune origin", description: "获取 origin 并清理过期引用", shell: "sh"}]
+relatedLessons: ["git-10", "git-11"]
+---
+
+fetch 是安全的“先看消息”。它不会替你合并代码，因此特别适合命令行小白在做重大整合前建立观察步骤。

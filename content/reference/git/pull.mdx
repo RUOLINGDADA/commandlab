@@ -1,0 +1,25 @@
+---
+id: "git-ref-pull"
+tool: "git"
+slug: "pull"
+title: "git pull"
+category: "远程协作"
+object: "当前分支与远端跟踪分支"
+summary: "获取远端变化并按配置执行 merge 或 rebase。"
+usage: "开始工作前同步团队分支；遇到冲突时保留完整状态并逐步处理。"
+syntax: "git pull [--rebase|--no-rebase] [--ff-only] <remote> <branch>"
+parameters:
+  - {flag: "--rebase", description: "获取后将本地提交重放到远端最新基线。"}
+  - {flag: "--ff-only", description: "只有可以快进时才更新，避免自动生成合并提交。"}
+  - {flag: "<remote> <branch>", description: "指定同步来源，如 origin main。"}
+commonOptions: ["--rebase：变基整合", "--ff-only：只允许快进"]
+scenarios: ["同步主分支后开始新任务。", "明确禁止自动合并时使用 ff-only。"]
+comparisons: ["与 fetch + merge 对比：pull 将下载和整合合并为一步，排错时不如拆开透明。"]
+risk: "中"
+reversible: "冲突期间可用 merge --abort 或 rebase --abort；整合完成后应使用反向提交恢复。"
+errors: ["You have divergent branches：本地与远端分叉，需要明确选择 merge 或 rebase 策略。"]
+examples: [{command: "git pull --ff-only origin main", description: "只接受快进同步 main", shell: "sh"}]
+relatedLessons: ["git-11", "git-16"]
+---
+
+小白第一次同步建议拆成 `git fetch` 和 `git log` 两步，先读懂差异再决定如何整合，而不是把所有变化交给一条命令。

@@ -1,0 +1,24 @@
+---
+id: "docker-ref-restart"
+tool: "docker"
+slug: "restart"
+title: "docker restart"
+category: "容器生命周期"
+object: "容器主进程"
+summary: "停止并重新启动指定容器，容器名称和卷保持不变。"
+usage: "配置已更新或进程短暂异常时重启服务。"
+syntax: "docker restart [-t <seconds>] CONTAINER [CONTAINER...]"
+parameters:
+  - {flag: "-t <seconds>", description: "等待优雅停止的秒数，超时后再强制结束。"}
+  - {flag: "CONTAINER...", description: "一个或多个容器名称或 ID。"}
+commonOptions: ["-t：停止等待时间", "CONTAINER：目标容器"]
+scenarios: ["重启 commandlab-web 并检查日志。", "服务恢复后确认健康状态和端口映射仍在。"]
+comparisons: ["与 run 对比：restart 复用现有配置，run 会创建新容器。"]
+risk: "中"
+reversible: "可再次启动或停止；内存状态会丢失，卷中数据保留。"
+errors: ["container is not running：通常可直接 start，无需 restart。"]
+examples: [{command: "docker restart -t 10 commandlab-web", description: "等待 10 秒后重启服务", shell: "sh"}]
+relatedLessons: ["docker-05", "docker-06"]
+---
+
+restart 不会重新读取 Dockerfile，也不会更新镜像。它只是复用原容器配置重新启动进程；要改变端口或挂载，必须重新创建容器。

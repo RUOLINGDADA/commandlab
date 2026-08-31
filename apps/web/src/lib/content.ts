@@ -7,10 +7,19 @@ import {
   type Lesson,
   type ReferenceEntry,
   type Tool,
+  type TeachingScene,
 } from "@commandlab/content-schema";
+import { buildAnimationRegistry } from "./animations";
+import { buildTeachingRegistry } from "./teaching/scenes";
 
 let lessonCache: Lesson[] | undefined;
-type LoadedReference = ReferenceEntry & { body: string };
+type LoadedReference = Omit<ReferenceEntry, "syntax" | "parameters"> & {
+  body: string;
+  syntax: string;
+  parameters: Array<{ flag: string; description: string; example?: string }>;
+  animation: NonNullable<ReferenceEntry["animation"]>;
+  teachingScene: TeachingScene;
+};
 let referenceCache: LoadedReference[] | undefined;
 
 function contentRoot(): string {
@@ -122,16 +131,40 @@ export function loadReferences(): LoadedReference[] {
           .map((file) => path.join(directory, file))
       : [];
   });
-  referenceCache = files.map((file) => {
+  const parsedEntries = files.map((file) => {
     const parsed = matter(fs.readFileSync(file, "utf8"));
     const metadata = referenceEntrySchema.parse(parsed.data);
     const body = parsed.content.trim();
     if (body.length < 30) throw new Error(`${file} 的百科正文过短。`);
-    return { ...metadata, body } as ReferenceEntry & { body: string };
+    const parameters =
+      metadata.parameters ??
+      metadata.commonOptions.map((option) => {
+        const [flag, ...rest] = option.split("：");
+        return { flag: flag ?? option, description: rest.join("：") || option };
+      });
+    return {
+      ...metadata,
+      syntax: metadata.syntax ?? metadata.examples[0]?.command ?? metadata.title,
+      parameters,
+      body,
+    };
+  });
+  const registry = buildAnimationRegistry(parsedEntries);
+  const teachingRegistry = buildTeachingRegistry(parsedEntries);
+  referenceCache = parsedEntries.map((entry) => {
+    const animation = registry.get(`${entry.tool}/${entry.slug}`);
+    const teachingScene = teachingRegistry.get(`${entry.tool}/${entry.slug}`)?.scene;
+    if (!animation) throw new Error(`百科条目缺少动画注册项：${entry.tool}/${entry.slug}`);
+    if (!teachingScene) throw new Error(`百科条目缺少教学场景：${entry.tool}/${entry.slug}`);
+    return { ...entry, animation, teachingScene } as LoadedReference;
   });
   return referenceCache;
 }
 
 export function getReferencesByTool(tool: Tool): LoadedReference[] {
   return loadReferences().filter((entry) => entry.tool === tool);
+}
+
+export function getReference(tool: Tool, slug: string): LoadedReference | undefined {
+  return loadReferences().find((entry) => entry.tool === tool && entry.slug === slug);
 }

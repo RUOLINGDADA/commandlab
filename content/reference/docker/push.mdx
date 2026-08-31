@@ -1,0 +1,24 @@
+---
+id: "docker-ref-push"
+tool: "docker"
+slug: "push"
+title: "docker push"
+category: "镜像发布"
+object: "本地镜像与远端 Registry"
+summary: "把带仓库地址和标签的本地镜像上传到 Registry。"
+usage: "发布前完成镜像扫描、标签检查和登录验证。"
+syntax: "docker push [--disable-content-trust] NAME[:TAG]"
+parameters:
+  - {flag: "NAME[:TAG]", description: "完整仓库路径和标签，不能只写本地短名称。", example: "registry.example.com/team/app:1.2.0"}
+  - {flag: "--disable-content-trust", description: "关闭内容信任校验；生产环境不要无理由使用。"}
+commonOptions: ["NAME:TAG：完整发布地址", "--disable-content-trust：关闭内容信任"]
+scenarios: ["发布带版本标签的应用镜像。", "推送前核对 digest 和目标仓库。"]
+comparisons: ["与 docker save 对比：push 上传到 Registry，save 导出为本地 tar 文件。"]
+risk: "高"
+reversible: "远端标签可覆盖或删除但会影响使用者；优先使用不可变版本标签并保留 digest。"
+errors: ["denied: requested access：未登录、仓库路径错误或没有推送权限。"]
+examples: [{command: "docker push registry.example.com/team/app:1.2.0", description: "推送版本化镜像", shell: "sh"}]
+relatedLessons: ["docker-19", "docker-24"]
+---
+
+push 会把镜像层发送到远端，命令成功只说明 Registry 接收了内容；交付记录还应保存镜像 digest、构建提交和扫描结果。

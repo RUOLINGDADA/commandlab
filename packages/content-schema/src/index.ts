@@ -45,6 +45,192 @@ const parameterSchema = z.object({
   effect: z.string().min(6),
 });
 
+/** 百科命令的参数逐项解析；flag 使用可复制的短参数或长参数写法。 */
+const referenceParameterSchema = z.object({
+  flag: z.string().min(1),
+  description: z.string().min(8),
+  example: z.string().min(1).optional(),
+});
+
+/** 命令动画按对象变化分组，渲染器可复用但每条命令的帧必须独立。 */
+export const animationKindSchema = z.enum([
+  "workspace",
+  "staging",
+  "commit",
+  "history",
+  "branch",
+  "merge",
+  "rebase",
+  "recovery",
+  "remote",
+  "image",
+  "container",
+  "network",
+  "volume",
+  "compose",
+  "cleanup",
+  "diagnostic",
+]);
+
+export const commandAnimationFrameSchema = z.object({
+  label: z.string().min(2),
+  narration: z.string().min(10),
+  activeActors: z.array(z.string().min(1)).min(1),
+  transition: z.string().min(2),
+});
+
+export const commandAnimationActorSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  role: z.string().min(4),
+});
+
+export const commandAnimationSpecSchema = z.object({
+  id: z.string().regex(/^(git|docker)-[a-z0-9-]+$/),
+  tool: toolSchema,
+  slug: z.string().regex(/^[a-z0-9-]+$/),
+  title: z.string().min(2),
+  kind: animationKindSchema,
+  metaphor: z.string().min(10),
+  actors: z.array(commandAnimationActorSchema).min(2),
+  frames: z.array(commandAnimationFrameSchema).min(3),
+});
+
+/** 教学 Git 提交节点的最小可视化状态。parents 用提交 ID 表达有向图。 */
+export const teachingGitCommitSchema = z.object({
+  id: z.string().min(1),
+  parents: z.array(z.string()),
+  message: z.string().min(1),
+  lane: z.enum(["main", "feature", "remote", "replay"]).default("main"),
+});
+
+export const teachingGitFileSchema = z.object({
+  path: z.string().min(1),
+  status: z.enum(["untracked", "modified", "staged", "clean"]),
+  version: z.number().int().nonnegative(),
+});
+
+/** 远端分支上的文件快照；pull 会把它与本地 workingTree 进行确定性同步。 */
+export const teachingGitRemoteFileSchema = z.object({
+  path: z.string().min(1),
+  version: z.number().int().nonnegative(),
+});
+
+export const teachingGitStateSchema = z.object({
+  tool: z.literal("git"),
+  repositoryInitialized: z.boolean(),
+  commits: z.array(teachingGitCommitSchema),
+  branches: z.record(z.string(), z.string()),
+  head: z.object({ kind: z.enum(["branch", "detached"]), name: z.string(), commit: z.string() }),
+  tags: z.record(z.string(), z.string()),
+  workingTree: z.array(teachingGitFileSchema),
+  remoteFiles: z.array(teachingGitRemoteFileSchema),
+  staging: z.array(z.string()),
+  remotes: z.record(z.string(), z.string()),
+  remoteBranches: z.record(z.string(), z.string()),
+  reflog: z.array(z.string()),
+  stash: z.array(z.string()),
+  config: z.record(z.string(), z.string()),
+});
+
+/** Docker 先使用轻量状态快照接入同一时间轴，后续可扩展为完整 Engine 模型。 */
+export const teachingDockerStateSchema = z.object({
+  tool: z.literal("docker"),
+  images: z.array(
+    z.object({ id: z.string(), name: z.string(), status: z.enum(["local", "pulling", "pushed"]) }),
+  ),
+  containers: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      image: z.string(),
+      status: z.enum(["created", "running", "stopped", "removed"]),
+    }),
+  ),
+  networks: z.array(z.string()),
+  volumes: z.array(
+    z.object({
+      name: z.string(),
+      attachedTo: z.array(z.string()),
+      bytes: z.number().nonnegative(),
+    }),
+  ),
+  ports: z.array(
+    z.object({
+      host: z.number().int().positive(),
+      container: z.number().int().positive(),
+      target: z.string(),
+    }),
+  ),
+});
+
+export const teachingStateSchema = z.discriminatedUnion("tool", [
+  teachingGitStateSchema,
+  teachingDockerStateSchema,
+]);
+
+export const teachingEventSchema = z.object({
+  type: z.enum([
+    "repository-init",
+    "file-stage",
+    "file-unstage",
+    "commit-create",
+    "pointer-move",
+    "branch-create",
+    "head-switch",
+    "merge-parents",
+    "commit-replay",
+    "tag-create",
+    "remote-transfer",
+    "recovery-restore",
+    "stash-save",
+    "diagnostic-read",
+    "image-layer",
+    "container-lifecycle",
+    "network-connect",
+    "volume-mount",
+    "compose-orchestrate",
+    "cleanup-remove",
+  ]),
+  subject: z.string().min(1),
+  detail: z.string().min(8),
+});
+
+export const teachingPhaseSchema = z.enum([
+  "idle",
+  "typing",
+  "executing",
+  "transitioning",
+  "settled",
+]);
+
+export const teachingFrameSchema = z.object({
+  id: z.string().min(1),
+  phase: teachingPhaseSchema,
+  commandText: z.string(),
+  terminalLines: z.array(z.string()),
+  state: teachingStateSchema,
+  events: z.array(teachingEventSchema),
+  activeIds: z.array(z.string()),
+  narration: z.string().min(10),
+  transition: z.string().min(2),
+  duration: z.number().int().positive(),
+});
+
+/** 一条命令的完整教学场景；页面骨架只依赖这个契约。 */
+export const teachingSceneSchema = z.object({
+  id: z.string().regex(/^(git|docker)-[a-z0-9-]+$/),
+  tool: toolSchema,
+  slug: z.string().regex(/^[a-z0-9-]+$/),
+  title: z.string().min(2),
+  command: z.string().min(3),
+  kind: animationKindSchema,
+  metaphor: z.string().min(10),
+  initialState: teachingStateSchema,
+  frames: z.array(teachingFrameSchema).min(5),
+  finalState: teachingStateSchema,
+});
+
 const exerciseRoleSchema = z.enum(["main", "variant"]);
 
 /** 一道真实本机练习步骤，题目、答案、验证和清理保持一一对应。 */
@@ -241,6 +427,10 @@ export const referenceEntrySchema = z.object({
   object: z.string().min(2),
   summary: z.string().min(10),
   usage: z.string().min(10),
+  /** 命令完整语法；旧条目缺省时由首个示例回退。 */
+  syntax: z.string().min(1).optional(),
+  /** 逐参数说明；旧条目可暂由 commonOptions 展示。 */
+  parameters: z.array(referenceParameterSchema).min(1).optional(),
   commonOptions: z.array(z.string().min(2)).min(1),
   scenarios: z.array(z.string().min(10)).min(1),
   comparisons: z.array(z.string().min(10)).min(1),
@@ -249,6 +439,8 @@ export const referenceEntrySchema = z.object({
   errors: z.array(z.string().min(10)).min(1),
   examples: z.array(commandSchema).min(1),
   relatedLessons: z.array(z.string().regex(/^(git|docker)-\d{2}$/)).min(1),
+  /** 可选的内容内动画元数据；缺省条目由构建期注册表补齐并严格校验。 */
+  animation: commandAnimationSpecSchema.optional(),
 });
 
 /** 构建阶段按 tool 分派到 Git 或 Docker 的专用课程模型。 */
@@ -264,6 +456,21 @@ export type LessonMeta = z.infer<typeof lessonSchema>;
 export type GitLesson = z.infer<typeof gitLessonSchema>;
 export type DockerLesson = z.infer<typeof dockerLessonSchema>;
 export type ReferenceEntry = z.infer<typeof referenceEntrySchema>;
+export type ReferenceParameter = z.infer<typeof referenceParameterSchema>;
+export type AnimationKind = z.infer<typeof animationKindSchema>;
+export type CommandAnimationFrame = z.infer<typeof commandAnimationFrameSchema>;
+export type CommandAnimationActor = z.infer<typeof commandAnimationActorSchema>;
+export type CommandAnimationSpec = z.infer<typeof commandAnimationSpecSchema>;
+export type TeachingGitCommit = z.infer<typeof teachingGitCommitSchema>;
+export type TeachingGitFile = z.infer<typeof teachingGitFileSchema>;
+export type TeachingGitRemoteFile = z.infer<typeof teachingGitRemoteFileSchema>;
+export type TeachingGitState = z.infer<typeof teachingGitStateSchema>;
+export type TeachingDockerState = z.infer<typeof teachingDockerStateSchema>;
+export type TeachingState = z.infer<typeof teachingStateSchema>;
+export type TeachingEvent = z.infer<typeof teachingEventSchema>;
+export type TeachingPhase = z.infer<typeof teachingPhaseSchema>;
+export type TeachingFrame = z.infer<typeof teachingFrameSchema>;
+export type TeachingScene = z.infer<typeof teachingSceneSchema>;
 
 /** 页面使用的完整课程对象，正文来自 MDX 的 frontmatter 之后。 */
 export type Lesson = LessonMeta & {

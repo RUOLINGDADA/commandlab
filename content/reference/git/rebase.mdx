@@ -1,0 +1,20 @@
+---
+id: "git-ref-rebase"
+tool: "git"
+slug: "rebase"
+title: "git rebase"
+category: "历史整理"
+object: "提交基线与提交 ID"
+summary: "把当前分支提交重新播放到新的基线之上，整理线性历史。"
+usage: "只整理尚未共享的个人分支；开始前创建临时分支或备份。"
+commonOptions: ["-i：交互式调整提交顺序和说明", "--abort：发生冲突时放弃整个 rebase"]
+scenarios: ["在发起合并请求前合并最新 main。", "合并多个临时提交并保留清晰历史。"]
+comparisons: ["与 git merge 对比：rebase 改写提交 ID，merge 通过新节点记录整合。"]
+risk: "高"
+reversible: "reflog 可找回旧提交；已推送分支需要团队约定，不能随意强推覆盖他人历史。"
+errors: ["You have unstaged changes：先提交或暂存工作区，再开始 rebase。"]
+examples: [{command: "git rebase -i HEAD~3", description: "整理最近三个提交", shell: "sh"}]
+relatedLessons: ["git-16", "git-17"]
+---
+
+把 rebase 想成“换一条新的起跑线重新播放提交”。小白第一次练习应在隔离仓库进行，并记录 rebase 前后的 `git log --oneline --graph`，确认哪些提交 ID 发生了变化。
