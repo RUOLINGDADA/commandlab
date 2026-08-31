@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="zh-CN" data-theme="dark" suppressHydrationWarning>
+    <html lang="zh-CN" data-theme="light" suppressHydrationWarning>
       <body>
         <a href="#main" className="skip-link">
           跳到主要内容
@@ -23,7 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <div className="shell footer-inner">
             <div>
               <strong>CommandLab</strong>
-              <p>理解命令，而不只是记住命令。</p>
+              一套可执行、可验证的 Git 与 Docker 课程。
             </div>
             <div className="footer-links">
               <Link href="/learn/">课程</Link>

@@ -19,6 +19,22 @@
 - 完成状态、收藏和笔记保存在浏览器 IndexedDB，无需注册。
 - 在线终端暂未开放；专业隔离服务器准备好后再加入真实沙箱。
 
+## Docker 一键部署
+
+需要 Docker Desktop 或 Docker Engine + Compose。项目会先构建 Next.js 静态站点，再交给 Nginx 提供服务：
+
+```bash
+docker compose up -d --build
+```
+
+浏览器打开 <http://localhost:8080>。停止服务：
+
+```bash
+docker compose down
+```
+
+修改端口时设置 `COMMANDLAB_PORT`，例如 `COMMANDLAB_PORT=9000 docker compose up -d --build`。
+
 ## 本地开发
 
 要求 Node.js 24 或更高版本、pnpm 11.19.0。
@@ -66,7 +82,7 @@ pnpm --filter @commandlab/web validate:export
 
 ## 发布
 
-维护者在 GitHub 的 **Actions → Create release** 中输入语义化版本。工作流创建 GitHub Release 后，Pages 工作流会自动构建并部署网站。首发版本为 `v0.1.0`。
+维护者在 GitHub 的 **Actions → Create release** 中输入语义化版本。工作流创建 GitHub Release 后，Pages 工作流会自动构建并部署网站。当前版本为 `v0.1.2`。
 
 ## 许可
 

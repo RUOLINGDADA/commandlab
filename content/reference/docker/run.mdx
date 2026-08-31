@@ -1,0 +1,20 @@
+---
+id: "docker-ref-run"
+tool: "docker"
+slug: "run"
+title: "docker run"
+category: "容器生命周期"
+object: "容器"
+summary: "从镜像创建并启动一个新容器。"
+usage: "本地试运行服务、执行一次性脚本或快速验证镜像入口。"
+commonOptions: ["--name：指定稳定容器名", "-d：后台运行", "-p：映射端口", "-v：挂载卷或宿主目录"]
+scenarios: ["启动一个带名称的测试服务并用 docker ps 验证。", "运行一次性脚本并保留退出码用于排错。"]
+comparisons: ["与 docker create 对比：run 会立即启动，create 只创建不启动。", "与 docker start 对比：start 重启已有容器，不会创建新容器。"]
+risk: "中"
+reversible: "容器可停止和删除；未挂载到卷的数据随容器删除而丢失。"
+errors: ["Conflict: name is already in use：同名容器已存在，先 inspect 再决定复用或删除。"]
+examples: [{command: "docker run -d --name commandlab-web -p 8080:80 nginx:alpine", description: "启动本地测试 Web 服务", shell: "sh"}]
+relatedLessons: ["docker-03", "docker-04"]
+---
+
+`docker run` 同时完成创建和启动。端口与挂载会改变宿主机边界，复制前先确认影响范围。

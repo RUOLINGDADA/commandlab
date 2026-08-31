@@ -21,7 +21,7 @@
 - Release：`https://github.com/RUOLINGDADA/commandlab/releases/tag/v0.1.1`
 - Release 工作流：`https://github.com/RUOLINGDADA/commandlab/actions/runs/33008282618`
 - Pages 工作流：`https://github.com/RUOLINGDADA/commandlab/actions/runs/33008338380`
-- 线上验收页：`https://ruolingdada.github.io/commandlab/courses/docker/engine-model/`
+- 线上验收页（旧版首课记录）：`https://ruolingdada.github.io/commandlab/courses/docker/install-engine/`
 
 ## 后续事项
 

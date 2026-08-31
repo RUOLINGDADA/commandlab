@@ -1,0 +1,258 @@
+---
+id: docker-16
+tool: docker
+slug: bind-mount
+title: Bind Mount 本地开发
+summary: 把本地项目目录挂载进容器，修改宿主机文件后验证容器能立即读取变化。
+level: 高级
+order: 16
+duration: 28
+objectives:
+  - 解释Bind Mount 本地开发涉及的对象、状态和执行流程
+  - 完成主任务与变体并用稳定字段验证
+  - 能根据错误证据恢复并精确清理
+prerequisites:
+  - 完成 docker-15
+scenarios:
+  - id: scenario-bind-mount
+    title: Bind Mount 本地开发：主任务与变体
+    context: >-
+      你正在处理“Bind Mount 本地开发”工单：把本地项目目录挂载进容器，修改宿主机文件后验证容器能立即读取变化。
+      先建立可复核的基线，再只改变一个业务条件，最后留下可回滚的现场。
+    goal: 把本地项目目录挂载进容器，修改宿主机文件后验证容器能立即读取变化。
+    prerequisites:
+      - Docker Engine 处于运行状态
+      - 终端可以执行 Docker 命令
+    images:
+      - name: 'node:22-alpine'
+        source: Docker Hub 官方镜像
+        purpose: 读取宿主机实时修改的源码
+        risk: 仅操作 commandlab- 前缀资源；端口、挂载、网络、权限和资源限制会影响宿主机边界
+    steps:
+      - id: step-bind-mount-1
+        role: main
+        prompt: 你接手了“Bind Mount 本地开发”任务。请先独立完成主任务，留下可复核的对象状态和输出证据。
+        objective: 在真实的“Bind Mount 本地开发”场景中，判断 Docker 操作对象、状态变化、宿主机影响和可逆性。
+        preparation:
+          - 确认 Docker Desktop 或 Docker Engine 已启动。
+          - 只使用 commandlab-bind-mount 或本节明确列出的 commandlab- 资源；发现旧资源先记录状态。
+        hints:
+          - 先写出预期对象、状态和退出码，再展开答案。
+          - 错误出现时保留完整错误文本，按对象—状态—原因—恢复顺序排查。
+          - ID、时间、摘要、平台和大小可能因本机不同，只判断关键字段。
+        answer:
+          explanation: >-
+            这一步模拟“Bind Mount
+            本地开发”的日常工作。先执行主操作，再执行观察命令；前者改变目标对象，后者读取证据，不会在浏览器中执行。
+          commands:
+            - command: >-
+                docker run --rm --name commandlab-dev -v
+                "$PWD/commandlab-work:/workspace" alpine:3.20 cat
+                /workspace/message.txt
+              description: 主操作：创建、启动、构建或改变本案例对象。
+              shell: sh
+            - command: Get-Content commandlab-work/message.txt
+              description: 观察操作：读取状态、输出或配置，确认主操作确实生效。
+              shell: powershell
+          parameters:
+            - token: '--rm'
+              meaning: 控制--rm对应的运行或输出行为
+              effect: 改变 Engine 创建对象或返回证据的方式
+            - token: '--name'
+              meaning: 控制--name对应的运行或输出行为
+              effect: 改变 Engine 创建对象或返回证据的方式
+            - token: '-dev'
+              meaning: 控制-dev对应的运行或输出行为
+              effect: 改变 Engine 创建对象或返回证据的方式
+            - token: '-v'
+              meaning: 控制-v对应的运行或输出行为
+              effect: 改变 Engine 创建对象或返回证据的方式
+          process:
+            - Bind Mount 本地开发：Docker CLI 解析参数后，将请求发送给当前 context 指向的 Engine。
+            - Engine 校验镜像与对象依赖，按需复用层、创建容器或更新资源，然后把稳定状态字段返回终端。
+            - 主任务完成后保留现场，便于下一步读取状态和复盘。
+          stateChanges:
+            - 主任务会创建或改变 commandlab-bind-mount 相关对象。
+            - 验证命令仅读取状态，不会再次启动或删除对象。
+        expected: 关键结果：容器读取到宿主机刚写入的内容，且清理容器不会删除源文件；对象名称、状态、退出码或数据保留情况应与任务目标一致。
+        verify:
+          - command: Get-Content commandlab-work/message.txt
+            description: 再次读取关键字段，证明任务目标已达成。
+            shell: powershell
+        cleanup: &ref_0
+          - command: >-
+              Remove-Item -Recurse -Force commandlab-work -ErrorAction
+              SilentlyContinue
+            description: 只清理本课实际创建的 commandlab- 资源。
+            shell: powershell
+        pitfalls:
+          - symptom: 出现 name is already in use、对象不存在、端口被占用或状态与预期不同。
+            cause: 旧资源残留、当前 Docker context 不同、宿主机端口已被占用，或把镜像/容器/卷混为一谈。
+            diagnosis: >-
+              先列出 commandlab-bind-mount 相关对象，再读取 inspect 的
+              Names、State、Mounts、Ports 或 Config 字段；保留完整错误，不要直接重试。
+            recovery: 确认只影响本节 commandlab- 资源后定向删除或修正参数；若是端口冲突，换用未占用的本地端口，不要删除无关容器。
+        diagnosisOrder:
+          - 保留原始错误和退出码
+          - 确认 commandlab-bind-mount 相关对象是否存在
+          - 读取状态、挂载、端口或配置字段
+          - 只修正已经证实的原因并重新验证
+        cleanupScope: 只影响答案中明确创建的 commandlab- 容器、镜像、卷、网络、目录或 Compose 项目，不执行全局 prune。
+        comparisons:
+          - command: docker run
+            purpose: 从镜像创建并启动新容器
+            scope: 新容器、进程和可写层
+            risk: 中，端口和挂载会扩大宿主机影响
+            reversible: 容器可删除，未挂载数据不可恢复
+          - command: docker inspect
+            purpose: 读取对象结构化状态
+            scope: 指定对象，只读
+            risk: 低，环境变量可能出现在输出
+            reversible: 完全可逆
+        variants:
+          - 容器读取到宿主机刚写入的内容，且清理容器不会删除源文件
+          - 把本节结果写成值班记录：对象、状态、证据、原因和清理结果。
+        dangerous: true
+      - id: step-bind-mount-2
+        role: variant
+        prompt: 主任务完成后，业务条件发生变化。请完成“Bind Mount 本地开发”的变体任务，并说明哪些对象被复用、哪些对象被重新创建。
+        objective: 在真实的“Bind Mount 本地开发”场景中，判断 Docker 操作对象、状态变化、宿主机影响和可逆性。
+        preparation:
+          - 确认 Docker Desktop 或 Docker Engine 已启动。
+          - 只使用 commandlab-bind-mount 或本节明确列出的 commandlab- 资源；发现旧资源先记录状态。
+        hints:
+          - 先写出预期对象、状态和退出码，再展开答案。
+          - 错误出现时保留完整错误文本，按对象—状态—原因—恢复顺序排查。
+          - ID、时间、摘要、平台和大小可能因本机不同，只判断关键字段。
+        answer:
+          explanation: >-
+            这一步模拟“Bind Mount
+            本地开发”的日常工作。先执行主操作，再执行观察命令；前者改变目标对象，后者读取证据，不会在浏览器中执行。
+          commands:
+            - command: Set-Content commandlab-work/message.txt 'changed-from-host'
+              description: 主操作：创建、启动、构建或改变本案例对象。
+              shell: sh
+            - command: >-
+                docker run --rm -v "$PWD/commandlab-work:/workspace" alpine:3.20
+                cat /workspace/message.txt
+              description: 观察操作：读取状态、输出或配置，确认主操作确实生效。
+              shell: sh
+          parameters:
+            - token: '-Content'
+              meaning: 控制-Content对应的运行或输出行为
+              effect: 改变 Engine 创建对象或返回证据的方式
+            - token: '-work'
+              meaning: 控制-work对应的运行或输出行为
+              effect: 改变 Engine 创建对象或返回证据的方式
+            - token: '-from-host'
+              meaning: 控制-from-host对应的运行或输出行为
+              effect: 改变 Engine 创建对象或返回证据的方式
+          process:
+            - Bind Mount 本地开发：Docker CLI 解析参数后，将请求发送给当前 context 指向的 Engine。
+            - Engine 校验镜像与对象依赖，按需复用层、创建容器或更新资源，然后把稳定状态字段返回终端。
+            - 变体只改变一个业务条件，便于把差异归因到该条件而不是随机环境。
+          stateChanges:
+            - 变体会复用可复用对象，并只重新创建发生变化的部分。
+            - 验证命令仅读取状态，不会再次启动或删除对象。
+        expected: >-
+          关键结果：变体结果仍应满足：容器读取到宿主机刚写入的内容，且清理容器不会删除源文件，但应能指出与主任务不同的状态或复用关系。；对象名称、状态、退出码或数据保留情况应与任务目标一致。
+        verify:
+          - command: >-
+              docker run --rm -v "$PWD/commandlab-work:/workspace" alpine:3.20
+              cat /workspace/message.txt
+            description: 再次读取关键字段，证明任务目标已达成。
+            shell: sh
+        cleanup:
+          - command: >-
+              Remove-Item -Recurse -Force commandlab-work -ErrorAction
+              SilentlyContinue
+            description: 只清理本课实际创建的 commandlab- 资源。
+            shell: powershell
+        pitfalls:
+          - symptom: 出现 name is already in use、对象不存在、端口被占用或状态与预期不同。
+            cause: 旧资源残留、当前 Docker context 不同、宿主机端口已被占用，或把镜像/容器/卷混为一谈。
+            diagnosis: >-
+              先列出 commandlab-bind-mount 相关对象，再读取 inspect 的
+              Names、State、Mounts、Ports 或 Config 字段；保留完整错误，不要直接重试。
+            recovery: 确认只影响本节 commandlab- 资源后定向删除或修正参数；若是端口冲突，换用未占用的本地端口，不要删除无关容器。
+        diagnosisOrder:
+          - 保留原始错误和退出码
+          - 确认 commandlab-bind-mount 相关对象是否存在
+          - 读取状态、挂载、端口或配置字段
+          - 只修正已经证实的原因并重新验证
+        cleanupScope: 只影响答案中明确创建的 commandlab- 容器、镜像、卷、网络、目录或 Compose 项目，不执行全局 prune。
+        comparisons:
+          - command: docker run
+            purpose: 从镜像创建并启动新容器
+            scope: 新容器、进程和可写层
+            risk: 中，端口和挂载会扩大宿主机影响
+            reversible: 容器可删除，未挂载数据不可恢复
+          - command: docker inspect
+            purpose: 读取对象结构化状态
+            scope: 指定对象，只读
+            risk: 低，环境变量可能出现在输出
+            reversible: 完全可逆
+        variants:
+          - 变体结果仍应满足：容器读取到宿主机刚写入的内容，且清理容器不会删除源文件，但应能指出与主任务不同的状态或复用关系。
+          - 把本节结果写成值班记录：对象、状态、证据、原因和清理结果。
+        dangerous: true
+interactiveQuiz:
+  question: Bind Mount 本地开发：看到下面哪类输出，才足以证明任务完成？
+  options:
+    - 容器读取到宿主机刚写入的内容，且清理容器不会删除源文件
+    - 只看命令是否返回 0，不检查对象状态
+    - 直接使用全局 prune 清理现场
+  answer: 0
+  explanation: 本题要求把“Bind Mount 本地开发”的操作对象和稳定验收字段联系起来；退出码或全局清理都不能单独证明任务安全完成。
+  type: output
+platforms:
+  - platform: windows
+    notes: Windows 推荐在 WSL2 中执行；PowerShell 文件和路径命令按标注切换。
+    setup:
+      - command: docker version
+        description: 确认客户端和服务端可连接
+        shell: sh
+    verify:
+      - command: docker ps -a --filter name=commandlab-bind-mount
+        description: 只列出本课程同名前缀容器并核对状态
+        shell: sh
+    cleanup: *ref_0
+  - platform: macos
+    notes: macOS 使用 Docker Desktop，挂载目录前确认共享权限。
+    setup:
+      - command: docker version
+        description: 确认客户端和服务端可连接
+        shell: sh
+    verify:
+      - command: docker ps -a --filter name=commandlab-bind-mount
+        description: 只列出本课程同名前缀容器并核对状态
+        shell: sh
+    cleanup: *ref_0
+  - platform: linux
+    notes: Linux 直接连接 Engine；权限错误先检查用户组和 Docker context。
+    setup:
+      - command: docker version
+        description: 确认客户端和服务端可连接
+        shell: sh
+    verify:
+      - command: docker ps -a --filter name=commandlab-bind-mount
+        description: 只列出本课程同名前缀容器并核对状态
+        shell: sh
+    cleanup: *ref_0
+---
+
+## 场景背景
+
+把本地项目目录挂载进容器，修改宿主机文件后验证容器能立即读取变化。
+
+## 核心概念
+
+本节围绕“Bind Mount 本地开发”建立对象边界。先辨认命令操作的是镜像、容器、卷、网络、构建上下文还是 Compose 项目，再判断哪些状态由 Engine 持久保存，哪些只属于容器主进程。
+
+## Docker 执行流程
+
+CLI 解析本节参数并把请求发送到当前 Docker context。Engine 检查 node:22-alpine 及依赖对象，按需拉取或复用镜像层，随后创建、更新或读取 commandlab- 资源。验证阶段只读取名称、状态、退出码、挂载、端口、健康状态或资源限制等稳定字段。
+
+## 课后复盘
+
+完成后回答：主任务创建或改变了什么？变体复用了什么？宿主机端口、路径、网络或数据是否受到影响？再次执行前需要保留哪些证据，清理时为什么不能使用全局 prune？

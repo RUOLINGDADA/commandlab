@@ -1,0 +1,21 @@
+---
+id: "docker-ref-exec"
+tool: "docker"
+slug: "exec"
+title: "docker exec"
+category: "运行中调试"
+object: "容器"
+summary: "在运行中容器内启动一次附加进程。"
+usage: "检查运行中服务的文件和环境。"
+commonOptions: ["-it：交互终端","--env：只给附加进程注入变量","--user：以指定用户执行"]
+scenarios: ["检查运行中服务的文件和环境。","验证主进程不会因调试命令退出而停止。"]
+comparisons: ["与 docker attach 对比：exec 新建附加进程，attach 连接主进程。"]
+risk: "中"
+reversible: "附加命令拥有容器内权限；不要把秘密作为命令行参数。"
+errors: ["Error: Container ... is not running：先读取状态再决定 start。"]
+examples: [{command: "docker exec commandlab-web nginx -t", description: "围绕 docker exec 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-06"]
+---
+
+在运行中容器内启动一次附加进程。验证主进程不会因调试命令退出而停止。 与 docker attach 对比：exec 新建附加进程，attach 连接主进程。
+

@@ -1,0 +1,20 @@
+---
+id: "git-ref-restore"
+tool: "git"
+slug: "restore"
+title: "git restore"
+category: "撤销修改"
+object: "工作区或暂存区"
+summary: "撤销尚未提交的文件修改，或把文件从暂存区移出。"
+usage: "误改配置、误暂存文件或想回到最近提交版本时使用。"
+commonOptions: ["--staged：只取消暂存，不丢弃工作区内容", "--source：指定恢复来源提交"]
+scenarios: ["把误加入暂存区的文件移出，同时保留本地修改。", "放弃一个确定不要的工作区改动。"]
+comparisons: ["与 git reset 对比：restore 更聚焦文件，reset 还会移动 HEAD。"]
+risk: "中"
+reversible: "取消暂存通常可恢复；丢弃工作区修改前应先备份或确认 diff。"
+errors: ["error: pathspec did not match：路径拼写错误或文件不在当前仓库。"]
+examples: [{command: "git restore --staged config.example", description: "取消暂存但保留文件修改", shell: "sh"}, {command: "git restore --worktree notes.txt", description: "恢复工作区文件", shell: "sh"}]
+relatedLessons: ["git-03", "git-08"]
+---
+
+先用 `git diff` 和 `git diff --staged` 看清楚，再选择只取消暂存还是丢弃文件内容。

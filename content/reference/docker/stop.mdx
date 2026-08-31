@@ -1,0 +1,20 @@
+---
+id: "docker-ref-stop"
+tool: "docker"
+slug: "stop"
+title: "docker stop"
+category: "生命周期"
+object: "容器"
+summary: "向容器主进程发送优雅停止信号并等待退出。"
+usage: "发布前停止旧版本，并给应用留下处理终止信号和清理资源的时间。"
+commonOptions: ["-t：设置等待秒数","容器名或 ID：限定对象"]
+scenarios: ["发布前停止旧版本，并观察优雅退出是否按预期完成。","验证服务收到 SIGTERM 后能清理资源。"]
+comparisons: ["与 docker kill 对比：stop 给应用清理机会，kill 立即终止。"]
+risk: "中"
+reversible: "会中断服务；先确认只影响 commandlab- 容器。"
+errors: ["Error response from daemon：名称错误或容器已被删除。"]
+examples: [{command: "docker stop commandlab-web", description: "围绕 docker stop 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-05"]
+---
+
+向容器主进程发送优雅停止信号并等待退出。验证服务收到 SIGTERM 后能清理资源。 与 docker kill 对比：stop 给应用清理机会，kill 立即终止。

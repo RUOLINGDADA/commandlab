@@ -6,11 +6,11 @@ import { Button } from "@commandlab/ui";
 
 /** 在深色与浅色主题间切换，并将用户选择保存在本地。 */
 export function ThemeToggle() {
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("commandlab-theme");
-    const nextDark = stored ? stored === "dark" : true;
+    const nextDark = stored ? stored === "dark" : false;
     const frame = window.requestAnimationFrame(() => {
       setDark(nextDark);
       document.documentElement.dataset.theme = nextDark ? "dark" : "light";

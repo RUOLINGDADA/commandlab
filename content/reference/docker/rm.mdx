@@ -1,0 +1,21 @@
+---
+id: "docker-ref-rm"
+tool: "docker"
+slug: "rm"
+title: "docker rm"
+category: "资源清理"
+object: "容器"
+summary: "删除已停止容器及其元数据。"
+usage: "课程结束后精确清理 commandlab- 容器。"
+commonOptions: ["-f：强制删除运行中容器","-v：同时删除匿名卷"]
+scenarios: ["课程结束后精确清理 commandlab- 容器。","删除前记录日志和退出码。"]
+comparisons: ["与 docker container prune 对比：rm 可精确指定，prune 批量影响更大。"]
+risk: "高"
+reversible: "删除容器会丢失未挂载数据；禁止对生产名称使用通配清理。"
+errors: ["Conflict：运行中的容器需先 stop 或明确使用 -f。"]
+examples: [{command: "docker rm commandlab-web", description: "围绕 docker rm 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-09"]
+---
+
+删除已停止容器及其元数据。删除前记录日志和退出码。 与 docker container prune 对比：rm 可精确指定，prune 批量影响更大。
+

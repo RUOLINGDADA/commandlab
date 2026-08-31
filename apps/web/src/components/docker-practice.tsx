@@ -22,12 +22,16 @@ export function DockerPractice({
   platforms: DockerLesson["platforms"];
 }) {
   const [completed, setCompleted] = useState<string[]>([]);
+  const [attempted, setAttempted] = useState<string[]>([]);
   const [platform, setPlatform] =
     useState<DockerLesson["platforms"][number]["platform"]>("windows");
   const guide = platforms.find((item) => item.platform === platform) ?? platforms[0]!;
 
   useEffect(() => {
-    void getLessonProgress(lessonId).then((progress) => setCompleted(progress.completedSteps));
+    void getLessonProgress(lessonId).then((progress) => {
+      setCompleted(progress.completedSteps);
+      setAttempted(progress.attemptedSteps);
+    });
   }, [lessonId]);
 
   async function toggleStep(stepId: string) {
@@ -36,6 +40,14 @@ export function DockerPractice({
       : [...completed, stepId];
     setCompleted(next);
     await updateLessonProgress(lessonId, { completedSteps: next });
+  }
+
+  async function toggleAttempted(stepId: string) {
+    const next = attempted.includes(stepId)
+      ? attempted.filter((item) => item !== stepId)
+      : [...attempted, stepId];
+    setAttempted(next);
+    await updateLessonProgress(lessonId, { attemptedSteps: next });
   }
 
   return (
@@ -67,7 +79,7 @@ export function DockerPractice({
       {scenarios.map((scenario) => (
         <section className="scenario-card" key={scenario.id}>
           <div className="scenario-heading">
-            <p className="eyebrow">实操场景</p>
+            <p className="eyebrow">实操场景 · 一个主任务 + 一个变体</p>
             <h3>{scenario.title}</h3>
             <p>{scenario.context}</p>
             <p>
@@ -89,7 +101,9 @@ export function DockerPractice({
                 index={index + 1}
                 step={step}
                 done={completed.includes(step.id)}
+                attempted={attempted.includes(step.id)}
                 onToggle={() => void toggleStep(step.id)}
+                onToggleAttempted={() => void toggleAttempted(step.id)}
               />
             ))}
           </div>
@@ -103,24 +117,40 @@ function StepCard({
   index,
   step,
   done,
+  attempted,
   onToggle,
+  onToggleAttempted,
 }: {
   index: number;
   step: ExerciseStep;
   done: boolean;
+  attempted: boolean;
   onToggle: () => void;
+  onToggleAttempted: () => void;
 }) {
   return (
     <Card className={done ? "exercise-step is-done" : "exercise-step"}>
       <div className="step-title">
         <span className="step-number">{String(index).padStart(2, "0")}</span>
         <div>
-          <p className="eyebrow">步骤 {index}</p>
+          <p className="eyebrow">
+            {step.role === "main" ? "主任务" : "变体任务"} · 步骤 {index}
+          </p>
           <h4>{step.prompt}</h4>
         </div>
-        <button className="step-check" type="button" onClick={onToggle} aria-pressed={done}>
-          <CheckCircle2 size={18} /> {done ? "已完成" : "标记完成"}
-        </button>
+        <div className="step-state-actions">
+          <button
+            className="step-check"
+            type="button"
+            onClick={onToggleAttempted}
+            aria-pressed={attempted}
+          >
+            {attempted ? "已尝试" : "标记已尝试"}
+          </button>
+          <button className="step-check" type="button" onClick={onToggle} aria-pressed={done}>
+            <CheckCircle2 size={18} /> {done ? "已完成" : "标记完成"}
+          </button>
+        </div>
       </div>
       <p className="step-objective">
         <strong>操作目标：</strong>
@@ -132,7 +162,14 @@ function StepCard({
           此步骤可能删除或暴露资源，请确认只操作 `commandlab-` 前缀对象。
         </p>
       )}
-      <CommandList title="准备命令" commands={step.setup} />
+      <div className="step-preparation">
+        <strong>开始前确认</strong>
+        <ul>
+          {step.preparation.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </div>
       <details>
         <summary>
           <ChevronDown size={16} />
@@ -151,6 +188,34 @@ function StepCard({
         </summary>
         <p>{step.answer.explanation}</p>
         <CommandList title="答案命令" commands={step.answer.commands} />
+        <div className="answer-details-grid">
+          <div>
+            <h4>参数与关键字解释</h4>
+            <ul>
+              {step.answer.parameters.map((parameter) => (
+                <li key={`${parameter.token}-${parameter.meaning}`}>
+                  <code>{parameter.token}</code>：{parameter.meaning}。{parameter.effect}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4>Docker 内部执行流程</h4>
+            <ol>
+              {step.answer.process.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ol>
+          </div>
+          <div>
+            <h4>对象状态变化</h4>
+            <ul>
+              {step.answer.stateChanges.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
         <p>
           <strong>关键预期：</strong>
           {step.expected}
@@ -159,21 +224,53 @@ function StepCard({
       <details>
         <summary>
           <ChevronDown size={16} />
-          查看验证、坑点和清理
+          查看验证方法
+        </summary>
+        <CommandList title="验证命令" commands={step.verify} />
+        <p className="verification-note">
+          逐条执行后，核对命令描述中的字段或状态；不要只凭“命令没有报错”判断成功。
+        </p>
+      </details>
+      <details>
+        <summary>
+          <ChevronDown size={16} />
+          查看坑点与恢复
         </summary>
         <p>
-          <strong>验证：</strong>
+          <strong>排查顺序：</strong>
+          保留原始错误，先确认对象，再确认状态，接着判断原因，最后执行定向恢复。
         </p>
-        <CommandList title="验证命令" commands={step.verify} />
+        <div className="pitfall-list">
+          {step.pitfalls.map((pitfall) => (
+            <div className="pitfall-item" key={pitfall.symptom}>
+              <strong>{pitfall.symptom}</strong>
+              <p>
+                <b>原因：</b>
+                {pitfall.cause}
+              </p>
+              {pitfall.diagnosis && (
+                <p>
+                  <b>排查：</b>
+                  {pitfall.diagnosis}
+                </p>
+              )}
+              <p>
+                <b>恢复：</b>
+                {pitfall.recovery}
+              </p>
+            </div>
+          ))}
+        </div>
         <p>
-          <strong>常见坑点：</strong>
-          {step.pitfalls
-            .map(
-              (pitfall) =>
-                `${pitfall.symptom}（原因：${pitfall.cause}；恢复：${pitfall.recovery}）`,
-            )
-            .join("；")}
+          <strong>排查顺序：</strong>
+          {step.diagnosisOrder.join(" → ")}
         </p>
+      </details>
+      <details>
+        <summary>
+          <ChevronDown size={16} />
+          查看命令辨析与变体练习
+        </summary>
         <p>
           <strong>命令辨析：</strong>
           {step.comparisons
@@ -183,10 +280,26 @@ function StepCard({
             )
             .join("；")}
         </p>
-        <CommandList title="清理命令" commands={step.cleanup} />
         <p>
           <strong>衍生练习：</strong>
           {step.variants.join("；")}
+        </p>
+      </details>
+      <details>
+        <summary>
+          <ChevronDown size={16} />
+          查看精确清理
+        </summary>
+        {step.dangerous && (
+          <p className="danger-warning">
+            <AlertTriangle size={16} />
+            清理会删除本步骤创建的对象。先核对名称，只执行与当前课程相符的命令。
+          </p>
+        )}
+        <CommandList title="清理命令" commands={step.cleanup} />
+        <p className="verification-note">
+          <strong>影响范围：</strong>
+          {step.cleanupScope}
         </p>
       </details>
     </Card>
@@ -212,15 +325,18 @@ function CommandList({
         {title}
       </h4>
       {commands.map((item) => (
-        <div className="command-line" key={`${title}-${item.command}`}>
-          <code>{item.command}</code>
-          <button
-            type="button"
-            onClick={() => void copy(item.command)}
-            aria-label={`复制命令 ${item.command}`}
-          >
-            复制
-          </button>
+        <div className="command-item" key={`${title}-${item.command}`}>
+          <div className="command-line">
+            <code>{item.command}</code>
+            <button
+              type="button"
+              onClick={() => void copy(item.command)}
+              aria-label={`复制命令 ${item.command}`}
+            >
+              复制
+            </button>
+          </div>
+          <p className="command-description">{item.description}</p>
         </div>
       ))}
     </div>

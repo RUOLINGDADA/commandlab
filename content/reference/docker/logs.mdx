@@ -1,0 +1,21 @@
+---
+id: "docker-ref-logs"
+tool: "docker"
+slug: "logs"
+title: "docker logs"
+category: "日志观察"
+object: "容器"
+summary: "读取容器主进程写入 stdout/stderr 的日志。"
+usage: "排查 Web 返回 5xx。"
+commonOptions: ["--tail：限制行数","-f：持续跟随","--timestamps：附带时间"]
+scenarios: ["排查 Web 返回 5xx。","确认一次性任务的错误输出。"]
+comparisons: ["与 docker exec 对比：logs 看主进程输出，exec 进入容器执行新命令。"]
+risk: "低"
+reversible: "只读；日志可能含敏感配置，避免直接粘贴到公开工单。"
+errors: ["Error: No such container：名称不存在或 context 不同。"]
+examples: [{command: "docker logs --tail 20 commandlab-web", description: "围绕 docker logs 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-06"]
+---
+
+读取容器主进程写入 stdout/stderr 的日志。确认一次性任务的错误输出。 与 docker exec 对比：logs 看主进程输出，exec 进入容器执行新命令。
+

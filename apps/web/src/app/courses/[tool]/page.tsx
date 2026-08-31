@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { toolLabels, type Tool } from "@commandlab/content-schema";
+import { Card } from "@commandlab/ui";
 import { CourseCard } from "@/components/course-card";
 import { getLessonsByTool } from "@/lib/content";
 
@@ -35,6 +36,19 @@ export default async function ToolCoursePage({ params }: { params: Promise<{ too
         <h1>{toolLabels[typedTool].name}</h1>
         <p>{toolLabels[typedTool].description}</p>
       </header>
+      {typedTool === "docker" && (
+        <Card className="practice-protocol">
+          <p className="eyebrow">实操说明与安全协议</p>
+          <h2>先完成题目，再展开答案</h2>
+          <p>
+            所有资源统一使用 <code>commandlab-</code>{" "}
+            前缀。涉及删除、挂载、网络、端口、权限或资源限制时，先阅读步骤中的影响范围；错误出现时保留错误文本，按“对象—状态—原因—恢复”顺序排查。
+          </p>
+          <p>
+            验收关注对象是否存在、状态是否正确、数据是否保留、退出码是否符合预期，以及输出是否包含目标名称或健康状态。完成后复盘命令操作的对象、宿主机影响和再次执行时的复用关系。
+          </p>
+        </Card>
+      )}
       {levels.map((level, index) => (
         <section className="level-section" key={level}>
           <div className="level-heading">

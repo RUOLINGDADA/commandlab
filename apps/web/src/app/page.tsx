@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, BookOpenCheck, Boxes, GitBranch, Laptop, Route, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpenCheck,
+  Boxes,
+  GitBranch,
+  Laptop,
+  ListChecks,
+  Search,
+} from "lucide-react";
 import { Card } from "@commandlab/ui";
 import { CourseCard } from "@/components/course-card";
 import { TerminalPreview } from "@/components/terminal-preview";
@@ -16,33 +24,31 @@ export default function HomePage() {
     <>
       <section className="hero shell">
         <div className="hero-copy">
-          <p className="eyebrow">
-            <Sparkles size={15} /> 面向初学者的开发工具实战平台
-          </p>
+          <p className="eyebrow">命令行学习 · Git 与 Docker</p>
           <h1>
-            在动手与犯错中，<span>真正掌握命令。</span>
+            把每条命令，<span>放回真实场景。</span>
           </h1>
           <p className="hero-description">
-            从 Git 的第一次提交到 Docker
-            的生产排错。每节课都解释思维模型、常见坑点、命令区别，并给出三平台本机练习。
+            CommandLab
+            是一套可以边读边做的中文课程。你会先判断操作对象，再执行命令，最后用结果验证，而不是只背参数。
           </p>
           <div className="hero-actions">
             <Link href="/learn/" className="primary-link">
-              开始学习 <ArrowRight size={17} />
+              浏览课程 <ArrowRight size={16} />
             </Link>
-            <Link href="/terminal/" className="secondary-link">
-              查看在线终端计划
+            <Link href="/reference/" className="secondary-link">
+              打开工具百科 <Search size={16} />
             </Link>
           </div>
           <div className="hero-proof">
             <span>
-              <strong>48</strong> 节系统课程
+              <strong>{lessons.length}</strong> 节课程
             </span>
             <span>
-              <strong>4</strong> 个能力等级
+              <strong>2</strong> 条学习路径
             </span>
             <span>
-              <strong>3</strong> 个操作系统
+              <strong>3</strong> 个平台指引
             </span>
           </div>
         </div>
@@ -51,25 +57,25 @@ export default function HomePage() {
 
       <section className="section shell">
         <div className="section-heading">
-          <p className="eyebrow">学习方法</p>
-          <h2>从概念到独立解决问题</h2>
-          <p>知识、练习与复盘放在同一条路径里。</p>
+          <p className="eyebrow">课程怎么组织</p>
+          <h2>读懂对象，再动手操作</h2>
+          <p>每一节课都围绕一个可以验证的小结果展开。</p>
         </div>
         <div className="feature-grid">
           <Feature
-            icon={<Route />}
-            title="分级路径"
-            text="从入门到精通，每一层都清楚说明前置知识和完成标准。"
+            icon={<ListChecks />}
+            title="按难度推进"
+            text="从第一次提交、第一次容器启动开始，逐级进入协作、构建和排错。"
           />
           <Feature
             icon={<BookOpenCheck />}
-            title="命令辨析"
-            text="比较相似命令的范围、风险和可逆性，不再凭感觉执行。"
+            title="先看影响范围"
+            text="课程会说明命令作用于工作区、镜像、容器还是宿主机，以及如何恢复。"
           />
           <Feature
             icon={<Laptop />}
-            title="三平台实战"
-            text="Windows、macOS、Linux 分别提供命令、验证与安全清理步骤。"
+            title="本机完成练习"
+            text="Windows、macOS、Linux 都有对应步骤，执行结果和清理方式写在同一页。"
           />
         </div>
       </section>
@@ -78,22 +84,22 @@ export default function HomePage() {
         <div className="tool-path tool-path--git">
           <GitBranch />
           <div>
-            <p className="eyebrow">路径 01</p>
-            <h2>Git 版本控制</h2>
-            <p>建立快照、分支协作、整理历史，再到恢复事故现场。</p>
+            <p className="eyebrow">01 · 版本控制</p>
+            <h2>Git</h2>
+            <p>从工作区和暂存区开始，逐步掌握提交、分支、协作与历史恢复。</p>
             <Link href="/courses/git/">
-              查看 Git 路径 <ArrowRight size={15} />
+              进入 Git 课程 <ArrowRight size={15} />
             </Link>
           </div>
         </div>
         <div className="tool-path tool-path--docker">
           <Boxes />
           <div>
-            <p className="eyebrow">路径 02</p>
-            <h2>Docker 容器化</h2>
-            <p>理解镜像与容器，写好构建文件，并能定位生产问题。</p>
+            <p className="eyebrow">02 · 容器工具</p>
+            <h2>Docker</h2>
+            <p>从镜像和容器开始，练习构建、Compose、网络、数据与故障定位。</p>
             <Link href="/courses/docker/">
-              查看 Docker 路径 <ArrowRight size={15} />
+              进入 Docker 课程 <ArrowRight size={15} />
             </Link>
           </div>
         </div>
@@ -101,13 +107,44 @@ export default function HomePage() {
 
       <section className="section shell">
         <div className="section-heading">
-          <p className="eyebrow">从这里开始</p>
-          <h2>第一节课，不需要任何经验</h2>
+          <p className="eyebrow">推荐入口</p>
+          <h2>先完成两个小任务</h2>
         </div>
         <div className="course-grid course-grid--featured">
           {featured.map((lesson) => (
             <CourseCard key={lesson.id} lesson={lesson} />
           ))}
+        </div>
+      </section>
+
+      <section className="section shell home-next-step">
+        <div className="section-heading left">
+          <p className="eyebrow">
+            <ListChecks size={14} /> 学习顺序
+          </p>
+          <h2>今天只做一件事</h2>
+        </div>
+        <div className="tool-paths">
+          <div className="tool-path">
+            <strong className="next-step-number">01</strong>
+            <div>
+              <h2>先理解状态</h2>
+              <p>遇到问题时，先用 status、ps 或 inspect 看清对象当前处于什么状态。</p>
+              <Link href="/reference/">
+                查看速查手册 <ArrowRight size={15} />
+              </Link>
+            </div>
+          </div>
+          <div className="tool-path">
+            <strong className="next-step-number">02</strong>
+            <div>
+              <h2>再执行变更</h2>
+              <p>完成命令后保留输出，用下一条只读命令确认结果，再清理练习资源。</p>
+              <Link href="/progress/">
+                查看学习进度 <ArrowRight size={15} />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </>

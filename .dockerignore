@@ -1,0 +1,7 @@
+.git
+.next
+.turbo
+node_modules
+apps/web/out
+coverage
+*.log

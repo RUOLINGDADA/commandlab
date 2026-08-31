@@ -6,7 +6,13 @@ export const platformSchema = z.enum(["windows", "macos", "linux"]);
 
 /** 可复制的命令或配置片段。shell 用于提示用户应在哪类终端执行。 */
 export const commandSchema = z.object({
-  command: z.string().min(1),
+  command: z
+    .string()
+    .min(1)
+    .refine(
+      (value) => !/^(复现同一案例|改变一个可观察参数|故意改变一个参数|参考操作命令)/.test(value),
+      "命令字段不能使用自然语言占位内容。",
+    ),
   description: z.string().min(1),
   shell: z.enum(["sh", "powershell", "yaml", "dockerfile"]).default("sh"),
 });
@@ -21,6 +27,7 @@ const imageSchema = z.object({
 const pitfallSchema = z.object({
   symptom: z.string().min(2),
   cause: z.string().min(2),
+  diagnosis: z.string().min(10).optional(),
   recovery: z.string().min(2),
 });
 
@@ -32,21 +39,44 @@ const comparisonSchema = z.object({
   reversible: z.string().min(2),
 });
 
+const parameterSchema = z.object({
+  token: z.string().min(1),
+  meaning: z.string().min(6),
+  effect: z.string().min(6),
+});
+
+const exerciseRoleSchema = z.enum(["main", "variant"]);
+
 /** 一道真实本机练习步骤，题目、答案、验证和清理保持一一对应。 */
 export const exerciseStepSchema = z.object({
   id: z.string().regex(/^step-[a-z0-9-]+$/),
-  prompt: z.string().min(10),
+  role: exerciseRoleSchema,
+  /** 题目只描述任务，不得泄露可直接执行的命令。 */
+  prompt: z
+    .string()
+    .min(10)
+    .refine(
+      (value) =>
+        !/(^|\s)(docker|docker-compose|compose|git)\s+/.test(value) &&
+        !/```|&&|\|\||\|\s|\s--[a-z]|\$\{?PWD/.test(value),
+      "实操题目只能描述任务，命令必须放在参考答案中。",
+    ),
   objective: z.string().min(10),
-  setup: z.array(commandSchema).min(1),
+  preparation: z.array(z.string().min(8)).min(1),
   hints: z.array(z.string().min(4)).min(2),
   answer: z.object({
     explanation: z.string().min(10),
     commands: z.array(commandSchema).min(1),
+    parameters: z.array(parameterSchema).min(1),
+    process: z.array(z.string().min(10)).min(2),
+    stateChanges: z.array(z.string().min(8)).min(1),
   }),
   expected: z.string().min(10),
   verify: z.array(commandSchema).min(1),
   cleanup: z.array(commandSchema).min(1),
   pitfalls: z.array(pitfallSchema).min(1),
+  diagnosisOrder: z.array(z.string().min(2)).min(3),
+  cleanupScope: z.string().min(10),
   comparisons: z.array(comparisonSchema).min(2),
   variants: z.array(z.string().min(8)).min(1),
   dangerous: z.boolean().default(false),
@@ -60,7 +90,7 @@ export const scenarioSchema = z.object({
   goal: z.string().min(10),
   prerequisites: z.array(z.string().min(4)).min(1),
   images: z.array(imageSchema).min(1),
-  steps: z.array(exerciseStepSchema).min(2),
+  steps: z.array(exerciseStepSchema).length(2),
 });
 
 const platformGuideSchema = z.object({
@@ -150,19 +180,76 @@ export const dockerLessonSchema = z
         message: "答案索引必须指向现有选项。",
       });
     }
-    const minimumScenarios = lesson.level === "高级" || lesson.level === "精通" ? 2 : 1;
-    if (lesson.scenarios.length < minimumScenarios) {
+    if (lesson.scenarios.length !== 1) {
       context.addIssue({
         code: "custom",
         path: ["scenarios"],
-        message: `${lesson.level}课程至少需要 ${minimumScenarios} 个实操场景。`,
+        message: "Docker 课程必须使用一个完整场景，并包含主任务和变体任务。",
       });
     }
     const stepIds = lesson.scenarios.flatMap((scenario) => scenario.steps.map((step) => step.id));
     if (new Set(stepIds).size !== stepIds.length) {
       context.addIssue({ code: "custom", path: ["scenarios"], message: "实操步骤编号不能重复。" });
     }
+    for (const [scenarioIndex, scenario] of lesson.scenarios.entries()) {
+      const roles = scenario.steps.map((step) => step.role);
+      if (
+        roles.filter((role) => role === "main").length !== 1 ||
+        roles.filter((role) => role === "variant").length !== 1
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["scenarios", scenarioIndex, "steps"],
+          message: "每个 Docker 场景必须恰好包含一个主任务和一个变体任务。",
+        });
+      }
+    }
+    for (const [scenarioIndex, scenario] of lesson.scenarios.entries()) {
+      for (const [stepIndex, step] of scenario.steps.entries()) {
+        if (step.pitfalls.some((pitfall) => !pitfall.diagnosis)) {
+          context.addIssue({
+            code: "custom",
+            path: ["scenarios", scenarioIndex, "steps", stepIndex, "pitfalls"],
+            message: "Docker 坑点必须包含具体排查证据。",
+          });
+        }
+      }
+    }
+    const ranges: Record<Level, [number, number]> = {
+      入门: [15, 20],
+      进阶: [20, 25],
+      高级: [25, 30],
+      精通: [30, 35],
+    };
+    const [minimum, maximum] = ranges[lesson.level];
+    if (lesson.duration < minimum || lesson.duration > maximum) {
+      context.addIssue({
+        code: "custom",
+        path: ["duration"],
+        message: `${lesson.level}课程（2 个步骤）时长应为 ${minimum}-${maximum} 分钟。`,
+      });
+    }
   });
+
+/** 工具百科条目，使用与课程相同的 MDX + YAML 内容管线。 */
+export const referenceEntrySchema = z.object({
+  id: z.string().regex(/^(git|docker)-ref-[a-z0-9-]+$/),
+  tool: toolSchema,
+  slug: z.string().regex(/^[a-z0-9-]+$/),
+  title: z.string().min(2),
+  category: z.string().min(2),
+  object: z.string().min(2),
+  summary: z.string().min(10),
+  usage: z.string().min(10),
+  commonOptions: z.array(z.string().min(2)).min(1),
+  scenarios: z.array(z.string().min(10)).min(1),
+  comparisons: z.array(z.string().min(10)).min(1),
+  risk: z.enum(["低", "中", "高"]),
+  reversible: z.string().min(10),
+  errors: z.array(z.string().min(10)).min(1),
+  examples: z.array(commandSchema).min(1),
+  relatedLessons: z.array(z.string().regex(/^(git|docker)-\d{2}$/)).min(1),
+});
 
 /** 构建阶段按 tool 分派到 Git 或 Docker 的专用课程模型。 */
 export const lessonSchema = z.union([gitLessonSchema, dockerLessonSchema]);
@@ -176,6 +263,7 @@ export type InteractiveQuiz = z.infer<typeof interactiveQuizSchema>;
 export type LessonMeta = z.infer<typeof lessonSchema>;
 export type GitLesson = z.infer<typeof gitLessonSchema>;
 export type DockerLesson = z.infer<typeof dockerLessonSchema>;
+export type ReferenceEntry = z.infer<typeof referenceEntrySchema>;
 
 /** 页面使用的完整课程对象，正文来自 MDX 的 frontmatter 之后。 */
 export type Lesson = LessonMeta & {

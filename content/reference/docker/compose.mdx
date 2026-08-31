@@ -1,0 +1,21 @@
+---
+id: "docker-ref-compose"
+tool: "docker"
+slug: "compose"
+title: "docker compose"
+category: "多容器编排"
+object: "Compose 项目"
+summary: "按 compose.yaml 声明创建、启动、查看和停止一组服务。"
+usage: "启动 Web、缓存和数据库开发栈。"
+commonOptions: ["-p：固定项目名","up -d：后台启动","config：展开并校验配置"]
+scenarios: ["启动 Web、缓存和数据库开发栈。","用 ps 和 logs 判断服务真实状态。"]
+comparisons: ["与 docker run 对比：Compose 管理服务组和依赖，run 只管理一个容器。"]
+risk: "中"
+reversible: "项目名决定资源前缀；down 可能删除匿名卷和网络。"
+errors: ["no configuration file provided：当前目录缺少 compose.yaml。"]
+examples: [{command: "docker compose -p commandlab up -d", description: "围绕 docker compose 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-20"]
+---
+
+按 compose.yaml 声明创建、启动、查看和停止一组服务。用 ps 和 logs 判断服务真实状态。 与 docker run 对比：Compose 管理服务组和依赖，run 只管理一个容器。
+

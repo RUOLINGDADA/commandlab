@@ -32,8 +32,7 @@ describe("课程内容", () => {
     const dockerLessons = lessons.filter((lesson) => lesson.tool === "docker");
     const stepIds = new Set<string>();
     for (const lesson of dockerLessons) {
-      const minimumScenarios = lesson.level === "高级" || lesson.level === "精通" ? 2 : 1;
-      expect(lesson.scenarios.length).toBeGreaterThanOrEqual(minimumScenarios);
+      expect(lesson.scenarios).toHaveLength(1);
       for (const scenario of lesson.scenarios) {
         expect(scenario.images.length).toBeGreaterThan(0);
         for (const step of scenario.steps) {
@@ -48,6 +47,59 @@ describe("课程内容", () => {
         }
       }
     }
-    expect(stepIds.size).toBeGreaterThanOrEqual(48);
+    expect(stepIds.size).toBeGreaterThanOrEqual(24);
+  });
+
+  it("Docker 互动题按课程主题唯一且题目不泄露命令", () => {
+    const dockerLessons = lessons.filter((lesson) => lesson.tool === "docker");
+    expect(new Set(dockerLessons.map((lesson) => lesson.interactiveQuiz.question)).size).toBe(24);
+    for (const lesson of dockerLessons) {
+      expect(lesson.interactiveQuiz.type).toBeDefined();
+      for (const scenario of lesson.scenarios) {
+        for (const step of scenario.steps) {
+          expect(step.prompt).not.toMatch(/docker\s|git\s|```|&&|\|\||--[a-z]/);
+          expect(step.preparation.join(" ")).not.toMatch(/docker\s/);
+        }
+      }
+    }
+  });
+
+  it("Docker 使用新课程路径并为每节明确主任务与变体", () => {
+    const dockerLessons = lessons.filter((lesson) => lesson.tool === "docker");
+    expect(dockerLessons.map((lesson) => lesson.slug)).toEqual([
+      "install-engine",
+      "hello-pull",
+      "interactive",
+      "background-naming",
+      "lifecycle",
+      "logs-exec-top",
+      "web-port",
+      "image-catalog",
+      "image-cleanup",
+      "dockerfile-basic",
+      "dockerfile-instructions",
+      "context-ignore",
+      "layers-cache",
+      "multi-stage",
+      "volumes",
+      "bind-mount",
+      "network-dns",
+      "config-env",
+      "registry-tags",
+      "compose-app",
+      "compose-health",
+      "resources-logs",
+      "security-debug",
+      "production-delivery",
+    ]);
+    for (const lesson of dockerLessons) {
+      const steps = lesson.scenarios[0]!.steps;
+      expect(steps.filter((step) => step.role === "main")).toHaveLength(1);
+      expect(steps.filter((step) => step.role === "variant")).toHaveLength(1);
+      for (const step of steps) {
+        expect(step.diagnosisOrder.length).toBeGreaterThanOrEqual(3);
+        expect(step.cleanupScope).toContain("commandlab-");
+      }
+    }
   });
 });

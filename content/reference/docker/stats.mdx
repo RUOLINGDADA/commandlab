@@ -1,0 +1,21 @@
+---
+id: "docker-ref-stats"
+tool: "docker"
+slug: "stats"
+title: "docker stats"
+category: "资源观察"
+object: "运行中容器"
+summary: "实时读取 CPU、内存、网络和块 I/O 使用量。"
+usage: "定位内存增长或 CPU 异常。"
+commonOptions: ["--no-stream：只采样一次","容器名：限定观察对象"]
+scenarios: ["定位内存增长或 CPU 异常。","结合 inspect 的限制值判断是否接近上限。"]
+comparisons: ["与 docker system df 对比：stats 看运行时，system df 看磁盘占用。"]
+risk: "低"
+reversible: "只读但可能暴露工作负载特征；采样本身会产生少量开销。"
+errors: ["Container ... not found：容器已退出或名称错误。"]
+examples: [{command: "docker stats --no-stream commandlab-worker", description: "围绕 docker stats 的最小可验证示例", shell: "sh"}]
+relatedLessons: ["docker-22"]
+---
+
+实时读取 CPU、内存、网络和块 I/O 使用量。结合 inspect 的限制值判断是否接近上限。 与 docker system df 对比：stats 看运行时，system df 看磁盘占用。
+

@@ -1,9 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
-import { lessonSchema, type Lesson, type Tool } from "@commandlab/content-schema";
+import {
+  lessonSchema,
+  referenceEntrySchema,
+  type Lesson,
+  type ReferenceEntry,
+  type Tool,
+} from "@commandlab/content-schema";
 
 let lessonCache: Lesson[] | undefined;
+type LoadedReference = ReferenceEntry & { body: string };
+let referenceCache: LoadedReference[] | undefined;
 
 function contentRoot(): string {
   const rootCandidate = path.resolve(process.cwd(), "content");
@@ -57,9 +65,8 @@ export function validateContent(): Lesson[] {
     if (platforms.size !== 3) throw new Error(`${lesson.id} 的三平台指引不完整。`);
 
     if (lesson.tool === "docker") {
-      const minimumScenarios = lesson.level === "高级" || lesson.level === "精通" ? 2 : 1;
-      if (lesson.scenarios.length < minimumScenarios) {
-        throw new Error(`${lesson.id} 至少需要 ${minimumScenarios} 个实操场景。`);
+      if (lesson.scenarios.length !== 1) {
+        throw new Error(`${lesson.id} 必须使用一个完整场景，并在其中包含主任务和变体。`);
       }
       const stepIds = lesson.scenarios.flatMap((scenario) => scenario.steps.map((step) => step.id));
       if (new Set(stepIds).size !== stepIds.length) {
@@ -95,4 +102,36 @@ export function getLessonsByTool(tool: Tool): Lesson[] {
 
 export function getLesson(tool: Tool, slug: string): Lesson | undefined {
   return validateContent().find((lesson) => lesson.tool === tool && lesson.slug === slug);
+}
+
+export function getLessonById(id: string): Lesson | undefined {
+  return validateContent().find((lesson) => lesson.id === id);
+}
+
+/** 构建阶段读取工具百科条目，供静态百科页和搜索使用。 */
+export function loadReferences(): LoadedReference[] {
+  if (referenceCache) return referenceCache;
+  const root = path.join(contentRoot(), "reference");
+  if (!fs.existsSync(root)) return [];
+  const files = (["git", "docker"] as const).flatMap((tool) => {
+    const directory = path.join(root, tool);
+    return fs.existsSync(directory)
+      ? fs
+          .readdirSync(directory)
+          .filter((file) => file.endsWith(".mdx"))
+          .map((file) => path.join(directory, file))
+      : [];
+  });
+  referenceCache = files.map((file) => {
+    const parsed = matter(fs.readFileSync(file, "utf8"));
+    const metadata = referenceEntrySchema.parse(parsed.data);
+    const body = parsed.content.trim();
+    if (body.length < 30) throw new Error(`${file} 的百科正文过短。`);
+    return { ...metadata, body } as ReferenceEntry & { body: string };
+  });
+  return referenceCache;
+}
+
+export function getReferencesByTool(tool: Tool): LoadedReference[] {
+  return loadReferences().filter((entry) => entry.tool === tool);
 }
