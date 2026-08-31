@@ -25,3 +25,5 @@ Docker 课程重设计已经通过 PR #9 合并，版本 PR #10 已完成。`v0.
 续作 `docs/tasks/2026-08-31-terminal-density-context-menu/` 已完成：终端工作台网格使用固定高度，输出区域独立滚动且采用紧凑 Git 风格行距；工作区文件、分支、提交、远端和 stash 行支持边界内右键菜单，动作通过仿真命令执行器回放；终端候选支持 `git `、`git st`、`git co` 和常用参数模板，可用方向键、Tab 或点击选择。新增候选/菜单映射单测，完整工程验证和桌面/390px 浏览器验收通过。工作台仍只运行浏览器内存状态，不调用宿主机 Git/Shell。
 
 最新续作 `docs/tasks/2026-08-31-ide-workspace-remote-sync/` 已完成：浏览器右键不稳定的问题改为所有工作区对象旁显示可见 `>` 操作入口，菜单动作继续通过仿真命令回放；Git 状态新增受 schema 校验的 `remoteFiles` 快照，支持远端表单、`git remote files`、`git remote touch <path>`、远端提交以及 `git pull` 将远端新增/更新文件同步到本地 Tracked clean 文件。pull 会生成合并提交，并对本地未提交同路径文件报告冲突且不覆盖。命令候选覆盖 `git remote `、`git pull ` 和 `git push `。已通过 29 项测试、类型、Lint、格式、内容校验、生产构建和桌面/390px 浏览器验收；工作台仍只运行在浏览器内存会话。
+
+最新续作 `docs/tasks/2026-08-31-home-live-workbench/` 已完成：主页不再使用紧凑终端预览，首屏采用任务入口和会话状态侧栏，工作台下移为全宽完整 `InteractiveGitWorkbench`；桌面输入 `git status` 已确认输出和状态同步，390px 页面整体无横向溢出。紧凑模式仍供课程详情等上下文使用。

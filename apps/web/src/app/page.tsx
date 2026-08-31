@@ -10,8 +10,8 @@ import {
 } from "lucide-react";
 import { Card } from "@commandlab/ui";
 import { CourseCard } from "@/components/course-card";
+import { InteractiveGitWorkbench } from "@/components/interactive-git-workbench";
 import { Reveal } from "@/components/reveal";
-import { TerminalPreview } from "@/components/terminal-preview";
 import { validateContent } from "@/lib/content";
 
 export default function HomePage() {
@@ -24,65 +24,90 @@ export default function HomePage() {
   return (
     <>
       <section className="hero shell hero-home">
-        <div className="hero-copy">
-          <p className="eyebrow hero-eyebrow">
-            <span className="live-dot" />
-            命令行学习 · Git 与 Docker
-          </p>
-          <h1>
-            把每条命令，<span>变成可验证的结果。</span>
-          </h1>
-          <p className="hero-description">
-            CommandLab
-            是一套可以边读边做的中文课程。你会先判断操作对象，再执行命令，最后用结果验证，而不是只背参数。
-          </p>
-          <div className="hero-actions">
-            <Link href="/learn/" className="primary-link">
-              浏览课程 <ArrowRight size={16} />
-            </Link>
-            <Link href="/reference/" className="secondary-link">
-              打开工具百科 <Search size={16} />
-            </Link>
-          </div>
-          <div className="hero-proof">
-            <span>
-              <strong>{lessons.length}</strong> 节课程
-            </span>
-            <span>
-              <strong>2</strong> 条学习路径
-            </span>
-            <span>
-              <strong>3</strong> 个平台指引
-            </span>
-          </div>
-          <div className="hero-command-strip" aria-label="学习闭环">
-            <span>观察状态</span>
-            <ArrowRight size={13} />
-            <span>执行命令</span>
-            <ArrowRight size={13} />
-            <span>核对证据</span>
-          </div>
-        </div>
-        <div className="hero-workspace">
-          <div className="workspace-rail">
-            <span className="workspace-rail-dot" />
-            <strong>学习工作台</strong>
-            <small>今日路径</small>
-            <span className="workspace-active">Git · 01</span>
-            <span>Docker · 01</span>
-            <span>工具百科</span>
-          </div>
-          <div className="workspace-main">
-            <TerminalPreview compact />
-            <div className="workspace-float workspace-float--top">
-              <span>学习进度</span>
-              <strong>03 / 24</strong>
+        <div className="home-hero-top">
+          <div className="hero-copy">
+            <p className="eyebrow hero-eyebrow">
+              <span className="live-dot" />
+              命令行学习 · Git 与 Docker
+            </p>
+            <h1>
+              把每条命令，<span>变成可验证的结果。</span>
+            </h1>
+            <p className="hero-description">
+              CommandLab
+              是一套可以边读边做的中文课程。你会先判断操作对象，再执行命令，最后用结果验证，而不是只背参数。
+            </p>
+            <div className="hero-actions">
+              <Link href="/learn/" className="primary-link">
+                浏览课程 <ArrowRight size={16} />
+              </Link>
+              <Link href="/reference/" className="secondary-link">
+                打开工具百科 <Search size={16} />
+              </Link>
             </div>
-            <div className="workspace-float workspace-float--bottom">
-              <span className="live-dot" /> 输出已验证
+            <div className="hero-proof">
+              <span>
+                <strong>{lessons.length}</strong> 节课程
+              </span>
+              <span>
+                <strong>2</strong> 条学习路径
+              </span>
+              <span>
+                <strong>3</strong> 个平台指引
+              </span>
             </div>
           </div>
+
+          <aside className="home-launchpad" aria-label="工作区入口">
+            <div className="home-launchpad-heading">
+              <span className="live-dot" />
+              <span>今日工作区</span>
+              <small>内存隔离</small>
+            </div>
+            <p>从一个小任务开始，把结果留在当前会话里。</p>
+            <nav className="home-launchpad-links" aria-label="快速入口">
+              <Link href="/terminal/" className="is-current">
+                <span>
+                  <strong>Git 仿真终端</strong>
+                  <small>输入命令，观察状态变化</small>
+                </span>
+                <ArrowRight size={15} />
+              </Link>
+              <Link href="/learn/">
+                <span>
+                  <strong>学习路径</strong>
+                  <small>按任务推进 Git 与 Docker</small>
+                </span>
+                <ArrowRight size={15} />
+              </Link>
+              <Link href="/reference/">
+                <span>
+                  <strong>工具百科</strong>
+                  <small>查语法、参数与演示</small>
+                </span>
+                <ArrowRight size={15} />
+              </Link>
+            </nav>
+            <div className="home-launchpad-footer">
+              <span>SESSION</span>
+              <code>commandlab-git-lab</code>
+            </div>
+          </aside>
         </div>
+
+        <div className="home-workbench-heading">
+          <div>
+            <p className="eyebrow">现在开始</p>
+            <h2>在真实反馈里学会 Git</h2>
+          </div>
+          <div className="home-workbench-meta">
+            <span>
+              <span className="live-dot" /> 浏览器内运行
+            </span>
+            <span>状态、文件与提交图同步</span>
+          </div>
+        </div>
+        <InteractiveGitWorkbench />
       </section>
 
       <Reveal>

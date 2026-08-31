@@ -16,6 +16,7 @@
 - `docs/tasks/2026-08-31-interactive-git-workbench/`（交互式 Git 仿真终端与可点击工作区已完成本地实现与验收）
 - `docs/tasks/2026-08-31-terminal-density-context-menu/`（终端固定滚动、紧凑输出、工作区右键菜单与命令提示已完成本地实现与验收）
 - `docs/tasks/2026-08-31-ide-workspace-remote-sync/`（可见 `>` 操作入口、远端文件仿真、`git pull` 工作区同步已完成本地实现与验收）
+- `docs/tasks/2026-08-31-home-live-workbench/`（主页已替换为完整在线 Git 工作台，并完成 ZCode 风格首屏布局验收）
 - `docs/tasks/2026-08-31-release-v0.1.3/`（版本统一、main 合并、GitHub Release 与 Pages 部署，已完成）
 - `docs/tasks/2026-08-31-commandlab-redesign/`（UI、Git 课程深度练习、百科扩充已完成；待后续发布决策）
 - `docs/tasks/2026-08-31-reference-motion/`（全量命令百科、参数解析、首页工作区动效和响应式验收完成）
@@ -45,3 +46,4 @@
 - Git 命令动画引擎重构：Git reducer 覆盖 24 条命令，场景统一为六阶段时间轴；add/commit/branch/switch/merge/rebase/reset/stash/fetch/push 等关键状态变化完成浏览器验收；普通构建、GitHub Pages 强制构建和 11 页导出校验通过
 - 动画可读性重构：动画详情页改为全宽 IDE 式工作台，SVG 扩大至 1180×620，新增前后状态摘要、文件/提交/分支/远端动作路径和 0.5x/0.7x/1x 播放速度；桌面与 390px 浏览器验收通过
 - 动画中间状态重构：时间轴扩展为 8 帧逐字输入与对象生成/指针移动分离，默认 0.5x；commit/merge/rebase 与 Docker 生命周期在中间帧显示真实节点、路径和前后快照
+- 主页在线工作台续作：主页移除 `TerminalPreview compact`，首屏改为任务入口加完整 `InteractiveGitWorkbench`；桌面输入 `git status` 后终端输出和状态同步，390px 页面整体无横向溢出，完整工作台与紧凑模式计数分别为 1/0。
