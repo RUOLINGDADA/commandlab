@@ -1,13 +1,13 @@
 # 项目状态
 
-- 当前阶段：UI 与 Docker 部署重构已发布，等待 Docker 引擎环境补验
+- 当前阶段：UI 与 Docker 部署重构已发布；代码与远程交付完成，Docker 本机验收受引擎环境阻塞
 - 当前版本：0.1.2
 - 目标仓库：`RUOLINGDADA/commandlab`
 - 目标站点：`https://ruolingdada.github.io/commandlab/`
 - 在线沙箱：首发关闭，显示“暂未开放”
 - 远程推送：已完成，`main` 已跟踪 `origin/main`
 - GitHub Release：`v0.1.2` 已发布
-- 当前开发分支：`codex/docker-guide-redesign`（Docker 24 节新路径、新 slug 与百科扩充）
+- 当前开发分支：`main`（已快进至 `origin/main`）
 - 分支规则：`Protect main` 已启用
 - Pages：Actions 部署成功
 
@@ -26,4 +26,5 @@
 - Next 静态构建与 `/commandlab` 导出校验：通过
 - Docker 指南风格重构：完整工程验证、Pages 导出和浏览器验收通过；功能提交 `9183085` 已推送，最新文档交接提交因网络故障暂未推送
 - UI 与部署重构：格式、Lint、TypeScript、Vitest、内容校验、生产构建和 Docker HTTP 冒烟通过；本机 8080 被占用，容器验收使用 18080
-- UI 与 `v0.1.2` 发布：PR #12 已合并，Release 工作流 #3 与 Pages 工作流 #3 成功；线上关键路径 HTTP 200；Docker Desktop 引擎因 `sailor-ingest.sock` 初始化错误仍无法构建
+- UI 与 `v0.1.2` 发布：PR #12 已合并，Release 工作流 #3 与 Pages 工作流 #3 成功；线上关键路径 HTTP 200；Dependabot PR #14 已合并且 esbuild 告警为 Fixed
+- Docker 本机补验：已通过 WSL 将 Docker Desktop 运行目录中的旧 socket 文件改名为 `.bak-20260831`（可恢复）；Docker Desktop 4.88.1 仍在启动时重新创建 `sailor-ingest.sock` 并退出，需升级/修复 Docker Desktop 后再运行 Compose 验收
