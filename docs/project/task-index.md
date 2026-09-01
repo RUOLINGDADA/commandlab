@@ -18,3 +18,7 @@
 | [2026-08-31 IDE 工作区操作入口与远端同步](../tasks/2026-08-31-ide-workspace-remote-sync/requirements.md)         | 本地完成 | 可见 `>` 操作入口、远端文件仿真、`git pull` 工作区同步与冲突保护       |
 | [2026-08-31 主页在线终端工作台](../tasks/2026-08-31-home-live-workbench/requirements.md)                         | 本地完成 | 主页完整 Git 工作台、任务入口和 ZCode 风格首屏布局                     |
 | [2026-08-31 v0.1.3 发布](../tasks/2026-08-31-release-v0.1.3/requirements.md)                                     | 已完成   | 统一版本、合并 main、创建 GitHub Release 并部署 Pages                  |
+| [2026-09-01 主题与动画布局修复](../tasks/2026-09-01-theme-animation-layout/requirements.md)                      | 本地完成 | 修复筛选分隔、动画导航主题保持与课程嵌入舞台裁切/卡片遮挡              |
+| [2026-09-01 Docker 学习体验增强](../tasks/2026-09-01-docker-learning-experience/requirements.md)                 | 本地完成 | 丰富 Docker 动画/终端、接入统一在线终端并优化嵌入动画 UI               |
+| [2026-09-02 新手教程走查与优化](../tasks/2026-09-02-novice-course-walkthrough/requirements.md)                   | 本地完成 | 以电脑小白视角优化课程引导、动画播放和 Docker 在线练习入口             |
+| [2026-09-01 全量教程内容审阅与百科扩充](../tasks/2026-09-01-full-content-audit/requirements.md)                  | 本地完成 | 逐节补充新手前置、验证与恢复路径，新增 8 条 Git/Docker 百科并接入动画  |

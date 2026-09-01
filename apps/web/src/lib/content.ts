@@ -168,3 +168,66 @@ export function getReferencesByTool(tool: Tool): LoadedReference[] {
 export function getReference(tool: Tool, slug: string): LoadedReference | undefined {
   return loadReferences().find((entry) => entry.tool === tool && entry.slug === slug);
 }
+
+/**
+ * 建立课程 → 引用条目的反向索引，用于在课程正文与练习区中嵌入命令动画。
+ * 仅返回该课程下能直接定位到的引用条目，未命中的命令不出现。
+ */
+export function getLessonReferenceSlugs(lesson: {
+  id: string;
+  commands: ReadonlyArray<{ command: string }>;
+}): string[] {
+  const all = loadReferences();
+  const commandToSlug = new Map<string, string>();
+  for (const entry of all) {
+    for (const example of entry.examples) {
+      const parts = example.command.trim().split(/\s+/);
+      const commandName = parts[0] === "git" || parts[0] === "docker" ? parts[1] : parts[0];
+      if (commandName && !commandToSlug.has(commandName)) {
+        commandToSlug.set(commandName, `${entry.tool}/${entry.slug}`);
+      }
+    }
+    const syntaxParts = entry.syntax.trim().split(/\s+/);
+    const commandName =
+      syntaxParts[0] === "git" || syntaxParts[0] === "docker" ? syntaxParts[1] : syntaxParts[0];
+    if (commandName && !commandToSlug.has(commandName)) {
+      commandToSlug.set(commandName, `${entry.tool}/${entry.slug}`);
+    }
+  }
+  const matched = new Set<string>();
+  for (const { command } of lesson.commands) {
+    const parts = command.trim().split(/\s+/);
+    const commandName = parts[0] === "git" || parts[0] === "docker" ? parts[1] : parts[0];
+    if (!commandName) continue;
+    const target = commandToSlug.get(commandName);
+    if (target) matched.add(target);
+  }
+  // 兜底：按课程 id 关联常见 lesson-to-reference 通道
+  const fallback: Record<string, string[]> = {
+    "git-04": ["git/commit"],
+    "git-05": ["git/add", "git/restore"],
+    "git-06": ["git/branch"],
+    "git-07": ["git/switch"],
+    "git-08": ["git/merge"],
+    "git-09": ["git/rebase"],
+    "git-10": ["git/reset"],
+    "git-11": ["git/stash"],
+    "git-12": ["git/log"],
+    "git-13": ["git/show"],
+    "git-14": ["git/reflog"],
+    "git-15": ["git/cherry-pick"],
+    "git-16": ["git/tag"],
+    "git-17": ["git/remote"],
+    "git-18": ["git/fetch"],
+    "git-19": ["git/pull"],
+    "git-20": ["git/push"],
+    "git-21": ["git/diff"],
+    "git-22": ["git/blame"],
+    "git-23": ["git/clean"],
+    "git-24": ["git/bisect"],
+  };
+  for (const slug of fallback[lesson.id] ?? []) {
+    if (all.some((entry) => `${entry.tool}/${entry.slug}` === slug)) matched.add(slug);
+  }
+  return Array.from(matched);
+}

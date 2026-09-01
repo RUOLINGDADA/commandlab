@@ -38,6 +38,28 @@ describe("interactive Git simulator", () => {
     expect(listed.output[0]).toContain("stash@{0}");
   });
 
+  it("支持 commit -a 自动暂存已修改文件", () => {
+    const initial = createInteractiveGitState();
+    const committed = executeInteractiveGitCommand(initial, 'git commit -a -m "批量保存"');
+    expect(committed.error).toBeUndefined();
+    expect(committed.state.commits.at(-1)?.message).toBe("批量保存");
+    expect(committed.state.staging).toEqual([]);
+    expect(committed.state.workingTree.find((file) => file.path === "README.md")?.status).toBe(
+      "clean",
+    );
+  });
+
+  it("支持 HEAD~、HEAD^ 和唯一短提交引用", () => {
+    const initial = createInteractiveGitState();
+    const staged = executeInteractiveGitCommand(initial, "git add README.md");
+    const committed = executeInteractiveGitCommand(staged.state, 'git commit -m "第二次提交"');
+    const showParent = executeInteractiveGitCommand(committed.state, "git show HEAD~1");
+    expect(showParent.error).toBeUndefined();
+    expect(showParent.output.join("\n")).toContain("commit B");
+    const showCaret = executeInteractiveGitCommand(committed.state, "git show HEAD^1");
+    expect(showCaret.error).toBeUndefined();
+    expect(showCaret.output.join("\n")).toContain("commit B");
+  });
   it("错误命令不会污染原状态", () => {
     const initial = createInteractiveGitState();
     const before = JSON.stringify(initial);

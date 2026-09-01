@@ -23,9 +23,15 @@ import { Button } from "@commandlab/ui";
 import { CommandSpecificStage } from "./command-specific-views";
 
 /** 教学动画总控：时间轴驱动终端、状态快照和 SVG，组件不推断命令语义。 */
-export function CommandAnimation({ scene }: { scene: TeachingScene }) {
+export function CommandAnimation({
+  scene,
+  embedded = false,
+}: {
+  scene: TeachingScene;
+  embedded?: boolean;
+}) {
   const [frameIndex, setFrameIndex] = useState(0);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(!embedded);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [playbackRate, setPlaybackRate] = useState(0.5);
@@ -69,7 +75,7 @@ export function CommandAnimation({ scene }: { scene: TeachingScene }) {
 
   return (
     <section
-      className={`teaching-animation teaching-animation--${scene.tool}`}
+      className={`teaching-animation teaching-animation--${scene.tool}${embedded ? " teaching-animation--embedded" : ""}`}
       aria-label={`${scene.title} 教学演示`}
     >
       <div className="teaching-workbench">

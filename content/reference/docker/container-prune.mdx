@@ -1,0 +1,24 @@
+---
+id: "docker-ref-container-prune"
+tool: "docker"
+slug: "container-prune"
+title: "docker container prune"
+category: "清理"
+object: "已停止容器"
+summary: "删除当前 Engine 中满足条件的已停止容器。"
+usage: "确认容器状态和数据不再需要后，批量清理已停止容器。"
+syntax: "docker container prune [--filter <filter>] [--force]"
+parameters:
+  - {flag: "--filter", description: "限定创建时间等条件，减少误删范围。"}
+  - {flag: "--force", description: "跳过确认提示；自动化脚本中使用前必须确认 context。"}
+commonOptions: ["--filter：缩小范围", "--force：跳过确认"]
+scenarios: ["只清理一周前退出的临时容器。", "先列出容器再决定是否执行批量清理。"]
+comparisons: ["与 docker rm 对比：rm 逐个指定对象，prune 按条件批量删除。", "与 docker system prune 对比：system prune 还可能删除镜像、网络等其他资源。"]
+risk: "高"
+reversible: "容器删除后可恢复性有限，未挂载数据可能丢失；删除前先用 inspect 和 logs 保存证据。"
+errors: ["conflict：容器仍在运行，先 stop 或改用 rm -f 前确认影响。"]
+examples: [{command: "docker container prune --filter until=168h", description: "清理超过 7 天的已停止容器", shell: "sh"}]
+relatedLessons: ["docker-09", "docker-24"]
+---
+
+批量清理前先确认 docker context show、docker ps -a 和容器数据是否已挂载到卷。学习环境优先使用课程前缀筛选的 docker rm，不要把 prune 当作默认清理命令。

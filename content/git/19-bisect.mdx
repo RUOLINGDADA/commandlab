@@ -14,24 +14,32 @@ pitfall: {"symptom":"没有确认状态就执行 git bisect start，得到与预
 comparison: {"items":["git bisect start","git bisect run ./test.sh"],"guidance":"先判断目标是观察状态、改变工作区、移动引用还是改写历史，再选择命令。","risk":"只读检查风险低；覆盖工作区或改写共享历史前必须建立恢复点。","reversible":"Git 对象通常可从 reflog 追踪，未提交且被覆盖的内容可能无法恢复。"}
 related: ["git bisect start","git bisect run ./test.sh","git status","git help"]
 quiz: {"question":"学习“二分定位回归”时，哪项习惯最可靠？","options":["不看状态直接执行写命令","先观察、预测影响，再执行并验证","命令没有报错就表示目标完成"],"answer":1,"explanation":"可靠操作包含观察、预测、执行和验证四步。"}
-practice: {"goal":"在独立仓库练习：二分定位回归","steps":["建立 commandlab-git-lab 并创建种子提交","执行 git log --oneline --all，随后运行 git status --short"],"expected":"git status --short 显示与目标一致的状态或历史。","hint":"先运行 git status，确认当前分支与工作区是否干净。","solution":"完成种子仓库后执行 git log --oneline --all，再用 git status --short 验证并解释输出。","variant":"新增一个文件或分支条件，先写下预测，再重复 git bisect start 并比较结果。"}
+practice: {"goal":"在独立仓库练习：二分定位回归","steps":["在种子提交后再创建至少三个提交，并准备一个可执行、返回 0/1 的测试脚本（例如检查 note.txt 是否包含已知字符串）","执行 git bisect start、git bisect bad HEAD、git bisect good <确认正常的旧提交>，最后运行 git bisect run ./test.sh"],"expected":"Git 报告首次引入问题的提交；完成后必须执行 git bisect reset 回到原分支。","hint":"good 和 bad 必须是真实存在且可比较的提交；测试脚本返回 0 表示通过、1 表示失败，其他退出码会中止自动搜索。","solution":"先用 git log --oneline 找到边界，再启动 bisect；保留报告的提交哈希并用 git show 验证，最后 reset。","variant":"手动执行 git bisect good 或 git bisect bad 一轮，观察 Git 如何缩小候选范围。"}
 platforms: [{"platform":"windows","setup":["New-Item -ItemType Directory -Force commandlab-git-lab | Out-Null","Set-Location commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","Set-Content note.txt 'CommandLab'","git add note.txt","git commit -m \"docs: seed lab\"","git log --oneline --all"],"verify":["git status --short"],"cleanup":["Set-Location ..","Remove-Item -Recurse -Force commandlab-git-lab"]},{"platform":"macos","setup":["mkdir -p commandlab-git-lab && cd commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","printf 'CommandLab\\n' > note.txt","git add note.txt","git commit -m \"docs: seed lab\"","git log --oneline --all"],"verify":["git status --short"],"cleanup":["cd ..","rm -rf commandlab-git-lab"]},{"platform":"linux","setup":["mkdir -p commandlab-git-lab && cd commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","printf 'CommandLab\\n' > note.txt","git add note.txt","git commit -m \"docs: seed lab\"","git log --oneline --all"],"verify":["git status --short"],"cleanup":["cd ..","rm -rf commandlab-git-lab"]}]
 ---
 
-## 核心模型
+## 本节要解决什么
 
-用好坏边界快速找到首次出错提交。
+用好坏边界快速找到首次出错提交，并在隔离仓库中练习、验证与安全清理。先把命令要影响的对象说清楚，再执行；这样你能判断输出是否合理，而不是只看“有没有报错”。
 
-不要从背诵参数开始。先运行 git status 确认当前分支、暂存区和工作区，再判断命令会移动引用、改变暂存区，还是改写工作区。把影响区域说清楚后再执行，可以避免大多数误操作。
+## 先准备，再操作
 
-## 操作顺序
+1. 进入课程上方练习步骤创建的独立仓库，先运行 `git status`。
+2. 对照步骤中写出的前置状态；如果当前分支、文件或远端不存在，先完成准备动作，不要跳过。
+3. 执行核心命令 `git bisect start`，把完整输出和退出码保留下来。
+4. 使用练习要求的验证命令检查结果，再解释哪一个对象发生了变化。
+5. 确认没有需要保留的修改后，执行平台对应的定向清理命令。
 
-1. 在独立的 commandlab-git-lab 目录建立实验环境。
-2. 使用 git bisect start 完成本节核心观察或动作。
-3. 运行 git status --short 检查结果，不用“没有报错”代替验证。
-4. 对照状态或提交图解释变化，然后执行安全清理。
+## 命令拆解
 
-## 进一步理解
+`git bisect start`：在已知好、坏提交之间二分查找回归点，需要先准备可重复的测试命令。
 
-git bisect start 与 git bisect run ./test.sh 的职责并不相同。在团队仓库中还要考虑命令是否改变已经共享的提交 ID。整理历史前应建立临时分支或标签，并确认恢复路径。
+这条命令的结果可能因 Git 版本、当前分支名和仓库内容不同而变化。稳定的验证方式是查看状态、引用或差异，而不是复制某个固定哈希或时间。
 
+## 出错时怎么办
+
+先停止继续输入，保留原始错误；再运行 `git status`、`git log --oneline --all` 或本节列出的只读检查，确认自己所在目录、分支和前置对象。需要改写历史的命令只在练习仓库或未共享分支中执行；不确定时先创建分支或记录当前提交：`git branch backup-before-19-bisect`。
+
+## 课后复盘
+
+用自己的话回答：命令读取或改变了哪个对象？验证输出中哪一行证明目标达成？如果结果不对，最先检查哪个前置条件？清理时为什么只能删除本节创建的资源？

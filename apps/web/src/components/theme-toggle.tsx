@@ -1,33 +1,43 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Button } from "@commandlab/ui";
+import { useSyncExternalStore } from "react";
+
+const THEME_CHANGE_EVENT = "commandlab-theme-change";
+
+function subscribe(onStoreChange: () => void) {
+  window.addEventListener(THEME_CHANGE_EVENT, onStoreChange);
+  return () => window.removeEventListener(THEME_CHANGE_EVENT, onStoreChange);
+}
+
+function getSnapshot() {
+  return document.documentElement.dataset.theme !== "light";
+}
+
+function getServerSnapshot() {
+  return true;
+}
 
 /** 在深色与浅色主题间切换，并将用户选择保存在本地。 */
 export function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem("commandlab-theme");
-    const nextDark = stored ? stored === "dark" : false;
-    const frame = window.requestAnimationFrame(() => {
-      setDark(nextDark);
-      document.documentElement.dataset.theme = nextDark ? "dark" : "light";
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
+  const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   function toggle() {
     const nextDark = !dark;
-    setDark(nextDark);
     document.documentElement.dataset.theme = nextDark ? "dark" : "light";
     window.localStorage.setItem("commandlab-theme", nextDark ? "dark" : "light");
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
   }
 
   return (
-    <Button variant="ghost" className="icon-button" onClick={toggle} aria-label="切换明暗主题">
-      {dark ? <Sun size={18} /> : <Moon size={18} />}
-    </Button>
+    <button
+      type="button"
+      className="ide-titlebar-button"
+      onClick={toggle}
+      aria-label={dark ? "切换到浅色主题" : "切换到深色主题"}
+      title={dark ? "切换到浅色主题" : "切换到深色主题"}
+    >
+      {dark ? <Sun size={14} /> : <Moon size={14} />}
+    </button>
   );
 }

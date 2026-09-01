@@ -939,13 +939,28 @@ function readInformational(
 
 function resolveRef(state: TeachingGitState, ref: string): string | undefined {
   if (ref === "HEAD") return state.head.commit || undefined;
-  if (ref.endsWith("~")) return state.branches[ref.slice(0, -1)] ?? state.head.commit;
-  return (
+  const parentMatch = /^(.*)(~|\^)(\d*)$/.exec(ref);
+  if (parentMatch) {
+    const base = parentMatch[1] === "HEAD" ? state.head.commit : resolveRef(state, parentMatch[1]!);
+    if (!base) return undefined;
+    const count = Math.max(1, Number(parentMatch[3] || 1));
+    let current = base;
+    for (let index = 0; index < count; index += 1) {
+      const commit = state.commits.find((item) => item.id === current);
+      const parent = commit?.parents[0];
+      if (!parent) return undefined;
+      current = parent;
+    }
+    return current;
+  }
+  const exact =
     state.branches[ref] ??
     state.tags[ref] ??
     state.remoteBranches[ref] ??
-    state.commits.find((commit) => commit.id === ref)?.id
-  );
+    state.commits.find((commit) => commit.id === ref)?.id;
+  if (exact) return exact;
+  const matches = state.commits.filter((commit) => commit.id.startsWith(ref));
+  return matches.length === 1 ? matches[0]!.id : undefined;
 }
 
 function parseState(state: TeachingGitState): TeachingGitState {

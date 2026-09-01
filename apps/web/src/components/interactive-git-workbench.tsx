@@ -2,22 +2,30 @@
 
 import Link from "next/link";
 import {
+  AlertCircle,
   Check,
+  ChevronDown,
   ChevronRight,
   CircleDot,
+  Download,
   FileCode2,
+  Files,
   FolderGit2,
   GitBranch,
   GitCommitHorizontal,
+  GitMerge,
+  GitPullRequestArrow,
   History,
-  PackageOpen,
+  Layers,
   Play,
   Plus,
   RefreshCcw,
   RotateCcw,
-  TerminalSquare,
+  Search,
+  Send,
   Trash2,
   Upload,
+  X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { TeachingGitState } from "@commandlab/content-schema";
@@ -44,7 +52,8 @@ import {
 type InteractiveGitWorkbenchProps = { compact?: boolean };
 
 /**
- * 浏览器内 Git 工作台：终端和可视化面板共享一个隔离状态，所有动作都可回放。
+ * 浏览器内 Git 工作台：模拟 VS Code/IntelliJ 的 Source Control 工具窗口。
+ * 终端、Source Control 面板、提交框、状态栏、命令历史与对象操作共享一个隔离内存状态。
  */
 export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkbenchProps) {
   const [state, setState] = useState<TeachingGitState>(() => createInteractiveGitState());
@@ -56,10 +65,15 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
   const [suggestionIndex, setSuggestionIndex] = useState(-1);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<WorkbenchContextMenu | null>(null);
+  const [commitMessage, setCommitMessage] = useState<string>("");
+  const [diffTarget, setDiffTarget] = useState<{ path: string; staged: boolean } | null>(null);
+  const [branchMenuOpen, setBranchMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const suggestions = useMemo(() => getInteractiveCommandSuggestions(input), [input]);
   const inputRef = useRef<HTMLInputElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
   const workbenchRef = useRef<HTMLElement>(null);
+  const branchRef = useRef<HTMLDivElement>(null);
   const counts = useMemo(() => statusCounts(state), [state]);
 
   useEffect(() => {
@@ -77,22 +91,10 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
     setSuggestionIndex(-1);
     setSuggestionsOpen(false);
     setContextMenu(null);
+    setCommitMessage("");
+    setDiffTarget(null);
+    setSearchTerm("");
   }, []);
-
-  const openContextMenu = useCallback(
-    (event: React.MouseEvent<HTMLElement>, target: InteractiveContextTarget) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const bounds = workbenchRef.current?.getBoundingClientRect();
-      if (!bounds) return;
-      const menuWidth = 232;
-      const menuHeight = 190;
-      const x = Math.max(8, Math.min(event.clientX - bounds.left, bounds.width - menuWidth - 8));
-      const y = Math.max(8, Math.min(event.clientY - bounds.top, bounds.height - menuHeight - 8));
-      setContextMenu({ ...target, x, y });
-    },
-    [],
-  );
 
   const runCommand = useCallback(
     (raw: string) => {
@@ -105,7 +107,9 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
         const outputLines = result.output.map((text) =>
           line(result.error ? "error" : "output", text),
         );
-        setTranscript((previous) => [...previous, line("command", command), ...outputLines]);
+        setTranscript((previous) =>
+          [...previous, line("command", command), ...outputLines].slice(-240),
+        );
       }
       setState(result.state);
       if (command !== "clear" && command !== "cls") {
@@ -120,6 +124,14 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
       requestAnimationFrame(() => inputRef.current?.focus());
     },
     [state],
+  );
+
+  const openContextMenu = useCallback(
+    (event: React.MouseEvent<HTMLElement>, target: InteractiveContextTarget) => {
+      event.preventDefault();
+      setContextMenu({ x: event.clientX, y: event.clientY, ...target });
+    },
+    [],
   );
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -141,6 +153,11 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
   };
 
   const onInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      runCommand(input);
+      return;
+    }
     if (suggestionsOpen && suggestions.length > 1 && input.trim()) {
       if (event.key === "ArrowDown") {
         event.preventDefault();
@@ -183,6 +200,14 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
 
   const runAndSelect = (command: string, selection?: string) => {
     setSelected(selection);
+    if (command.startsWith("git diff ")) {
+      const path = command.split(" -- ").pop()?.trim();
+      if (path) {
+        setDiffTarget({ path, staged: command.includes("--cached") });
+      }
+    } else if (command === "git diff") {
+      setDiffTarget(null);
+    }
     runCommand(command);
   };
 
@@ -204,6 +229,17 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
     };
   }, [contextMenu]);
 
+  useEffect(() => {
+    if (!branchMenuOpen) return;
+    const closeOnPointerDown = (event: PointerEvent) => {
+      if (!branchRef.current?.contains(event.target as Node)) {
+        setBranchMenuOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", closeOnPointerDown);
+    return () => document.removeEventListener("pointerdown", closeOnPointerDown);
+  }, [branchMenuOpen]);
+
   const contextActions = contextMenu ? getInteractiveContextActions(contextMenu) : [];
   const runContextAction = (command: string) => {
     if (!contextMenu) return;
@@ -211,6 +247,22 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
     setContextMenu(null);
     runAndSelect(command, selection);
   };
+
+  const onCommit = () => {
+    const message = commitMessage.trim();
+    if (!message) {
+      runCommand('git commit -m "保存改动"');
+      return;
+    }
+    runCommand(`git commit -m "${message.replace(/"/g, '\\"')}"`);
+    setCommitMessage("");
+  };
+
+  const stageAll = () => runCommand("git add .");
+  const unstageAll = () => runCommand("git restore --staged .");
+  const discardAll = () => runCommand("git checkout -- .");
+  const pull = () => runCommand("git pull");
+  const push = () => runCommand("git push");
 
   if (compact) {
     return (
@@ -280,32 +332,77 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
       <header className="interactive-workbench-header">
         <div className="interactive-workbench-title">
           <span className="interactive-workbench-icon">
-            <TerminalSquare size={18} />
+            <FolderGit2 size={16} />
           </span>
           <div>
-            <p className="eyebrow">Git 仿真工作区</p>
+            <p className="eyebrow">Source Control · Main</p>
             <h2>commandlab-git-lab</h2>
           </div>
-          <span className="interactive-memory-badge">
-            <CircleDot size={11} /> 内存隔离
-          </span>
+        </div>
+        <div ref={branchRef} className="ide-branch-picker">
+          <button
+            type="button"
+            className="ide-branch-current"
+            aria-haspopup="listbox"
+            aria-expanded={branchMenuOpen}
+            onClick={() => setBranchMenuOpen((open) => !open)}
+            title="点击切换分支"
+          >
+            <GitBranch size={14} />
+            <span>{state.head.name}</span>
+            <ChevronDown size={12} />
+          </button>
+          {branchMenuOpen ? (
+            <ul className="ide-branch-menu" role="listbox">
+              {Object.entries(state.branches).map(([name, commit]) => (
+                <li key={name}>
+                  <button
+                    type="button"
+                    className={name === state.head.name ? "is-current" : ""}
+                    onClick={() => {
+                      setBranchMenuOpen(false);
+                      runCommand(`git switch ${name}`);
+                    }}
+                  >
+                    <GitBranch size={12} />
+                    <span>{name}</span>
+                    <code>{commit}</code>
+                    {name === state.head.name ? <Check size={12} /> : null}
+                  </button>
+                </li>
+              ))}
+              <li className="ide-branch-menu-divider" />
+              <li>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBranchMenuOpen(false);
+                    const name = window.prompt("新分支名称");
+                    if (name) runCommand(`git switch -c ${name.trim()}`);
+                  }}
+                >
+                  <Plus size={12} /> <span>新建分支…</span>
+                </button>
+              </li>
+            </ul>
+          ) : null}
         </div>
         <div className="interactive-workbench-actions">
           <Button variant="ghost" type="button" onClick={() => runCommand("help")}>
-            <History size={15} /> 帮助
+            <History size={14} /> 帮助
           </Button>
           <Button variant="ghost" type="button" onClick={() => setTranscript([])}>
-            <Trash2 size={15} /> 清屏
+            <Trash2 size={14} /> 清屏
           </Button>
           <Button variant="secondary" type="button" onClick={reset}>
-            <RefreshCcw size={15} /> 重置会话
+            <RefreshCcw size={14} /> 重置
           </Button>
         </div>
       </header>
 
       <div className="interactive-context-bar">
         <span className="context-branch">
-          <GitBranch size={15} /> {state.head.name}
+          <GitBranch size={13} /> {state.head.name}
         </span>
         <span>
           HEAD <strong>{state.head.commit || "(empty)"}</strong>
@@ -320,16 +417,90 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
           <CircleDot size={11} />{" "}
           {counts.changes + counts.staged + counts.untracked ? "有未提交变化" : "工作区干净"}
         </span>
+        <span className="ide-context-spacer" />
+        <button type="button" className="ide-context-button" onClick={pull} title="git pull">
+          <Download size={12} /> Pull
+        </button>
+        <button
+          type="button"
+          className="ide-context-button"
+          onClick={push}
+          disabled={!counts.commits}
+          title="git push"
+        >
+          <Upload size={12} /> Push
+        </button>
+        <button
+          type="button"
+          className="ide-context-button"
+          onClick={() => runCommand("git fetch")}
+        >
+          <RefreshCcw size={12} /> Fetch
+        </button>
       </div>
 
       <div className="interactive-workbench-grid">
         <aside className="interactive-sidebar" aria-label="Git Source Control">
-          <WorkspaceFiles
-            state={state}
-            selected={selected}
-            onSelect={runAndSelect}
-            onContextMenu={openContextMenu}
+          <div className="interactive-sidebar-section">
+            <div className="interactive-source-control-head">
+              <span className="interactive-panel-label">
+                <Layers size={12} /> Source Control
+              </span>
+              <strong>{counts.changes + counts.staged + counts.untracked}</strong>
+            </div>
+            <div className="ide-source-actions">
+              <button
+                type="button"
+                onClick={stageAll}
+                disabled={counts.changes + counts.untracked === 0}
+                title="git add ."
+              >
+                <Plus size={12} /> 暂存全部
+              </button>
+              <button
+                type="button"
+                onClick={unstageAll}
+                disabled={counts.staged === 0}
+                title="git restore --staged ."
+              >
+                <RotateCcw size={12} /> 撤回全部
+              </button>
+              <button
+                type="button"
+                onClick={discardAll}
+                disabled={counts.changes + counts.untracked === 0}
+                title="git checkout -- ."
+              >
+                <X size={12} /> 丢弃改动
+              </button>
+            </div>
+            <WorkspaceFiles
+              state={state}
+              selected={selected}
+              onSelect={runAndSelect}
+              onContextMenu={openContextMenu}
+            />
+          </div>
+          <CommitMessageBox
+            message={commitMessage}
+            onChange={setCommitMessage}
+            onCommit={onCommit}
+            disabled={counts.staged === 0 && counts.changes + counts.untracked === 0}
+            stagedCount={counts.staged}
           />
+          <div className="interactive-sidebar-section">
+            <div className="interactive-panel-label">
+              <Search size={12} /> Source Control 搜索
+            </div>
+            <input
+              className="ide-search-input"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="按文件名筛选…"
+              spellCheck={false}
+            />
+            <p className="interactive-empty">仅在浏览器内运行，不读取文件系统。</p>
+          </div>
           <BranchList
             state={state}
             selected={selected}
@@ -357,20 +528,29 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
             onContextMenu={openContextMenu}
           />
           <div className="interactive-lower-grid">
-            <RecentCommands history={history} onSelect={(command) => runCommand(command)} />
+            <DiffView
+              state={state}
+              target={diffTarget}
+              onClose={() => setDiffTarget(null)}
+              onOpenFile={(path) => runAndSelect(`git diff -- ${path}`, path)}
+            />
             <div className="interactive-shortcuts">
               <p className="interactive-panel-label">快速动作</p>
               <div className="shortcut-grid">
                 {(
                   [
-                    ["git status", "检查状态"],
-                    ["git add .", "暂存全部"],
-                    ['git commit -m "保存改动"', "创建提交"],
-                    ["git log --oneline", "查看历史"],
+                    ["git status", "检查状态", Files],
+                    ["git add .", "暂存全部", Plus],
+                    ['git commit -m "保存改动"', "创建提交", Send],
+                    ["git log --oneline", "查看历史", History],
+                    ["git switch -c feature", "新建分支", GitBranch],
+                    ["git merge main", "合并分支", GitMerge],
+                    ["git pull", "同步远端", GitPullRequestArrow],
+                    ["git stash", "暂存改动", Layers],
                   ] as const
-                ).map(([command, label]) => (
+                ).map(([command, label, Icon]) => (
                   <button type="button" key={command} onClick={() => runCommand(command)}>
-                    <Play size={12} /> <span>{label}</span>
+                    <Icon size={12} /> <span>{label}</span>
                     <code>{command}</code>
                   </button>
                 ))}
@@ -394,9 +574,144 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
           onBlur={() => window.setTimeout(() => setSuggestionsOpen(false), 120)}
         />
       </div>
+      <footer className="interactive-ide-statusbar" role="contentinfo">
+        <span>
+          <GitBranch size={11} /> {state.head.name}
+        </span>
+        <span>
+          <CircleDot size={11} /> {counts.changes + counts.staged} changes
+        </span>
+        <span>
+          <Upload size={11} /> ↑0 ↓0
+        </span>
+        <span>
+          <AlertCircle size={11} /> 0 errors, 0 warnings
+        </span>
+        <span className="ide-status-spacer" />
+        <span>{counts.commits} commits</span>
+        <span>HEAD {state.head.commit || "(empty)"}</span>
+        <span>UTF-8</span>
+        <span>LF</span>
+      </footer>
       {contextMenu ? (
         <ContextMenu menu={contextMenu} actions={contextActions} onSelect={runContextAction} />
       ) : null}
+    </section>
+  );
+}
+
+function CommitMessageBox({
+  message,
+  onChange,
+  onCommit,
+  disabled,
+  stagedCount,
+}: {
+  message: string;
+  onChange: (value: string) => void;
+  onCommit: () => void;
+  disabled: boolean;
+  stagedCount: number;
+}) {
+  return (
+    <div className="ide-commit-box">
+      <label className="interactive-panel-label" htmlFor="commit-message">
+        <Send size={12} /> Message (Ctrl+Enter 提交)
+      </label>
+      <textarea
+        id="commit-message"
+        value={message}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder="feat: …"
+        spellCheck={false}
+        onKeyDown={(event) => {
+          if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+            event.preventDefault();
+            onCommit();
+          }
+        }}
+      />
+      <div className="ide-commit-box-actions">
+        <span>
+          {stagedCount > 0 ? `${stagedCount} 个文件待提交` : "暂存区为空，可改用 -a 一次性提交"}
+        </span>
+        <Button
+          variant="primary"
+          type="button"
+          onClick={onCommit}
+          disabled={disabled && message.length === 0}
+        >
+          <Send size={12} /> Commit
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function DiffView({
+  state,
+  target,
+  onClose,
+  onOpenFile,
+}: {
+  state: TeachingGitState;
+  target: { path: string; staged: boolean } | null;
+  onClose: () => void;
+  onOpenFile: (path: string) => void;
+}) {
+  const file = target ? state.workingTree.find((item) => item.path === target.path) : null;
+  return (
+    <section className="interactive-diff-view">
+      <div className="interactive-diff-heading">
+        <div>
+          <p className="interactive-panel-label">
+            <FileCode2 size={12} /> Diff
+          </p>
+          <h3>{target ? target.path : "全部未暂存变更"}</h3>
+        </div>
+        {target ? (
+          <button type="button" onClick={onClose} aria-label="关闭差异视图" title="关闭">
+            <X size={12} />
+          </button>
+        ) : null}
+      </div>
+      {target ? (
+        file ? (
+          <pre className="interactive-diff-body" aria-live="polite">
+            <span className="diff-line diff-meta">
+              diff --git a/{file.path} b/{file.path}
+            </span>
+            <span className="diff-line diff-meta">
+              index {file.version.toString(16).padStart(7, "0")}..
+              {(file.version + 1).toString(16).padStart(7, "0")} 100644
+            </span>
+            <span className="diff-line diff-meta">--- a/{file.path}</span>
+            <span className="diff-line diff-meta">+++ b/{file.path}</span>
+            <span className="diff-line diff-context">@@ -1,3 +1,4 @@</span>
+            <span className="diff-line diff-context">{"  CommandLab 教学仓库"}</span>
+            <span className="diff-line diff-context">{"  学习 Git / Docker 命令"}</span>
+            <span className="diff-line diff-add">{"+ 已更新一节实验段落"}</span>
+            <span className="diff-line diff-context">{"  返回查看动画"}</span>
+          </pre>
+        ) : (
+          <p className="interactive-empty">文件不存在：{target.path}</p>
+        )
+      ) : state.workingTree.filter((f) => f.status !== "clean").length ? (
+        <ul className="interactive-diff-list">
+          {state.workingTree
+            .filter((file) => file.status !== "clean")
+            .map((file) => (
+              <li key={file.path}>
+                <button type="button" onClick={() => onOpenFile(file.path)}>
+                  <FileCode2 size={12} /> <span>{file.path}</span>
+                  <code>{file.status}</code>
+                </button>
+              </li>
+            ))}
+        </ul>
+      ) : (
+        <p className="interactive-empty">工作区无变更</p>
+      )}
     </section>
   );
 }
@@ -421,13 +736,7 @@ function WorkspaceFiles({
     (file) => file.status === "clean" && !state.staging.includes(file.path),
   );
   return (
-    <div className="interactive-sidebar-section">
-      <div className="interactive-sidebar-heading">
-        <span>
-          <FolderGit2 size={15} /> Source Control
-        </span>
-        <strong>{changes.length + staged.length + untracked.length}</strong>
-      </div>
+    <div className="ide-workspace-files">
       <FileGroup
         label="Changes"
         count={changes.length}
@@ -455,15 +764,17 @@ function WorkspaceFiles({
         onContextMenu={onContextMenu}
         action="stage"
       />
-      <FileGroup
-        label="Tracked"
-        count={tracked.length}
-        files={tracked}
-        selected={selected}
-        onSelect={onSelect}
-        onContextMenu={onContextMenu}
-        action="none"
-      />
+      {tracked.length > 0 ? (
+        <FileGroup
+          label="Tracked"
+          count={tracked.length}
+          files={tracked.slice(0, 4)}
+          selected={selected}
+          onSelect={onSelect}
+          onContextMenu={onContextMenu}
+          action="none"
+        />
+      ) : null}
       {!changes.length && !staged.length && !untracked.length ? (
         <p className="interactive-empty">工作区干净</p>
       ) : null}
@@ -513,7 +824,7 @@ function FileGroup({
             className="interactive-file-main"
             onClick={() => onSelect(`git diff -- ${file.path}`, file.path)}
           >
-            <FileCode2 size={14} />
+            <FileCode2 size={13} />
             <span>{file.path}</span>
             <em className={file.status === "clean" ? "is-clean" : undefined}>
               {file.status === "untracked"
@@ -540,7 +851,7 @@ function FileGroup({
               aria-label={`${action === "stage" ? "暂存" : "撤回"} ${file.path}`}
               title={action === "stage" ? "暂存文件" : "撤回暂存"}
             >
-              {action === "stage" ? <Plus size={13} /> : <RotateCcw size={13} />}
+              {action === "stage" ? <Plus size={12} /> : <RotateCcw size={12} />}
             </button>
           )}
           <ContextTrigger
@@ -573,7 +884,7 @@ function BranchList({
     <div className="interactive-sidebar-section">
       <div className="interactive-sidebar-heading">
         <span>
-          <GitBranch size={15} /> 分支
+          <GitBranch size={13} /> 分支
         </span>
         <strong>{Object.keys(state.branches).length}</strong>
       </div>
@@ -593,10 +904,10 @@ function BranchList({
                 onClick={() => onSelect(`git switch ${name}`, name)}
                 onContextMenu={(event) => onContextMenu(event, target)}
               >
-                <GitBranch size={13} />
+                <GitBranch size={12} />
                 <span>{name}</span>
                 <code>{commit}</code>
-                {name === state.head.name ? <Check size={13} /> : null}
+                {name === state.head.name ? <Check size={12} /> : null}
               </button>
               <ContextTrigger target={target} onOpen={onContextMenu} />
             </div>
@@ -622,7 +933,7 @@ function RemoteList({
     <div className="interactive-sidebar-section">
       <div className="interactive-sidebar-heading">
         <span>
-          <Upload size={15} /> 远端
+          <Upload size={13} /> 远端
         </span>
         <strong>{Object.keys(state.remotes).length}</strong>
       </div>
@@ -637,7 +948,7 @@ function RemoteList({
                 onClick={() => onSelect("git remote -v", name)}
                 onContextMenu={(event) => onContextMenu(event, target)}
               >
-                <Upload size={13} />
+                <Upload size={12} />
                 <span>{name}</span>
                 <code>{state.remoteBranches[`${name}/main`] ?? "-"}</code>
               </button>
@@ -693,7 +1004,7 @@ function RemoteFiles({
                 onClick={() => onSelect("git remote files", `remote-file:${file.path}`)}
                 onContextMenu={(event) => onContextMenu(event, target)}
               >
-                <FileCode2 size={13} />
+                <FileCode2 size={12} />
                 <span>{file.path}</span>
                 <code>v{file.version}</code>
               </button>
@@ -711,7 +1022,7 @@ function RemoteFiles({
           spellCheck={false}
         />
         <button type="submit" aria-label="创建远端文件" title="创建远端文件">
-          <Plus size={13} />
+          <Plus size={12} />
         </button>
       </form>
     </div>
@@ -733,7 +1044,7 @@ function StashList({
     <div className="interactive-sidebar-section">
       <div className="interactive-sidebar-heading">
         <span>
-          <PackageOpen size={15} /> stash
+          <Layers size={13} /> stash
         </span>
         <strong>{state.stash.length}</strong>
       </div>
@@ -753,7 +1064,7 @@ function StashList({
                   onClick={() => onSelect("git stash list", target.id)}
                   onContextMenu={(event) => onContextMenu(event, target)}
                 >
-                  <PackageOpen size={13} />
+                  <Layers size={12} />
                   <span>stash@&#123;{index}&#125;</span>
                   <code>{item}</code>
                 </button>
@@ -793,12 +1104,12 @@ function CommitGraph({
       <div className="interactive-branch-strip">
         {Object.entries(state.branches).map(([name, commit]) => (
           <span className={name === state.head.name ? "is-current" : ""} key={name}>
-            <GitBranch size={12} /> {name} <code>{commit}</code>
+            <GitBranch size={11} /> {name} <code>{commit}</code>
           </span>
         ))}
         {Object.entries(state.remoteBranches).map(([name, commit]) => (
           <span className="is-remote" key={name}>
-            <Upload size={12} /> {name} <code>{commit}</code>
+            <Upload size={11} /> {name} <code>{commit}</code>
           </span>
         ))}
       </div>
@@ -819,7 +1130,7 @@ function CommitGraph({
                 }
               >
                 <span className="interactive-commit-node">
-                  <GitCommitHorizontal size={15} />
+                  <GitCommitHorizontal size={13} />
                 </span>
                 <span className="interactive-commit-copy">
                   <strong>{commit.message}</strong>
@@ -843,33 +1154,6 @@ function CommitGraph({
           </p>
         )}
       </div>
-    </section>
-  );
-}
-
-function RecentCommands({
-  history,
-  onSelect,
-}: {
-  history: string[];
-  onSelect: (command: string) => void;
-}) {
-  return (
-    <section className="interactive-history-panel">
-      <p className="interactive-panel-label">命令历史</p>
-      {history.length ? (
-        history
-          .slice()
-          .reverse()
-          .slice(0, 5)
-          .map((command) => (
-            <button type="button" key={command} onClick={() => onSelect(command)}>
-              <History size={12} /> <code>{command}</code>
-            </button>
-          ))
-      ) : (
-        <p className="interactive-empty">执行过的命令会显示在这里</p>
-      )}
     </section>
   );
 }

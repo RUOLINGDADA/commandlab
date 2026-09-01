@@ -145,6 +145,32 @@ const gitProfiles: Record<
     kind: "diagnostic",
     metaphor: "用二分法缩小范围，找出最早引入问题的提交。",
   },
+  clone: {
+    command: "git clone https://example.com/repo.git",
+    kind: "remote",
+    includeRemote: true,
+    metaphor: "把远端仓库复制成新的本地工作副本，并登记 origin。",
+  },
+  show: {
+    command: "git show --stat HEAD",
+    kind: "history",
+    metaphor: "深入查看一个提交的说明、父提交和文件统计。",
+  },
+  mv: {
+    command: "git mv README.md docs/README.md",
+    kind: "workspace",
+    metaphor: "移动已跟踪文件，同时更新工作区和索引。",
+  },
+  rm: {
+    command: "git rm --cached .env",
+    kind: "cleanup",
+    metaphor: "从索引移除敏感配置，但保留本地文件。",
+  },
+  grep: {
+    command: "git grep -n TODO",
+    kind: "diagnostic",
+    metaphor: "在 Git 跟踪的文件或提交快照中定位文本。",
+  },
   "command-index": {
     command: "git help",
     kind: "workspace",
@@ -341,6 +367,24 @@ const dockerProfiles: Record<
     kind: "diagnostic",
     output: "healthy",
     metaphor: "读取健康检查结果，确认服务是否真的可用。",
+  },
+  "container-prune": {
+    command: "docker container prune --filter until=168h",
+    kind: "cleanup",
+    output: "Total reclaimed space: 0B",
+    metaphor: "按条件清理已停止容器，避免误删仍在运行的服务。",
+  },
+  "system-df": {
+    command: "docker system df --verbose",
+    kind: "diagnostic",
+    output: "Images · Containers · Local Volumes · Build Cache",
+    metaphor: "盘点 Engine 的磁盘占用，为定向清理提供证据。",
+  },
+  "compose-down": {
+    command: "docker compose -p commandlab down",
+    kind: "compose",
+    output: "Container web Removed\nNetwork commandlab_default Removed",
+    metaphor: "只回收当前 Compose 项目的容器和网络，默认保留命名卷。",
   },
   "command-index": {
     command: "docker --help",
@@ -580,7 +624,7 @@ function dockerFrame(
     id: `${seed.tool}-${seed.slug}-${phase}-${commandText.length}`,
     phase,
     commandText,
-    terminalLines: phase === "idle" ? [] : profile.output.split("\n"),
+    terminalLines: dockerTerminalLines(seed.slug, profile, phase, commandText, state),
     state,
     events,
     activeIds: events.map((item) => item.subject),
@@ -588,6 +632,48 @@ function dockerFrame(
     transition,
     duration,
   });
+}
+
+function dockerTerminalLines(
+  slug: string,
+  profile: { command: string; metaphor: string; output: string },
+  phase: "idle" | "typing" | "executing" | "transitioning" | "settled",
+  commandText: string,
+  state: TeachingDockerState,
+): string[] {
+  const counts = [
+    `objects: ${state.images.length} images · ${state.containers.length} containers · ${state.networks.length} networks · ${state.volumes.length} volumes`,
+    `ports: ${state.ports.length ? state.ports.map((port) => `${port.host}->${port.container}`).join(", ") : "none"}`,
+  ];
+  if (phase === "idle")
+    return [
+      "ENGINE READY · context=default",
+      ...counts,
+      "next: observe the object before execution",
+    ];
+  if (phase === "typing")
+    return [
+      `$ ${commandText}`,
+      `parser: ${commandText.length}/${profile.command.length} chars`,
+      "flags and target are being resolved; state is unchanged",
+    ];
+  if (phase === "executing")
+    return [
+      "request accepted · validating image, target and resource bindings",
+      ...profile.output.split("\n"),
+      `event: ${slug} · ${profile.metaphor}`,
+    ];
+  if (phase === "transitioning")
+    return [
+      "state transition · updating the in-memory Engine snapshot",
+      ...counts,
+      "watch: status, network attachment, mounts and published ports",
+    ];
+  return [
+    "command completed · snapshot is stable",
+    ...counts,
+    `next: docker inspect ${slug === "image" ? "nginx:latest" : "web"}`,
+  ];
 }
 
 function dockerEventType(slug: string): TeachingEventLike["type"] {

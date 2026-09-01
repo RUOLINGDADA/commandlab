@@ -27,3 +27,7 @@ Docker 课程重设计已经通过 PR #9 合并，版本 PR #10 已完成。`v0.
 最新续作 `docs/tasks/2026-08-31-ide-workspace-remote-sync/` 已完成：浏览器右键不稳定的问题改为所有工作区对象旁显示可见 `>` 操作入口，菜单动作继续通过仿真命令回放；Git 状态新增受 schema 校验的 `remoteFiles` 快照，支持远端表单、`git remote files`、`git remote touch <path>`、远端提交以及 `git pull` 将远端新增/更新文件同步到本地 Tracked clean 文件。pull 会生成合并提交，并对本地未提交同路径文件报告冲突且不覆盖。命令候选覆盖 `git remote `、`git pull ` 和 `git push `。已通过 29 项测试、类型、Lint、格式、内容校验、生产构建和桌面/390px 浏览器验收；工作台仍只运行在浏览器内存会话。
 
 最新续作 `docs/tasks/2026-08-31-home-live-workbench/` 已完成：主页不再使用紧凑终端预览，首屏采用任务入口和会话状态侧栏，工作台下移为全宽完整 `InteractiveGitWorkbench`；桌面输入 `git status` 已确认输出和状态同步，390px 页面整体无横向溢出。紧凑模式仍供课程详情等上下文使用。
+
+最新修复任务 `docs/tasks/2026-09-01-theme-animation-layout/` 已完成并回归加固：百科主题筛选项增加按钮边界、6px 间距和窄屏换行；动画入口改用 Next `Link`，根布局在 `beforeInteractive` 阶段读取本地主题，主题按钮使用 `useSyncExternalStore` 避免 hydration 闪变；课程 Git/Docker 嵌入动画舞台在嵌入模式下改为单列堆叠，命令栏使用可收缩轨道，舞台/画布改为卡片内 `overflow: auto`，超宽内容可完整查看。已完成 1280px/390px 浏览器边界与主题保持复测；开发服务器可用 `http://localhost:3000`，未执行发布。
+
+最新任务 `docs/tasks/2026-09-01-docker-learning-experience/` 已完成：`/terminal/` 统一提供 Git/Docker 工作台模式切换；Docker 仿真终端增加端口、网络、卷、镜像层、健康状态、资源指标和 Compose 配置等反馈；Docker 动画时间轴增加解析进度、对象快照和下一步诊断信息；课程嵌入播放器启用紧凑模式。已通过 `pnpm test`（46 项）、`pnpm validate:content`、`pnpm typecheck`、`pnpm lint`、`pnpm format:check`、`pnpm build`，并完成 1280px/390px 浏览器验收。开发服务器可用 `http://localhost:3000`，未执行线上发布。

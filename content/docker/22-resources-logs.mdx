@@ -47,7 +47,7 @@ scenarios:
                 docker run -d --name commandlab-worker --memory=128m --cpus=0.5
                 alpine:3.20 sh -c 'for i in 1 2 3; do echo work-$i; sleep 2;
                 done'
-              description: 主操作：创建、启动、构建或改变本案例对象。
+              description: 按本步骤目标执行命令；执行前先确认它操作的是镜像、容器、卷、网络还是 Compose 项目。
               shell: sh
             - command: docker stats --no-stream commandlab-worker
               description: 观察操作：读取状态、输出或配置，确认主操作确实生效。
@@ -124,7 +124,7 @@ scenarios:
           explanation: 这一步模拟“CPU、内存与日志管理”的日常工作。先执行主操作，再执行观察命令；前者改变目标对象，后者读取证据，不会在浏览器中执行。
           commands:
             - command: docker update --memory=64m --cpus=0.25 commandlab-resources-logs
-              description: 主操作：创建、启动、构建或改变本案例对象。
+              description: 按本步骤目标执行命令；执行前先确认它操作的是镜像、容器、卷、网络还是 Compose 项目。
               shell: sh
             - command: >-
                 docker inspect commandlab-resources-logs --format

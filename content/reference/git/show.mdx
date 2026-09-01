@@ -1,0 +1,24 @@
+---
+id: "git-ref-show"
+tool: "git"
+slug: "show"
+title: "git show"
+category: "历史与差异"
+object: "提交、标签或其他 Git 对象"
+summary: "查看某个提交或对象的元数据与补丁内容。"
+usage: "想知道某次提交改了什么，或核对标签指向时使用。"
+syntax: "git show [--stat|--name-only] [<object>]"
+parameters:
+  - {flag: "--stat", description: "只显示文件变更统计，不展开完整补丁。"}
+  - {flag: "--name-only", description: "只列出受影响的文件名。"}
+commonOptions: ["--stat：显示统计", "--format=fuller：显示更完整元数据", "HEAD~1：引用上一个提交"]
+scenarios: ["查看 HEAD 最近一次提交。", "核对某个标签或提交是否包含目标文件。"]
+comparisons: ["与 git log 对比：log 适合浏览多条历史，show 适合深入一个对象。", "与 git diff 对比：show 默认包含提交说明和父提交差异。"]
+risk: "低"
+reversible: "命令只读，不会改变仓库对象或工作区内容。"
+errors: ["fatal: ambiguous argument：对象名不存在，先用 git log --oneline 找到真实哈希。"]
+examples: [{command: "git show --stat HEAD", description: "查看最近提交的文件统计", shell: "sh"}]
+relatedLessons: ["git-05", "git-14"]
+---
+
+先用 git log --oneline --all 找到真实对象，再把哈希交给 git show。输出中的提交说明、作者、父提交和补丁分别回答“谁、何时、基于什么、改了什么”。

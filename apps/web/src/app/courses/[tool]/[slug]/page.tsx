@@ -3,7 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { AlertTriangle, ArrowLeft, ArrowRight, Clock3, GitCompareArrows } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  Clock3,
+  GitCompareArrows,
+  PlayCircle,
+} from "lucide-react";
 import { Badge, Card } from "@commandlab/ui";
 import { toolLabels, type Tool } from "@commandlab/content-schema";
 import { LessonActions } from "@/components/lesson-actions";
@@ -11,7 +18,14 @@ import { GitPractice } from "@/components/git-practice";
 import { DockerPractice } from "@/components/docker-practice";
 import { QuizCard } from "@/components/quiz-card";
 import { TerminalPreview } from "@/components/terminal-preview";
-import { getLesson, getLessonsByTool, validateContent } from "@/lib/content";
+import {
+  getLesson,
+  getLessonsByTool,
+  getLessonReferenceSlugs,
+  getReference,
+  validateContent,
+} from "@/lib/content";
+import { CommandAnimationEmbed } from "@/components/command-animation-embed";
 
 export function generateStaticParams() {
   return validateContent().map((lesson) => ({ tool: lesson.tool, slug: lesson.slug }));
@@ -41,6 +55,33 @@ export default async function LessonPage({
   const currentIndex = lessons.findIndex((item) => item.id === lesson.id);
   const previous = lessons[currentIndex - 1];
   const next = lessons[currentIndex + 1];
+
+  // 嵌入相关命令动画（首次加载无水合，无需 interactive）
+  const animationSlugs = getLessonReferenceSlugs({
+    id: lesson.id,
+    commands:
+      lesson.tool === "git"
+        ? lesson.commands
+        : lesson.scenarios.flatMap((scenario) =>
+            scenario.steps.flatMap((step) => [...step.answer.commands, ...step.verify]),
+          ),
+  });
+  const animations = animationSlugs
+    .map((s) => {
+      const [animTool, animSlug] = s.split("/");
+      if (!animTool || !animSlug) return null;
+      const ref = getReference(animTool as Tool, animSlug);
+      return ref ? { entry: ref, tool: animTool, slug: animSlug } : null;
+    })
+    .filter(
+      (
+        value,
+      ): value is {
+        entry: NonNullable<ReturnType<typeof getReference>>;
+        tool: string;
+        slug: string;
+      } => value !== null,
+    );
 
   return (
     <article className="lesson-layout shell">
@@ -85,6 +126,26 @@ export default async function LessonPage({
             </ul>
           </div>
         </header>
+
+        {/* 命令动画嵌入区：每个相关命令一个卡片，可直接播放 */}
+        {animations.length > 0 && (
+          <div className="lesson-animation-embed">
+            <div className="lesson-animation-embed-heading">
+              <PlayCircle size={14} />
+              <span>本节相关命令演示</span>
+            </div>
+            <div className="lesson-animation-embed-grid">
+              {animations.map(({ entry, tool: animTool, slug: animSlug }) => (
+                <CommandAnimationEmbed
+                  key={`${animTool}/${animSlug}`}
+                  scene={entry.teachingScene}
+                  tool={animTool}
+                  slug={animSlug}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         <section className="markdown-body">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{lesson.body}</ReactMarkdown>
@@ -131,7 +192,7 @@ export default async function LessonPage({
             <div className="section-heading left">
               <p className="eyebrow">本机实战 · 逐步案例</p>
               <h2>跟着场景完成每一个可验证步骤</h2>
-              <p>答案默认折叠；命令只会复制到剪贴板，不会在浏览器中执行。</p>
+              <p>答案默认折叠；没有本机 Docker 时，可以先用步骤旁的浏览器仿真入口练习。</p>
             </div>
             <DockerPractice
               lessonId={lesson.id}
@@ -156,7 +217,7 @@ export default async function LessonPage({
             lesson.tool === "docker" ? lesson.interactiveQuiz : { ...lesson.quiz, type: "choice" }
           }
         />
-        <TerminalPreview compact />
+        <TerminalPreview compact tool={lesson.tool} />
         <LessonActions lessonId={lesson.id} />
 
         <nav className="lesson-pagination" aria-label="课程翻页">
