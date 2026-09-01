@@ -254,7 +254,8 @@ export function InteractiveGitWorkbench({ compact = false }: InteractiveGitWorkb
       runCommand('git commit -m "保存改动"');
       return;
     }
-    runCommand(`git commit -m "${message.replace(/"/g, '\\"')}"`);
+    const escapedMessage = message.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    runCommand(`git commit -m "${escapedMessage}"`);
     setCommitMessage("");
   };
 
