@@ -19,12 +19,12 @@
     "validate:content": "pnpm --filter @commandlab/web validate:content"
   },
   "devDependencies": {
-    "@types/node": "24.10.13",
+    "@types/node": "26.4.0",
     "@vitest/coverage-v8": "4.1.11",
     "fake-indexeddb": "6.2.5",
-    "prettier": "3.8.2",
+    "prettier": "3.9.6",
     "turbo": "2.10.12",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "vitest": "4.1.11"
   }
 }
