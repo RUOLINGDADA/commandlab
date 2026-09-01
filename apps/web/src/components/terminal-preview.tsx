@@ -1,11 +1,22 @@
 import Link from "next/link";
-import { LockKeyhole, ServerCog, Terminal } from "lucide-react";
+import { LockKeyhole, Terminal } from "lucide-react";
 import { Card } from "@commandlab/ui";
-import { sandboxAvailability } from "@commandlab/practice-runtime";
 import { InteractiveGitWorkbench } from "./interactive-git-workbench";
+import { InteractiveDockerWorkbench } from "./interactive-docker-workbench";
 
-export function TerminalPreview({ compact = false }: { compact?: boolean }) {
-  if (compact) return <InteractiveGitWorkbench compact />;
+export function TerminalPreview({
+  compact = false,
+  tool = "git",
+}: {
+  compact?: boolean;
+  tool?: "git" | "docker";
+}) {
+  if (compact)
+    return tool === "docker" ? (
+      <InteractiveDockerWorkbench compact />
+    ) : (
+      <InteractiveGitWorkbench compact />
+    );
   return (
     <Card className={compact ? "terminal-card is-compact" : "terminal-card"}>
       <div className="terminal-topbar">
@@ -17,28 +28,19 @@ export function TerminalPreview({ compact = false }: { compact?: boolean }) {
         <span>commandlab-sandbox</span>
         <LockKeyhole size={14} />
       </div>
-      <div className="terminal-screen" aria-label="在线终端暂未开放">
+      <div className="terminal-screen terminal-screen--preview" aria-label="在线终端预览">
         <p>
-          <span>$</span> commandlab sandbox --status
+          <span>$</span> git status
         </p>
-        <p className="terminal-muted">online sandbox: unavailable</p>
+        <p className="terminal-muted">On branch main</p>
+        <p className="terminal-muted">working tree clean</p>
         <p className="terminal-info">
-          {sandboxAvailability.status === "unavailable"
-            ? sandboxAvailability.message
-            : "在线沙箱已连接。"}
+          这是只读预览。进入在线终端可以执行命令、查看提交图并练习 Git。
         </p>
-        {!compact && (
-          <div className="terminal-roadmap">
-            <ServerCog size={18} />
-            <span>为保护学习者与服务器，公网自由终端将在专业隔离环境准备后开放。</span>
-          </div>
-        )}
       </div>
-      {!compact && (
-        <Link href="/learn/" className="terminal-cta">
-          <Terminal size={16} /> 先从本机练习开始
-        </Link>
-      )}
+      <Link href="/terminal/" className="terminal-cta">
+        <Terminal size={16} /> 打开在线终端
+      </Link>
     </Card>
   );
 }

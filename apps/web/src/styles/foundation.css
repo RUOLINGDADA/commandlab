@@ -1,53 +1,98 @@
 :root {
   color-scheme: light;
-  --bg: #f4f5f7;
-  --bg-soft: #eceef1;
+  /* IDE 工具风设计令牌：低饱和工程色、单层细线、密集排版。 */
+  --bg: #f6f7f9;
+  --bg-soft: #eef0f3;
+  --bg-chrome: #e7eaef;
+  --bg-chrome-strong: #dfe3e8;
   --panel: #ffffff;
-  --panel-hover: #fafafa;
-  --panel-strong: #1f2933;
-  --text: #1d2732;
-  --muted: #586673;
-  --muted-strong: #3f4d5a;
+  --panel-hover: #f1f3f6;
+  --panel-strong: #0f141a;
+  --tab-bar: #f1f3f6;
+  --status-bar: #1f6feb;
+  --status-bar-ink: #ffffff;
+  --activity-bar: #1d2129;
+  --activity-bar-ink: #c7ccd4;
+  --activity-bar-ink-strong: #ffffff;
+  --title-bar: #0d1117;
+  --title-bar-ink: #d6dbe2;
+  --text: #14181f;
+  --text-strong: #0a0d12;
+  --muted: #5a6473;
+  --muted-strong: #3b4350;
   --line: #d8dde3;
-  --line-strong: #b8c0c9;
-  --primary: #d94b2b;
-  --primary-strong: #b93820;
+  --line-strong: #b9c1cb;
+  --primary: #1f6feb;
+  --primary-strong: #1158c7;
   --primary-ink: #ffffff;
-  --orange: #c65a28;
+  --orange: #b65924;
   --blue: #176b88;
-  --danger: #b42318;
-  --warning: #a15c00;
-  --success: #257942;
-  --radius-sm: 6px;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --shadow: 0 12px 30px rgba(27, 39, 50, 0.08);
+  --green: #1f883d;
+  --red: #cf222e;
+  --yellow: #9a6700;
+  --purple: #8250df;
+  --danger: #cf222e;
+  --warning: #9a6700;
+  --success: #1a7f37;
+  --modified: #bf8700;
+  --added: #1a7f37;
+  --deleted: #cf222e;
+  --staged: #1f6feb;
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 4px;
+  --shadow: 0 1px 0 rgba(15, 20, 26, 0.04);
   --sans:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono:
+    "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --editor-font: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --titlebar-h: 30px;
+  --tabbar-h: 32px;
+  --statusbar-h: 24px;
+  --activity-w: 46px;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #171a1e;
-  --bg-soft: #20252b;
-  --panel: #23282e;
-  --panel-hover: #2a3037;
-  --panel-strong: #eef1f4;
-  --text: #eef1f4;
-  --muted: #a5afb9;
-  --muted-strong: #c3cbd3;
-  --line: #39414a;
-  --line-strong: #52606c;
-  --primary: #f07855;
-  --primary-strong: #ff9676;
-  --primary-ink: #24130d;
-  --orange: #f08a51;
-  --blue: #65b7cf;
-  --danger: #ff8c82;
-  --warning: #f2bd63;
-  --success: #76c893;
-  --shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+  --bg: #0d1117;
+  --bg-soft: #161b22;
+  --bg-chrome: #161b22;
+  --bg-chrome-strong: #1c232c;
+  --panel: #0d1117;
+  --panel-hover: #1c232c;
+  --panel-strong: #f0f3f6;
+  --tab-bar: #161b22;
+  --status-bar: #161b22;
+  --status-bar-ink: #c9d1d9;
+  --activity-bar: #0a0e13;
+  --activity-bar-ink: #8b949e;
+  --activity-bar-ink-strong: #f0f3f6;
+  --title-bar: #010409;
+  --title-bar-ink: #c9d1d9;
+  --text: #e6edf3;
+  --text-strong: #f0f3f6;
+  --muted: #8b949e;
+  --muted-strong: #c9d1d9;
+  --line: #30363d;
+  --line-strong: #484f58;
+  --primary: #2f81f7;
+  --primary-strong: #58a6ff;
+  --primary-ink: #0a0d12;
+  --orange: #f0883e;
+  --blue: #58a6ff;
+  --green: #3fb950;
+  --red: #f85149;
+  --yellow: #d29922;
+  --purple: #bc8cff;
+  --danger: #f85149;
+  --warning: #d29922;
+  --success: #3fb950;
+  --modified: #d29922;
+  --added: #3fb950;
+  --deleted: #f85149;
+  --staged: #2f81f7;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -62,16 +107,27 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.55;
 }
 a {
-  color: inherit;
+  color: var(--primary);
   text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
 }
 button,
 input,
 textarea {
   font: inherit;
+  color: inherit;
+}
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
 }
 button,
 a {
@@ -82,89 +138,98 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 summary:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--primary) 45%, transparent);
-  outline-offset: 3px;
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
 }
 ::selection {
-  background: color-mix(in srgb, var(--primary) 22%, transparent);
+  background: color-mix(in srgb, var(--primary) 30%, transparent);
+}
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--mono);
+  font-size: 0.86em;
 }
 .shell {
-  width: min(1180px, calc(100% - 48px));
+  width: min(1320px, calc(100% - 24px));
   margin-inline: auto;
 }
 .page {
-  min-height: 72vh;
-  padding-block: 64px 110px;
+  min-height: calc(100vh - 92px);
+  padding-block: 28px 60px;
 }
 .narrow-page {
-  width: min(940px, calc(100% - 48px));
+  width: min(960px, calc(100% - 24px));
 }
 .section {
-  padding-block: 64px;
+  padding-block: 36px;
 }
 .skip-link {
   position: fixed;
   left: 12px;
   top: -80px;
   z-index: 999;
-  padding: 9px 14px;
-  border-radius: 6px;
+  padding: 6px 10px;
   background: var(--primary);
   color: var(--primary-ink);
+  font-size: 0.78rem;
 }
 .skip-link:focus {
   top: 12px;
 }
 .eyebrow {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 7px;
-  margin: 0 0 9px;
-  color: var(--primary-strong);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  gap: 6px;
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .page-heading {
-  max-width: 760px;
-  margin-bottom: 38px;
+  max-width: 880px;
+  margin-bottom: 22px;
 }
 .page-heading h1,
 .section-heading h2 {
   margin: 0;
-  font-size: clamp(2rem, 4vw, 3.8rem);
-  line-height: 1.08;
-  letter-spacing: 0;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 .page-heading p:last-child,
 .section-heading > p:last-child {
   color: var(--muted);
-  font-size: 1rem;
+  font-size: 0.92rem;
 }
 .section-heading {
-  max-width: 680px;
-  margin-bottom: 28px;
+  max-width: 760px;
+  margin-bottom: 20px;
 }
 .section-heading.left {
-  margin-bottom: 22px;
+  margin-bottom: 14px;
 }
 .section-heading.left h2 {
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-size: 1.2rem;
 }
 
 @media (max-width: 720px) {
   .shell,
   .narrow-page {
-    width: min(100% - 28px, 1180px);
+    width: calc(100% - 16px);
   }
   .page {
-    padding-block: 46px 80px;
+    padding-block: 18px 50px;
   }
   .section {
-    padding-block: 46px;
+    padding-block: 26px;
   }
-  .page-heading {
-    margin-bottom: 28px;
+  .page-heading h1 {
+    font-size: 1.4rem;
   }
 }

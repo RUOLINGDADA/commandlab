@@ -1,0 +1,24 @@
+---
+id: "git-ref-clone"
+tool: "git"
+slug: "clone"
+title: "git clone"
+category: "远程协作"
+object: "本地仓库与远程仓库"
+summary: "把远程仓库复制为一个新的本地工作副本，并自动配置 origin。"
+usage: "第一次参与项目，或需要在新电脑建立工作副本时使用。"
+syntax: "git clone [--branch <name>] [--depth <n>] <repository> [<directory>]"
+parameters:
+  - {flag: "--branch <name>", description: "克隆后直接切换到指定分支或标签。"}
+  - {flag: "--depth <n>", description: "只获取最近 n 个提交，适合临时查看但不含完整历史。"}
+commonOptions: ["--branch：选择初始分支", "--depth：浅克隆", "--recurse-submodules：同时初始化子模块"]
+scenarios: ["从远程地址建立本地工作副本。", "只需最近历史时使用浅克隆，并明确它不适合完整考古。"]
+comparisons: ["与 git init 对比：clone 会复制远端对象并设置 origin，init 只创建空仓库。"]
+risk: "中"
+reversible: "删除本地目录即可移除副本；不会删除远程仓库。"
+errors: ["destination path already exists：目标目录已存在且非空，换目录或先确认其中内容。"]
+examples: [{command: "git clone https://example.com/team/app.git app", description: "克隆到指定目录", shell: "sh"}]
+relatedLessons: ["git-10", "git-11"]
+---
+
+git clone 会联网读取远端，完成后先运行 git remote -v 和 git status，确认地址、当前分支和工作区，再开始修改。不要把 clone 当成备份删除远端的命令。

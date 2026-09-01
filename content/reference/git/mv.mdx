@@ -1,0 +1,24 @@
+---
+id: "git-ref-mv"
+tool: "git"
+slug: "mv"
+title: "git mv"
+category: "工作区"
+object: "工作区文件与索引"
+summary: "移动或重命名文件，并同步更新 Git 索引。"
+usage: "重命名已跟踪文件时使用，避免把删除和新增误看成两件无关的变化。"
+syntax: "git mv <source> <destination>"
+parameters:
+  - {flag: "<source>", description: "当前已跟踪的文件路径。"}
+  - {flag: "<destination>", description: "新的文件名或目录路径。"}
+commonOptions: ["-f：必要时覆盖目标文件，使用前先确认目标路径"]
+scenarios: ["重命名文档并保留历史追踪。", "把文件移动到已存在的子目录。"]
+comparisons: ["与 shell mv 对比：git mv 同时更新索引，shell mv 后仍需 git add -A。"]
+risk: "中"
+reversible: "移动后可用 git mv 新路径 旧路径 撤回；覆盖目标文件前先备份，提交后也可用 git revert 恢复记录。"
+errors: ["fatal: not under version control：源文件尚未被跟踪，先确认路径或直接使用 shell 移动。"]
+examples: [{command: "git mv README.txt docs/README.txt", description: "移动并重命名已跟踪文件", shell: "sh"}]
+relatedLessons: ["git-03", "git-05"]
+---
+
+git mv 立即改变工作区和索引，但还没有创建提交。完成后运行 git status，确认显示的是重命名，再用 git add/git commit 保存这次结构变化。

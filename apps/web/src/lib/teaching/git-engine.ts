@@ -213,6 +213,14 @@ export function applyGitCommand(input: TeachingGitState, commandText: string): A
     }
     case "commit": {
       const message = command.flags["-m"]?.join(" ") || "保存本次改动";
+      if (command.flags["-a"] || command.flags["--all"]) {
+        for (const file of state.workingTree) {
+          if (file.status === "modified") {
+            file.status = "staged";
+            if (!state.staging.includes(file.path)) state.staging.push(file.path);
+          }
+        }
+      }
       if (!state.staging.length) {
         output.push("nothing to commit");
         events.push(event("diagnostic-read", "staging", "暂存区为空，commit 没有新快照可以封存。"));

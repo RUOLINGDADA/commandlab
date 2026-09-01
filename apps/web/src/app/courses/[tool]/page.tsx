@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { toolLabels, type Tool } from "@commandlab/content-schema";
 import { Card } from "@commandlab/ui";
 import { CourseCard } from "@/components/course-card";
+import { InteractiveDockerWorkbench } from "@/components/interactive-docker-workbench";
 import { getLessonsByTool } from "@/lib/content";
 
 export function generateStaticParams() {
@@ -52,6 +53,7 @@ export default async function ToolCoursePage({ params }: { params: Promise<{ too
           <h1>{toolLabels[typedTool].name}</h1>
           <p>{toolLabels[typedTool].description}</p>
         </header>
+        {typedTool === "docker" ? <InteractiveDockerWorkbench /> : null}
         {typedTool === "docker" && (
           <Card className="practice-protocol">
             <p className="eyebrow">实操说明与安全协议</p>

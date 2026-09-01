@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { AlertTriangle, CheckCircle2, ChevronDown, Clipboard, RotateCcw } from "lucide-react";
+import { TerminalSquare } from "lucide-react";
 import { Card } from "@commandlab/ui";
 import { getLessonProgress, updateLessonProgress } from "@commandlab/practice-runtime";
 import type { DockerLesson, ExerciseStep } from "@commandlab/content-schema";
@@ -75,6 +77,20 @@ export function DockerPractice({
         />
         <CommandList title="安全清理" icon={<RotateCcw size={16} />} commands={guide.cleanup} />
       </Card>
+
+      <div className="practice-bridge">
+        <div>
+          <p className="eyebrow">没有本机 Docker 也能继续</p>
+          <strong>先在浏览器里模拟本节命令，再决定是否复制到电脑执行。</strong>
+          <p>仿真终端只改变当前页面的内存状态，不会安装软件或修改文件。</p>
+        </div>
+        <Link
+          href="/terminal/?mode=docker#docker-terminal"
+          className="ui-button ui-button--secondary"
+        >
+          <TerminalSquare size={15} /> 打开 Docker 在线终端
+        </Link>
+      </div>
 
       {scenarios.map((scenario) => (
         <section className="scenario-card" key={scenario.id}>
@@ -156,6 +172,14 @@ function StepCard({
         <strong>操作目标：</strong>
         {step.objective}
       </p>
+      {step.answer.commands[0] ? (
+        <div className="step-online-action">
+          <span>浏览器先试一遍</span>
+          <Link href="/terminal/?mode=docker#docker-terminal" className="step-online-link">
+            <TerminalSquare size={13} /> {step.answer.commands[0].command}
+          </Link>
+        </div>
+      ) : null}
       {step.dangerous && (
         <p className="danger-warning">
           <AlertTriangle size={16} />

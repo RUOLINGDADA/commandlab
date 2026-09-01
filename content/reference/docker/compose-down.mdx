@@ -1,0 +1,24 @@
+---
+id: "docker-ref-compose-down"
+tool: "docker"
+slug: "compose-down"
+title: "docker compose down"
+category: "多容器编排"
+object: "Compose 项目资源"
+summary: "停止并移除 Compose 项目创建的容器和网络。"
+usage: "结束本地开发栈并回收项目级资源。"
+syntax: "docker compose down [--volumes] [--remove-orphans]"
+parameters:
+  - {flag: "--volumes", description: "同时删除项目卷，卷中的数据可能无法恢复。"}
+  - {flag: "--remove-orphans", description: "删除不再出现在当前 Compose 文件中的孤儿容器。"}
+commonOptions: ["--volumes：删除卷，谨慎使用", "--remove-orphans：清理孤儿容器"]
+scenarios: ["保留数据库卷，只停止并移除服务容器。", "确认数据可丢弃后连同临时卷一起清理。"]
+comparisons: ["与 docker stop 对比：down 还会移除项目容器和网络。", "与 docker system prune 对比：down 只作用于当前 Compose 项目。"]
+risk: "高"
+reversible: "不带 --volumes 时通常可再次 up；带 --volumes 删除的数据卷不保证可恢复。"
+errors: ["no configuration file provided：当前目录没有 compose.yaml，使用 -f 指向正确文件。"]
+examples: [{command: "docker compose -p commandlab down", description: "移除 commandlab 项目容器和网络但保留卷", shell: "sh"}]
+relatedLessons: ["docker-20", "docker-21", "docker-24"]
+---
+
+执行前确认项目名和 compose 文件：docker compose -p commandlab config。默认 down 不删除命名卷；只有明确确认数据可丢失时才加 --volumes。

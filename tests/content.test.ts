@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateContent } from "../apps/web/src/lib/content";
+import { loadReferences, validateContent } from "../apps/web/src/lib/content";
 
 describe("课程内容", () => {
   const lessons = validateContent();
@@ -99,6 +99,48 @@ describe("课程内容", () => {
       for (const step of steps) {
         expect(step.diagnosisOrder.length).toBeGreaterThanOrEqual(3);
         expect(step.cleanupScope).toContain("commandlab-");
+      }
+    }
+  });
+
+  it("教程正文给出新手可执行的准备、验证和恢复路径", () => {
+    for (const lesson of lessons.filter((item) => item.tool === "git")) {
+      expect(lesson.body).toContain("先准备，再操作");
+      expect(lesson.body).toContain("出错时怎么办");
+      expect(lesson.body).toContain("课后复盘");
+      expect(lesson.body).not.toContain("命令没有报错就表示目标完成");
+    }
+  });
+
+  it("新增百科命令具有完整条目并接入动画", () => {
+    const entries = loadReferences();
+    for (const key of [
+      "git/clone",
+      "git/show",
+      "git/mv",
+      "git/rm",
+      "git/grep",
+      "docker/container-prune",
+      "docker/system-df",
+      "docker/compose-down",
+    ]) {
+      const [tool, slug] = key.split("/");
+      const entry = entries.find((item) => item.tool === tool && item.slug === slug);
+      expect(entry, key).toBeDefined();
+      expect(entry!.animation.frames.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("Docker 答案说明不再把所有命令误称为创建操作", () => {
+    for (const lesson of lessons.filter((item) => item.tool === "docker")) {
+      for (const scenario of lesson.scenarios) {
+        for (const step of scenario.steps) {
+          expect(
+            step.answer.commands.every(
+              (command) => !command.description.startsWith("主操作：创建、启动、构建"),
+            ),
+          ).toBe(true);
+        }
       }
     }
   });

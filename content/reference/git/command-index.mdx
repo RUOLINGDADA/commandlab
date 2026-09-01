@@ -13,10 +13,10 @@ parameters:
   - {flag: "--help", description: "查看命令帮助；如 git help log 可打开详细说明。"}
   - {flag: "-C <path>", description: "先切换到指定目录再执行命令，不改变当前终端目录。"}
   - {flag: "-c key=value", description: "只对本次命令临时覆盖一个配置值。"}
-  - {flag: "观测类", description: "status、log、show、diff、reflog、branch、remote。"}
-  - {flag: "修改类", description: "add、commit、switch、merge、rebase、stash、tag。"}
+  - {flag: "观测类", description: "status、log、show、diff、grep、reflog、branch、remote。"}
+  - {flag: "修改类", description: "add、commit、mv、rm、switch、merge、rebase、stash、tag。"}
   - {flag: "协作类", description: "clone、fetch、pull、push、cherry-pick。"}
-  - {flag: "恢复类", description: "restore、reset、revert、bisect、clean。"}
+  - {flag: "恢复类", description: "restore、reset、revert、bisect、clean、bundle。"}
 commonOptions: ["--help：查看帮助", "-C：指定目录", "-c：临时配置"]
 scenarios: ["根据问题选择只读命令，再决定是否改变仓库。", "在陌生仓库先用 status 和 log 建立安全基线。"]
 comparisons: ["与 shell 命令对比：Git 子命令作用于仓库对象，先确认当前目录和分支。"]

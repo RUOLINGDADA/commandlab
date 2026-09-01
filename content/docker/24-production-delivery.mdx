@@ -46,7 +46,7 @@ scenarios:
           explanation: 这一步模拟“生产化交付综合实战”的日常工作。先执行主操作，再执行观察命令；前者改变目标对象，后者读取证据，不会在浏览器中执行。
           commands:
             - command: docker compose -p commandlab-release config
-              description: 主操作：创建、启动、构建或改变本案例对象。
+              description: 按本步骤目标执行命令；执行前先确认它操作的是镜像、容器、卷、网络还是 Compose 项目。
               shell: sh
             - command: docker compose -p commandlab-release ps
               description: 观察操作：读取状态、输出或配置，确认主操作确实生效。
@@ -121,7 +121,7 @@ scenarios:
           explanation: 这一步模拟“生产化交付综合实战”的日常工作。先执行主操作，再执行观察命令；前者改变目标对象，后者读取证据，不会在浏览器中执行。
           commands:
             - command: docker compose -p commandlab-release config --quiet
-              description: 主操作：创建、启动、构建或改变本案例对象。
+              description: 按本步骤目标执行命令；执行前先确认它操作的是镜像、容器、卷、网络还是 Compose 项目。
               shell: sh
             - command: docker compose -p commandlab-release ps --format json
               description: 观察操作：读取状态、输出或配置，确认主操作确实生效。

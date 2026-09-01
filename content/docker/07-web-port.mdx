@@ -46,7 +46,7 @@ scenarios:
             - command: >-
                 docker run -d --name commandlab-web -p 127.0.0.1:8080:80
                 nginx:alpine
-              description: 主操作：创建、启动、构建或改变本案例对象。
+              description: 按本步骤目标执行命令；执行前先确认它操作的是镜像、容器、卷、网络还是 Compose 项目。
               shell: sh
             - command: 'curl -I http://127.0.0.1:8080'
               description: 观察操作：读取状态、输出或配置，确认主操作确实生效。
@@ -125,7 +125,7 @@ scenarios:
             - command: >-
                 docker run -d --name commandlab-web-alt -p 127.0.0.1:8081:80
                 nginx:1.27-alpine
-              description: 主操作：创建、启动、构建或改变本案例对象。
+              description: 按本步骤目标执行命令；执行前先确认它操作的是镜像、容器、卷、网络还是 Compose 项目。
               shell: sh
             - command: 'curl -I http://127.0.0.1:8081'
               description: 观察操作：读取状态、输出或配置，确认主操作确实生效。

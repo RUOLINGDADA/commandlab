@@ -14,24 +14,32 @@ pitfall: {"symptom":"没有确认状态就执行 git lfs track \"*.bin\"，得�
 comparison: {"items":["git lfs track \"*.bin\"","git lfs ls-files"],"guidance":"先判断目标是观察状态、改变工作区、移动引用还是改写历史，再选择命令。","risk":"只读检查风险低；覆盖工作区或改写共享历史前必须建立恢复点。","reversible":"Git 对象通常可从 reflog 追踪，未提交且被覆盖的内容可能无法恢复。"}
 related: ["git lfs track \"*.bin\"","git lfs ls-files","git status","git help"]
 quiz: {"question":"学习“管理大文件”时，哪项习惯最可靠？","options":["不看状态直接执行写命令","先观察、预测影响，再执行并验证","命令没有报错就表示目标完成"],"answer":1,"explanation":"可靠操作包含观察、预测、执行和验证四步。"}
-practice: {"goal":"在独立仓库练习：管理大文件","steps":["建立 commandlab-git-lab 并创建种子提交","执行 git lfs env，随后运行 git status --short"],"expected":"git status --short 显示与目标一致的状态或历史。","hint":"先运行 git status，确认当前分支与工作区是否干净。","solution":"完成种子仓库后执行 git lfs env，再用 git status --short 验证并解释输出。","variant":"新增一个文件或分支条件，先写下预测，再重复 git lfs track \"*.bin\" 并比较结果。"}
+practice: {"goal":"在独立仓库练习：管理大文件","steps":["先执行 git lfs version；若提示不是命令，先安装 Git LFS，不能把普通 Git 当作替代品","执行 git lfs install 与 git lfs track \"*.bin\"，创建一个 .bin 文件后运行 git add .gitattributes 文件名"],"expected":"git lfs ls-files 能列出已提交的大文件；git show HEAD:文件名 显示的是 LFS 指针文本，而不是把大文件内容塞进普通 Git 对象。","hint":"仅执行 track 不会自动转换历史，必须把 .gitattributes 和文件一起提交；仓库已有大文件时要先阅读 migrate 的风险说明。","solution":"确认 LFS 可用后再追踪新文件，提交并用 git lfs ls-files 验证；没有安装时记录环境限制，不要假装输出成功。","variant":"执行 git lfs untrack \"*.bin\"，观察 .gitattributes 的变化，再决定是否提交这次配置修改。"}
 platforms: [{"platform":"windows","setup":["New-Item -ItemType Directory -Force commandlab-git-lab | Out-Null","Set-Location commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","Set-Content note.txt 'CommandLab'","git add note.txt","git commit -m \"docs: seed lab\"","git lfs env"],"verify":["git status --short"],"cleanup":["Set-Location ..","Remove-Item -Recurse -Force commandlab-git-lab"]},{"platform":"macos","setup":["mkdir -p commandlab-git-lab && cd commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","printf 'CommandLab\\n' > note.txt","git add note.txt","git commit -m \"docs: seed lab\"","git lfs env"],"verify":["git status --short"],"cleanup":["cd ..","rm -rf commandlab-git-lab"]},{"platform":"linux","setup":["mkdir -p commandlab-git-lab && cd commandlab-git-lab","git init","git config user.name \"CommandLab Learner\"","git config user.email \"learner@example.com\"","printf 'CommandLab\\n' > note.txt","git add note.txt","git commit -m \"docs: seed lab\"","git lfs env"],"verify":["git status --short"],"cleanup":["cd ..","rm -rf commandlab-git-lab"]}]
 ---
 
-## 核心模型
+## 本节要解决什么
 
-用 Git LFS 指针减少仓库历史体积。
+用 Git LFS 指针减少仓库历史体积，并在隔离仓库中练习、验证与安全清理。先把命令要影响的对象说清楚，再执行；这样你能判断输出是否合理，而不是只看“有没有报错”。
 
-不要从背诵参数开始。先运行 git status 确认当前分支、暂存区和工作区，再判断命令会移动引用、改变暂存区，还是改写工作区。把影响区域说清楚后再执行，可以避免大多数误操作。
+## 先准备，再操作
 
-## 操作顺序
+1. 进入课程上方练习步骤创建的独立仓库，先运行 `git status`。
+2. 对照步骤中写出的前置状态；如果当前分支、文件或远端不存在，先完成准备动作，不要跳过。
+3. 执行核心命令 `git lfs track \`，把完整输出和退出码保留下来。
+4. 使用练习要求的验证命令检查结果，再解释哪一个对象发生了变化。
+5. 确认没有需要保留的修改后，执行平台对应的定向清理命令。
 
-1. 在独立的 commandlab-git-lab 目录建立实验环境。
-2. 使用 git lfs track "*.bin" 完成本节核心观察或动作。
-3. 运行 git status --short 检查结果，不用“没有报错”代替验证。
-4. 对照状态或提交图解释变化，然后执行安全清理。
+## 命令拆解
 
-## 进一步理解
+`git lfs track \`：用 Git LFS 把大文件内容交给 LFS 存储，仓库中保留指针文件；先确认本机已安装并初始化。
 
-git lfs track "*.bin" 与 git lfs ls-files 的职责并不相同。在团队仓库中还要考虑命令是否改变已经共享的提交 ID。整理历史前应建立临时分支或标签，并确认恢复路径。
+这条命令的结果可能因 Git 版本、当前分支名和仓库内容不同而变化。稳定的验证方式是查看状态、引用或差异，而不是复制某个固定哈希或时间。
 
+## 出错时怎么办
+
+先停止继续输入，保留原始错误；再运行 `git status`、`git log --oneline --all` 或本节列出的只读检查，确认自己所在目录、分支和前置对象。需要改写历史的命令只在练习仓库或未共享分支中执行；不确定时先创建分支或记录当前提交：`git branch backup-before-23-lfs`。
+
+## 课后复盘
+
+用自己的话回答：命令读取或改变了哪个对象？验证输出中哪一行证明目标达成？如果结果不对，最先检查哪个前置条件？清理时为什么只能删除本节创建的资源？

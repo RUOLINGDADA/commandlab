@@ -14,7 +14,7 @@ parameters:
   - {flag: "镜像", description: "pull、images、build、tag、push、rmi、save、load。"}
   - {flag: "容器", description: "run、create、start、stop、kill、restart、ps、logs、exec、inspect、cp、rm。"}
   - {flag: "网络与数据", description: "network、volume、port、stats。"}
-  - {flag: "编排与清理", description: "compose、system prune、container prune、image prune。"}
+  - {flag: "编排与清理", description: "compose、compose down、system df、system prune、container prune、image prune。"}
 commonOptions: ["--context：选择 Engine", "--help：查看子命令帮助", "--format：稳定字段输出"]
 scenarios: ["先用 ps、images、inspect 观察对象，再执行 run、rm 或 prune。", "生产排错按 context、资源状态、日志、健康检查顺序收集证据。"]
 comparisons: ["与 Podman 等工具对比：Docker CLI 通过 Engine 管理镜像、容器、网络和卷。"]

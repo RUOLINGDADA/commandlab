@@ -1,0 +1,23 @@
+---
+id: "docker-ref-system-df"
+tool: "docker"
+slug: "system-df"
+title: "docker system df"
+category: "诊断"
+object: "Engine 磁盘占用"
+summary: "查看镜像、容器、卷和构建缓存占用的空间。"
+usage: "磁盘告警或清理前，先判断空间主要被哪类对象占用。"
+syntax: "docker system df [--verbose]"
+parameters:
+  - {flag: "--verbose", description: "展开到对象级别，显示可回收与共享空间。"}
+commonOptions: ["--verbose：显示详细对象明细"]
+scenarios: ["清理前确认是否是构建缓存占满磁盘。", "解释为什么删除一个标签不等于释放全部层空间。"]
+comparisons: ["与 docker stats 对比：system df 看磁盘，stats 看运行中容器的 CPU/内存等资源。"]
+risk: "低"
+reversible: "命令只读，不会改变镜像、容器、卷或构建缓存。"
+errors: ["Cannot connect to the Docker daemon：先确认 Engine 运行并检查当前 context。"]
+examples: [{command: "docker system df --verbose", description: "查看详细磁盘占用", shell: "sh"}]
+relatedLessons: ["docker-09", "docker-13", "docker-22"]
+---
+
+docker system df 只提供“哪里占空间”的证据，不会替你决定能否删除。结合 docker image ls、docker ps -a 和卷清单逐项确认，再选择定向清理。

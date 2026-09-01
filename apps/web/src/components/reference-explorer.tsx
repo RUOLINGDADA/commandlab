@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BookOpen, PlayCircle, Search, TerminalSquare } from "lucide-react";
 import { Badge, Card } from "@commandlab/ui";
@@ -133,7 +134,7 @@ function ReferenceCard({
           <strong>专属动画：{entry.animation.frames.length} 步</strong>
           <span>{entry.animation.frames[0]?.narration}</span>
         </div>
-        <a href={`/reference/${entry.tool}/${entry.slug}/animation/`}>观看动画演示 →</a>
+        <Link href={`/reference/${entry.tool}/${entry.slug}/animation/`}>观看动画演示 →</Link>
       </div>
       <details open>
         <summary>查看全部参数解析</summary>

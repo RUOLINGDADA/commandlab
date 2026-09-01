@@ -1,0 +1,24 @@
+---
+id: "git-ref-rm"
+tool: "git"
+slug: "rm"
+title: "git rm"
+category: "工作区"
+object: "工作区文件与索引"
+summary: "删除已跟踪文件，并把删除同步记录到索引。"
+usage: "确认文件不再需要并准备在下一次提交中删除时使用。"
+syntax: "git rm [--cached] <path>"
+parameters:
+  - {flag: "--cached", description: "只从索引移除，保留工作区文件，常用于停止跟踪配置文件。"}
+  - {flag: "-r", description: "递归删除目录，使用前必须核对完整路径和目录内容。"}
+commonOptions: ["--cached：停止跟踪但不删除本地文件", "-r：递归目录"]
+scenarios: ["删除已经提交的临时文件。", "把误提交的本地配置改为不再跟踪。"]
+comparisons: ["与 git restore 对比：restore 恢复文件，rm 准备删除文件。", "与 shell rm 对比：git rm 同时更新索引。"]
+risk: "高"
+reversible: "提交前可用 git restore --staged 和 git restore 恢复；提交后优先用 git revert，避免改写共享历史。"
+errors: ["pathspec did not match：路径拼写错误或当前目录不对。"]
+examples: [{command: "git rm --cached .env", description: "停止跟踪但保留本地配置文件", shell: "sh"}]
+relatedLessons: ["git-06", "git-13"]
+---
+
+删除前先运行 git status 并确认路径。gitignore 只能阻止未跟踪文件被加入，不能让已经提交的文件自动消失；这时要用 git rm --cached，再把规则写入忽略文件。

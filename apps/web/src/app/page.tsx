@@ -24,65 +24,49 @@ export default function HomePage() {
   return (
     <>
       <section className="hero shell hero-home">
-        <div className="hero-copy">
-          <p className="eyebrow hero-eyebrow">
-            <span className="live-dot" />
-            命令行学习 · Git 与 Docker
-          </p>
-          <h1>
-            把每条命令，<span>变成可验证的结果。</span>
-          </h1>
-          <p className="hero-description">
-            CommandLab
-            是一套可以边读边做的中文课程。你会先判断操作对象，再执行命令，最后用结果验证，而不是只背参数。
-          </p>
-          <div className="hero-actions">
-            <Link href="/learn/" className="primary-link">
-              浏览课程 <ArrowRight size={16} />
-            </Link>
-            <Link href="/reference/" className="secondary-link">
-              打开工具百科 <Search size={16} />
-            </Link>
-          </div>
-          <div className="hero-proof">
-            <span>
-              <strong>{lessons.length}</strong> 节课程
-            </span>
-            <span>
-              <strong>2</strong> 条学习路径
-            </span>
-            <span>
-              <strong>3</strong> 个平台指引
-            </span>
-          </div>
-          <div className="hero-command-strip" aria-label="学习闭环">
-            <span>观察状态</span>
-            <ArrowRight size={13} />
-            <span>执行命令</span>
-            <ArrowRight size={13} />
-            <span>核对证据</span>
-          </div>
-        </div>
-        <div className="hero-workspace">
-          <div className="workspace-rail">
-            <span className="workspace-rail-dot" />
-            <strong>学习工作台</strong>
-            <small>今日路径</small>
-            <span className="workspace-active">Git · 01</span>
-            <span>Docker · 01</span>
-            <span>工具百科</span>
-          </div>
-          <div className="workspace-main">
-            <TerminalPreview compact />
-            <div className="workspace-float workspace-float--top">
-              <span>学习进度</span>
-              <strong>03 / 24</strong>
+        <div className="home-hero-centered">
+          <div className="hero-copy">
+            <p className="eyebrow hero-eyebrow">
+              <span className="live-dot" />
+              命令行学习 · Git 与 Docker
+            </p>
+            <h1>
+              把每条命令，<span>变成可验证的结果。</span>
+            </h1>
+            <p className="hero-description">
+              CommandLab
+              是一套可以边读边做的中文课程。你会先判断操作对象，再执行命令，最后用结果验证，而不是只背参数。
+            </p>
+            <div className="hero-actions">
+              <Link href="/learn/" className="primary-link">
+                浏览课程 <ArrowRight size={16} />
+              </Link>
+              <Link href="/reference/" className="secondary-link">
+                打开工具百科 <Search size={16} />
+              </Link>
             </div>
-            <div className="workspace-float workspace-float--bottom">
-              <span className="live-dot" /> 输出已验证
+            <div className="hero-proof">
+              <span>
+                <strong>{lessons.length}</strong> 节课程
+              </span>
+              <span>
+                <strong>2</strong> 条学习路径
+              </span>
+              <span>
+                <strong>3</strong> 个平台指引
+              </span>
             </div>
           </div>
         </div>
+
+        <div className="home-terminal-heading">
+          <div>
+            <p className="eyebrow">从这里开始</p>
+            <h2>命令行练习环境</h2>
+          </div>
+          <span className="home-terminal-note">只读预览 · 完整终端另有入口</span>
+        </div>
+        <TerminalPreview />
       </section>
 
       <Reveal>

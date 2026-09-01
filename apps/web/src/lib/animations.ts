@@ -13,6 +13,11 @@ const gitKinds: Record<string, AnimationKind> = {
   commit: "commit",
   status: "diagnostic",
   diff: "workspace",
+  show: "history",
+  grep: "diagnostic",
+  clone: "remote",
+  mv: "workspace",
+  rm: "cleanup",
   init: "workspace",
   config: "workspace",
   log: "history",
@@ -69,6 +74,9 @@ const dockerKinds: Record<string, AnimationKind> = {
   rename: "container",
   healthcheck: "diagnostic",
   "command-index": "workspace",
+  "container-prune": "cleanup",
+  "system-df": "diagnostic",
+  "compose-down": "compose",
 };
 
 const templateByKind: Record<AnimationKind, (seed: AnimationSeed) => CommandAnimationSpec> = {
