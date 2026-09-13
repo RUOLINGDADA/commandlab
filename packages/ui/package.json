@@ -13,10 +13,10 @@
   },
   "dependencies": {
     "clsx": "2.1.1",
-    "react": "19.2.8"
+    "react": "19.3.0"
   },
   "devDependencies": {
-    "@types/react": "19.2.14",
+    "@types/react": "19.3.0",
     "typescript": "6.0.3"
   }
 }
